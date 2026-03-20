@@ -828,21 +828,60 @@ async function generateDocument() {
     el.querySelector('.step-icon').textContent = s.replace('step-','');
   });
 
-  for (let i = 0; i < steps.length; i++) {
-    await new Promise(r => setTimeout(r, 550));
-    document.getElementById(steps[i]).classList.add('active');
-    if (i > 0) {
-      document.getElementById(steps[i-1]).classList.add('done');
-      document.getElementById(steps[i-1]).querySelector('.step-icon').textContent = '✓';
-    }
-  }
-  await new Promise(r => setTimeout(r, 600));
-  document.getElementById(steps[3]).classList.add('done');
-  document.getElementById(steps[3]).querySelector('.step-icon').textContent = '✓';
-  await new Promise(r => setTimeout(r, 300));
+  // Build template fields for API
+  const templateFields = {};
+  tpl.sections.forEach(s => { templateFields[s.key] = s.label; });
 
-  outputData = tpl.output;
-  renderOutput(tpl);
+  // Start loading animation and API call in parallel
+  const animateSteps = async () => {
+    for (let i = 0; i < steps.length; i++) {
+      await new Promise(r => setTimeout(r, 550));
+      document.getElementById(steps[i]).classList.add('active');
+      if (i > 0) {
+        document.getElementById(steps[i-1]).classList.add('done');
+        document.getElementById(steps[i-1]).querySelector('.step-icon').textContent = '✓';
+      }
+    }
+  };
+
+  const callAPI = async () => {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ memo, template: templateFields, templateName: tpl.name })
+    });
+    if (!res.ok) throw new Error('API fout: ' + res.status);
+    return await res.json();
+  };
+
+  try {
+    const [_, apiResult] = await Promise.all([animateSteps(), callAPI()]);
+
+    await new Promise(r => setTimeout(r, 600));
+    document.getElementById(steps[3]).classList.add('done');
+    document.getElementById(steps[3]).querySelector('.step-icon').textContent = '✓';
+    await new Promise(r => setTimeout(r, 300));
+
+    // Merge AI output with template (fallback to hardcoded if key missing)
+    outputData = {};
+    tpl.sections.forEach(s => {
+      outputData[s.key] = apiResult.output?.[s.key] || tpl.output?.[s.key] || '[Niet gegenereerd]';
+    });
+
+    // Temporarily override tpl.output for renderOutput
+    const tplWithOutput = { ...tpl, output: outputData };
+    renderOutput(tplWithOutput);
+
+  } catch (err) {
+    console.error('AI generatie mislukt, fallback op demo-output:', err);
+    // Fallback: use hardcoded demo output
+    await new Promise(r => setTimeout(r, 600));
+    document.getElementById(steps[3]).classList.add('done');
+    document.getElementById(steps[3]).querySelector('.step-icon').textContent = '✓';
+    await new Promise(r => setTimeout(r, 300));
+    outputData = tpl.output;
+    renderOutput(tpl);
+  }
 
   document.getElementById('loading-overlay').classList.remove('visible');
   document.getElementById('output-container').classList.add('visible');
@@ -858,7 +897,7 @@ function renderOutput(tpl) {
   blocksEl.innerHTML = '';
 
   tpl.sections.forEach((section, idx) => {
-    const text = tpl.output[section.key] || '[Niet vermeld in memo]';
+    const text = (tpl.output && tpl.output[section.key]) || outputData?.[section.key] || '[Niet vermeld in memo]';
     const delay = idx * 0.06;
     const blockHtml = `
       <div class="output-block" style="animation-delay:${delay}s">
