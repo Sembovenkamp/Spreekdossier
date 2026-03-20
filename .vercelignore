@@ -1,0 +1,7 @@
+node_modules
+*.bak
+index.html.bak
+index-static.html
+demo.html
+voice-demo.html
+README.md
