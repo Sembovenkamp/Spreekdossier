@@ -790,6 +790,9 @@ function checkSpeechAPI() {
 
 // ===== TEMPLATE SELECTION =====
 function selectTemplate(templateId, btn) {
+  // Stop any active recording cleanly before switching template
+  if (isRecording && SpeechEngine) SpeechEngine.stop();
+
   currentTemplate = templateId;
   document.querySelectorAll('.template-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -797,6 +800,15 @@ function selectTemplate(templateId, btn) {
   document.getElementById('output-container').classList.remove('visible');
   const tpl = TEMPLATES[templateId];
   document.getElementById('gen-btn-text').textContent = `✦ Genereer ${tpl.name}`;
+
+  // Reset transcript state for new template
+  finalTranscript = '';
+  interimTranscript = '';
+  renderTranscript();
+  document.getElementById('btn-clear').style.display = 'none';
+  document.getElementById('btn-generate').disabled = true;
+  document.getElementById('status-text').textContent = 'Klaar om op te nemen';
+  document.getElementById('record-hint').textContent = 'Druk op de microfoon en vertel wat er is besproken of gedaan';
 }
 
 function updateTemplateInfo(templateId) {
@@ -820,6 +832,8 @@ function startRecording() {
   renderTranscript();
   document.getElementById('btn-clear').style.display = 'none';
   document.getElementById('btn-generate').disabled = true;
+  document.getElementById('output-container').classList.remove('visible');
+  document.getElementById('loading-overlay').classList.remove('visible');
   SpeechEngine.start();
 }
 
