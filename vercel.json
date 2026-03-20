@@ -1,15 +1,5 @@
 {
-  "version": 2,
-  "builds": [
-    { "src": "index-static.html", "use": "@vercel/static" },
-    { "src": "voice-demo.html", "use": "@vercel/static" },
-    { "src": "demo.html", "use": "@vercel/static" },
-    { "src": "server.js", "use": "@vercel/node" }
-  ],
-  "routes": [
-    { "src": "/api/soep", "dest": "/server.js" },
-    { "src": "/voice-demo", "dest": "/voice-demo.html" },
-    { "src": "/demo", "dest": "/demo.html" },
-    { "src": "/", "dest": "/index-static.html" }
+  "rewrites": [
+    { "source": "/api/soep", "destination": "/api/soep.js" }
   ]
 }

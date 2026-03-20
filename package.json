@@ -1,18 +1,8 @@
 {
-  "name": "spreekdossier-site",
+  "name": "spreekdossier",
   "version": "1.0.0",
-  "description": "Spreekdossier — AI-rapportageassistent voor Nederlandse zorgverleners",
-  "main": "server.js",
-  "scripts": {
-    "start": "ANTHROPIC_API_KEY=$(node -e \"const fs=require('fs'); const c=JSON.parse(fs.readFileSync(process.env.HOME+'/.openclaw/agents/main/agent/auth-profiles.json')); console.log(c.profiles['anthropic:default'].key)\") node server.js",
-    "dev": "node server.js"
-  },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.36.3",
     "express": "^4.18.2"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "keywords": ["zorg", "AI", "SOEP", "rapportage", "fysiotherapie", "thuiszorg"],
-  "license": "UNLICENSED"
+  }
 }
