@@ -1,20 +1,4 @@
 {
-  "framework": null,
-  "outputDirectory": "public",
-  "builds": [
-    {
-      "src": "public/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "api/soep.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    { "src": "/api/soep", "dest": "/api/soep.js" },
-    { "src": "/voice-demo", "dest": "/public/voice-demo.html" },
-    { "src": "/demo", "dest": "/public/demo.html" },
-    { "src": "/(.*)", "dest": "/public/index.html" }
-  ]
+  "cleanUrls": true,
+  "trailingSlash": false
 }
