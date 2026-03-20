@@ -1592,20 +1592,7 @@
         30 dagen gratis proberen. Geen creditcard nodig. Als Spreekdossier jouw rapportages niet sneller en beter maakt — heb je niets te verliezen.
       </p>
       <form class="waitlist-form" id="waitlist-form" onsubmit="submitWaitlist(event)">
-        <input type="text" id="wl-name" placeholder="Jouw naam" required autocomplete="name" />
-        <input type="email" id="wl-email" placeholder="E-mailadres" required autocomplete="email" />
-        <select id="wl-specialisme" required>
-          <option value="" disabled selected>Specialisme</option>
-          <option value="fysiotherapeut">Fysiotherapeut</option>
-          <option value="thuiszorg">Thuiszorgverlener</option>
-          <option value="verpleegkundige">Verpleegkundige</option>
-          <option value="ergotherapeut">Ergotherapeut</option>
-          <option value="logopedist">Logopedist</option>
-          <option value="diëtist">Diëtist</option>
-          <option value="psycholoog">Psycholoog / GGZ</option>
-          <option value="huisarts">Huisarts / POH</option>
-          <option value="anders">Anders</option>
-        </select>
+        <input type="email" id="wl-email" placeholder="Jouw e-mailadres" required autocomplete="email" />
         <button type="submit" class="waitlist-submit" id="wl-btn">✦ Zet me op de wachtlijst — gratis</button>
         <div class="waitlist-msg" id="wl-msg"></div>
       </form>
@@ -1761,9 +1748,7 @@
     // ===== WAITLIST FORM =====
     async function submitWaitlist(e) {
       e.preventDefault();
-      const name = document.getElementById('wl-name').value.trim();
       const email = document.getElementById('wl-email').value.trim();
-      const specialisme = document.getElementById('wl-specialisme').value;
       const btn = document.getElementById('wl-btn');
       const msg = document.getElementById('wl-msg');
 
@@ -1781,7 +1766,7 @@
             'Authorization': 'Bearer sb_publishable_XkMuL4MXCBDwkdI9-CUkfg_RskqDhVa',
             'Prefer': 'return=minimal'
           },
-          body: JSON.stringify({ name, email, specialisme })
+          body: JSON.stringify({ email })
         });
 
         if (res.ok || res.status === 201) {
