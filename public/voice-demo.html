@@ -111,16 +111,19 @@
     .btn-generate:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
     /* FALLBACK */
-    .fallback-section { background: rgba(255,201,0,0.05); border: 1.5px solid rgba(255,201,0,0.2); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; display: none; }
-    .fallback-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-    .fallback-header h3 { font-size: 15px; font-weight: 700; }
-    .fallback-header p { font-size: 13px; color: var(--text-muted); }
-    textarea.fallback-input { width: 100%; min-height: 110px; background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 14px; font-family: inherit; font-size: 15px; color: var(--text); line-height: 1.6; resize: vertical; outline: none; margin-bottom: 12px; transition: border-color 0.2s; }
-    textarea.fallback-input:focus { border-color: var(--primary); }
-    textarea.fallback-input::placeholder { color: var(--text-light); }
+    .fallback-section { background: var(--bg-card); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; display: none; box-shadow: var(--shadow); }
+    .fallback-section.visible { display: block; }
+    .fallback-header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px; }
+    .fallback-header-icon { width: 46px; height: 46px; background: var(--primary-light); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .fallback-header h3 { font-size: 16px; font-weight: 700; margin-bottom: 3px; }
+    .fallback-header p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    textarea.fallback-input { width: 100%; min-height: 130px; background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; font-family: inherit; font-size: 15px; color: var(--text); line-height: 1.7; resize: vertical; outline: none; margin-bottom: 14px; transition: border-color 0.2s, box-shadow 0.2s; }
+    textarea.fallback-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,201,181,0.1); }
+    textarea.fallback-input::placeholder { color: var(--text-light); font-style: italic; }
 
     /* LOADING */
-    .loading-overlay { display: none; text-align: center; padding: 36px 20px; background: var(--bg-card); border-radius: var(--radius); border: 1.5px solid var(--border); box-shadow: var(--shadow); margin-bottom: 20px; }
+    .loading-overlay { display: none; text-align: center; padding: 40px 20px; background: var(--bg-card); border-radius: var(--radius); border: 1.5px solid var(--border-glow); box-shadow: var(--shadow-lg); margin-bottom: 20px; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     .loading-overlay.visible { display: block; }
     .loading-spinner { width: 48px; height: 48px; border: 4px solid var(--primary-light); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -276,13 +279,13 @@
   <!-- FALLBACK -->
   <div class="fallback-section" id="fallback-section">
     <div class="fallback-header">
-      <span style="font-size:24px;">⌨️</span>
+      <div class="fallback-header-icon">⌨️</div>
       <div>
         <h3>Typ je memo</h3>
-        <p>Spraakherkenning niet beschikbaar. Typ je memo hieronder.</p>
+        <p>Spraakherkenning is niet beschikbaar in deze browser. Typ of plak je memo hieronder — alles werkt verder hetzelfde.</p>
       </div>
     </div>
-    <textarea class="fallback-input" id="fallback-input" placeholder="Typ hier je gesproken memo..."></textarea>
+    <textarea class="fallback-input" id="fallback-input" placeholder="Typ of plak hier je gesproken memo, bijv: 'Patiënt meldt pijnafname van 7 naar 4. ROM knieflexie 105 graden...'"></textarea>
     <button class="btn-example" onclick="fillExample()">💡 Vul voorbeeldmemo in</button>
   </div>
 
@@ -627,39 +630,24 @@ Declaratiestatus: ✓ Klaar voor verwerking in EPD`
 
 // ===== STATE =====
 let currentTemplate = 'intake';
-let recognition = null;
 let isRecording = false;
 let finalTranscript = '';
 let interimTranscript = '';
 let speechAPIAvailable = false;
 let outputData = {};
 
-// ===== INIT =====
-(function init() {
-  checkSpeechAPI();
-  updateTemplateInfo('intake');
-})();
-
-function checkSpeechAPI() {
+// ===== SPEECH RECOGNITION ENGINE =====
+// Bulletproof implementation: creates a fresh object on every start/restart,
+// uses a 300ms debounce restart on auto-stop, ignores aborted/no-speech errors.
+const SpeechEngine = (function() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (SpeechRecognition) {
-    speechAPIAvailable = true;
-    initSpeechRecognition(SpeechRecognition);
-  } else {
-    document.getElementById('voice-section').style.display = 'none';
-    document.getElementById('fallback-section').style.display = 'block';
-    document.getElementById('btn-generate').disabled = false;
-    document.getElementById('fallback-input').addEventListener('input', function() {
-      document.getElementById('btn-generate').disabled = this.value.trim().length < 5;
-    });
-  }
-}
+  if (!SpeechRecognition) return null;
 
-function initSpeechRecognition(SpeechRecognition) {
-  let restartTimer = null;
-  let recognitionActive = false;
+  let activeRec = null;       // currently active recognition object
+  let restartTimer = null;    // debounce timer for auto-restarts
+  let userStopped = false;    // true = user pressed stop, don't restart
 
-  function createRecognition() {
+  function buildRecognition() {
     const r = new SpeechRecognition();
     r.continuous = true;
     r.interimResults = true;
@@ -667,7 +655,6 @@ function initSpeechRecognition(SpeechRecognition) {
     r.maxAlternatives = 1;
 
     r.onstart = () => {
-      recognitionActive = true;
       isRecording = true;
       setRecordingUI(true);
     };
@@ -679,15 +666,21 @@ function initSpeechRecognition(SpeechRecognition) {
         if (event.results[i].isFinal) finalNew += t + ' ';
         else interim += t;
       }
-      if (finalNew) { finalTranscript += finalNew; updateGenerateButton(); }
+      if (finalNew) {
+        finalTranscript += finalNew;
+        updateGenerateButton();
+      }
       interimTranscript = interim;
       renderTranscript();
     };
 
     r.onerror = (event) => {
-      recognitionActive = false;
-      if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+      const err = event.error;
+      // Hard stop: mic denied
+      if (err === 'not-allowed' || err === 'service-not-allowed') {
+        userStopped = true;
         isRecording = false;
+        activeRec = null;
         setRecordingUI(false);
         document.getElementById('mic-notice').classList.add('visible');
         document.getElementById('voice-section').style.display = 'none';
@@ -698,36 +691,101 @@ function initSpeechRecognition(SpeechRecognition) {
         });
         return;
       }
-      // aborted/network: will restart via onend
+      // Soft errors: aborted / no-speech — onend will handle restart
+      // (no action needed here; just let onend fire)
     };
 
     r.onend = () => {
-      recognitionActive = false;
-      if (!isRecording) {
+      // Prevent stale callbacks from an old recognition object
+      if (r !== activeRec) return;
+      activeRec = null;
+
+      if (userStopped || !isRecording) {
+        // Clean stop: finalize UI
         interimTranscript = '';
         renderTranscript();
         updateGenerateButton();
         return;
       }
-      // Still recording — restart with a small delay to let browser settle
+
+      // Auto-stop by browser while user still wants to record — restart
       clearTimeout(restartTimer);
       restartTimer = setTimeout(() => {
-        if (!isRecording) return;
+        if (userStopped || !isRecording) return;
         try {
-          recognition = createRecognition();
-          recognition.start();
-        } catch(e) {
+          activeRec = buildRecognition();
+          activeRec.start();
+        } catch (e) {
+          console.warn('Speech restart failed:', e);
           isRecording = false;
           setRecordingUI(false);
           updateGenerateButton();
         }
-      }, 100);
+      }, 300); // 300ms — enough for Chrome to fully release mic before re-acquiring
     };
 
     return r;
   }
 
-  recognition = createRecognition();
+  return {
+    isAvailable: true,
+
+    start() {
+      userStopped = false;
+      clearTimeout(restartTimer);
+      if (activeRec) {
+        try { activeRec.stop(); } catch(_) {}
+        activeRec = null;
+      }
+      // Short delay after any prior stop before starting fresh
+      setTimeout(() => {
+        try {
+          activeRec = buildRecognition();
+          activeRec.start();
+        } catch (e) {
+          console.error('Speech start failed:', e);
+          isRecording = false;
+          setRecordingUI(false);
+        }
+      }, 50);
+    },
+
+    stop() {
+      userStopped = true;
+      clearTimeout(restartTimer);
+      if (activeRec) {
+        try { activeRec.stop(); } catch(_) {}
+        // Don't null activeRec yet — let onend handle cleanup
+      }
+      isRecording = false;
+      setRecordingUI(false);
+      interimTranscript = '';
+      renderTranscript();
+      updateGenerateButton();
+      if (finalTranscript.trim()) {
+        document.getElementById('btn-clear').style.display = 'inline-flex';
+      }
+    }
+  };
+})();
+
+// ===== INIT =====
+(function init() {
+  checkSpeechAPI();
+  updateTemplateInfo('intake');
+})();
+
+function checkSpeechAPI() {
+  if (SpeechEngine && SpeechEngine.isAvailable) {
+    speechAPIAvailable = true;
+  } else {
+    document.getElementById('voice-section').style.display = 'none';
+    document.getElementById('fallback-section').style.display = 'block';
+    document.getElementById('btn-generate').disabled = false;
+    document.getElementById('fallback-input').addEventListener('input', function() {
+      document.getElementById('btn-generate').disabled = this.value.trim().length < 5;
+    });
+  }
 }
 
 // ===== TEMPLATE SELECTION =====
@@ -762,17 +820,11 @@ function startRecording() {
   renderTranscript();
   document.getElementById('btn-clear').style.display = 'none';
   document.getElementById('btn-generate').disabled = true;
-  try { recognition.start(); } catch(e) { console.warn(e); }
+  SpeechEngine.start();
 }
 
 function stopRecording() {
-  isRecording = false;
-  try { recognition.stop(); } catch(e) {}
-  setRecordingUI(false);
-  interimTranscript = '';
-  renderTranscript();
-  updateGenerateButton();
-  if (finalTranscript.trim()) document.getElementById('btn-clear').style.display = 'inline-flex';
+  SpeechEngine.stop();
 }
 
 function setRecordingUI(active) {
@@ -999,6 +1051,9 @@ function copyAll() {
 
 // ===== RESET =====
 function resetToStart() {
+  // If still recording, stop first
+  if (isRecording) SpeechEngine.stop();
+
   document.getElementById('output-container').classList.remove('visible');
   finalTranscript = ''; interimTranscript = '';
   if (speechAPIAvailable) {
@@ -1008,6 +1063,8 @@ function resetToStart() {
     document.getElementById('status-text').textContent = 'Klaar om op te nemen';
     document.getElementById('record-hint').textContent = 'Druk op de microfoon en vertel wat er is besproken of gedaan';
     document.getElementById('status-indicator').classList.remove('recording');
+    document.getElementById('btn-record').classList.remove('recording');
+    document.getElementById('btn-record').innerHTML = '🎙️';
   } else {
     document.getElementById('fallback-input').value = '';
     document.getElementById('btn-generate').disabled = true;
