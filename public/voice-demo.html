@@ -1,0 +1,1668 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Spreekdossier — Live Spraakdemo</title>
+  <meta name="description" content="Probeer Spreekdossier: spreek 2 minuten in en ontvang direct een complete SOEP-rapportage. Gratis demo voor zorgverleners." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #00A896;
+      --primary-dark: #008a7a;
+      --primary-light: #e6f7f5;
+      --accent: #F4A261;
+      --accent-dark: #e8874a;
+      --bg: #FAFAF8;
+      --bg-card: #ffffff;
+      --text: #1A1A2E;
+      --text-muted: #6b7280;
+      --text-light: #9ca3af;
+      --border: #e5e7eb;
+      --shadow: 0 4px 24px rgba(0,0,0,0.07);
+      --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --red: #ef4444;
+      --red-dark: #dc2626;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, 'SF Pro Display', BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      background: white;
+      border-bottom: 1px solid rgba(0,168,150,0.12);
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 12px rgba(0,0,0,0.05);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .logo-mark {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, var(--primary), #00c9b5);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      box-shadow: 0 2px 10px rgba(0,168,150,0.3);
+    }
+
+    .logo-name {
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--text);
+    }
+
+    .logo-tagline {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .header-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 100px;
+      border: 1.5px solid var(--border);
+      transition: all 0.2s;
+    }
+
+    .header-back:hover {
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    /* ===== MAIN CONTAINER ===== */
+    main {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 40px 20px 60px;
+    }
+
+    /* ===== INTRO ===== */
+    .intro {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .demo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(0,168,150,0.2);
+    }
+
+    .intro h1 {
+      font-size: clamp(28px, 6vw, 40px);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      margin-bottom: 14px;
+      color: var(--text);
+    }
+
+    .intro h1 .highlight {
+      background: linear-gradient(135deg, var(--primary), #00c9b5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .intro p {
+      font-size: 17px;
+      color: var(--text-muted);
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .intro p strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ===== INSTRUCTION CARD ===== */
+    .instruction-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 24px;
+      border: 1.5px solid rgba(0,168,150,0.15);
+      margin-bottom: 32px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .instruction-icon {
+      width: 44px; height: 44px;
+      background: var(--primary-light);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .instruction-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .instruction-card p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .instruction-example {
+      margin-top: 10px;
+      padding: 10px 14px;
+      background: var(--bg);
+      border-radius: 8px;
+      border-left: 3px solid var(--primary);
+      font-size: 13px;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* ===== RECORDING SECTION ===== */
+    .recording-section {
+      background: white;
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      border: 1.5px solid var(--border);
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .rec-status {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 8px 18px;
+      background: var(--bg);
+      border-radius: 100px;
+      border: 1.5px solid var(--border);
+      transition: all 0.3s;
+    }
+
+    .status-indicator.recording {
+      color: var(--red);
+      background: #fef2f2;
+      border-color: #fecaca;
+    }
+
+    .status-indicator.listening {
+      color: var(--primary);
+      background: var(--primary-light);
+      border-color: rgba(0,168,150,0.3);
+    }
+
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--text-light);
+      transition: background 0.3s;
+    }
+
+    .status-indicator.recording .status-dot {
+      background: var(--red);
+      animation: blink 1s ease infinite;
+    }
+
+    .status-indicator.listening .status-dot {
+      background: var(--primary);
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* ===== RECORD BUTTON ===== */
+    .record-btn-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .btn-record {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      background: var(--red);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      transition: all 0.25s;
+      box-shadow: 0 6px 24px rgba(239,68,68,0.4), 0 0 0 0 rgba(239,68,68,0.3);
+      position: relative;
+    }
+
+    .btn-record:hover:not(:disabled) {
+      transform: scale(1.06);
+      box-shadow: 0 8px 32px rgba(239,68,68,0.5), 0 0 0 0 rgba(239,68,68,0.3);
+    }
+
+    .btn-record.recording {
+      animation: pulse-record 1.5s ease infinite;
+    }
+
+    .btn-record:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    @keyframes pulse-record {
+      0% { box-shadow: 0 6px 24px rgba(239,68,68,0.4), 0 0 0 0 rgba(239,68,68,0.4); }
+      70% { box-shadow: 0 6px 24px rgba(239,68,68,0.4), 0 0 0 20px rgba(239,68,68,0); }
+      100% { box-shadow: 0 6px 24px rgba(239,68,68,0.4), 0 0 0 0 rgba(239,68,68,0); }
+    }
+
+    .btn-record-label {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    /* ===== TRANSCRIPT AREA ===== */
+    .transcript-box {
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      min-height: 100px;
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+      transition: border-color 0.3s;
+      position: relative;
+    }
+
+    .transcript-box.active {
+      border-color: var(--red);
+    }
+
+    .transcript-placeholder {
+      color: var(--text-light);
+      font-style: italic;
+      pointer-events: none;
+    }
+
+    .transcript-interim {
+      color: var(--text-light);
+    }
+
+    .transcript-final {
+      color: var(--text);
+    }
+
+    .transcript-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+
+    /* ===== CONTROLS ===== */
+    .rec-controls {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .btn-stop {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--red);
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 12px 28px;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(239,68,68,0.3);
+    }
+
+    .btn-stop:hover {
+      background: var(--red-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-generate {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary);
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 14px 32px;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s;
+      box-shadow: 0 4px 20px rgba(0,168,150,0.3);
+      width: 100%;
+      justify-content: center;
+    }
+
+    .btn-generate:hover:not(:disabled) {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0,168,150,0.4);
+    }
+
+    .btn-generate:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-reset {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px 22px;
+      border-radius: 100px;
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-reset:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* ===== FALLBACK ===== */
+    .fallback-section {
+      background: white;
+      border-radius: var(--radius);
+      padding: 28px;
+      border: 1.5px solid #fef3c7;
+      background: #fffdf5;
+      margin-bottom: 24px;
+    }
+
+    .fallback-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .fallback-header h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .fallback-header p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    textarea.fallback-input {
+      width: 100%;
+      min-height: 120px;
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      font-family: inherit;
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.6;
+      resize: vertical;
+      transition: border-color 0.2s;
+      outline: none;
+      margin-bottom: 14px;
+    }
+
+    textarea.fallback-input:focus {
+      border-color: var(--primary);
+    }
+
+    textarea.fallback-input::placeholder {
+      color: var(--text-light);
+    }
+
+    .btn-example {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: white;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 100px;
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 14px;
+    }
+
+    .btn-example:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* ===== LOADING ===== */
+    .loading-overlay {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+      background: white;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .loading-overlay.visible {
+      display: block;
+    }
+
+    .loading-spinner {
+      width: 52px; height: 52px;
+      border: 4px solid var(--primary-light);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 16px;
+      text-align: left;
+      max-width: 280px;
+      margin: 16px auto 0;
+    }
+
+    .loading-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text-muted);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .loading-step.active {
+      opacity: 1;
+      color: var(--text);
+    }
+
+    .loading-step .step-icon {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    .loading-step.done .step-icon {
+      background: var(--primary);
+      color: white;
+    }
+
+    .loading-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .loading-sub {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* ===== SOEP OUTPUT ===== */
+    .soep-output {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .soep-output.visible {
+      display: flex;
+    }
+
+    .soep-result-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .soep-result-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .soep-result-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 100px;
+      border: 1px solid rgba(0,168,150,0.2);
+    }
+
+    .soep-block {
+      background: white;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1.5px solid var(--border);
+      animation: slideUp 0.4s ease both;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+
+    .soep-block:nth-child(3) { animation-delay: 0.05s; }
+    .soep-block:nth-child(4) { animation-delay: 0.1s; }
+    .soep-block:nth-child(5) { animation-delay: 0.15s; }
+    .soep-block:nth-child(6) { animation-delay: 0.2s; }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .soep-block-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1.5px solid var(--border);
+    }
+
+    .soep-block-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .soep-badge-letter {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 16px;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .soep-badge-letter.S { background: linear-gradient(135deg, #00A896, #00c9b5); }
+    .soep-badge-letter.O { background: linear-gradient(135deg, #0891b2, #06b6d4); }
+    .soep-badge-letter.E { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+    .soep-badge-letter.P { background: linear-gradient(135deg, #F4A261, #fb923c); }
+
+    .soep-block-name {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .soep-block-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .btn-copy-block {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--bg);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: 100px;
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-copy-block:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-copy-block.copied {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      border-color: rgba(0,168,150,0.3);
+    }
+
+    .soep-block-text {
+      padding: 18px;
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.75;
+    }
+
+    /* ===== BOTTOM ACTIONS ===== */
+    .output-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-copy-all {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--text);
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 14px 24px;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-copy-all:hover {
+      background: #2d2d3a;
+      transform: translateY(-1px);
+    }
+
+    .btn-copy-all.copied {
+      background: var(--primary);
+    }
+
+    .btn-new-recording {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 14px 22px;
+      border-radius: 100px;
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-new-recording:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    /* ===== NOTICE ===== */
+    .mic-notice {
+      background: #fffbeb;
+      border: 1.5px solid #fde68a;
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      font-size: 13px;
+      color: #92400e;
+      line-height: 1.5;
+      margin-top: 16px;
+      display: none;
+    }
+
+    .mic-notice.visible { display: block; }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      text-align: center;
+      padding: 32px 20px 20px;
+      border-top: 1px solid var(--border);
+      margin-top: 40px;
+    }
+
+    .footer a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .footer p {
+      font-size: 13px;
+      color: var(--text-light);
+      margin-top: 6px;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 480px) {
+      main { padding: 24px 16px 48px; }
+      .recording-section { padding: 24px 18px; }
+      .output-actions { flex-direction: column; }
+      .btn-new-recording { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <a href="index-static.html" class="logo">
+      <div class="logo-mark">🎙</div>
+      <div>
+        <div class="logo-name">Spreekdossier</div>
+        <div class="logo-tagline">Minder typen. Meer behandelen.</div>
+      </div>
+    </a>
+    <a href="index-static.html" class="header-back">← Terug</a>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- INTRO -->
+    <div class="intro">
+      <div class="demo-badge">
+        <span>🎙️</span>
+        Live spraakdemo
+      </div>
+      <h1>Spreek in.<br><span class="highlight">Krijg je rapportage.</span></h1>
+      <p>
+        Druk op de rode knop en vertel wat er tijdens de behandeling is gebeurd. <strong>In 30 seconden</strong> staat je SOEP-rapportage klaar.
+      </p>
+    </div>
+
+    <!-- INSTRUCTION CARD -->
+    <div class="instruction-card">
+      <div class="instruction-icon">💡</div>
+      <div>
+        <h3>Hoe werkt het?</h3>
+        <p>Druk op de rode knop en vertel vrij wat er is gebeurd — zoals je het aan een collega zou vertellen. Spreekdossier structureert het automatisch.</p>
+        <div class="instruction-example">
+          "Mevrouw De Vries, 64 jaar, fysiotherapie. Klaagt over pijn in de rechterknie, 6 op 10. Vandaag manuele therapie en oefeningen gedaan. Bewegingsboog verbeterd. Volgende sessie donderdag."
+        </div>
+      </div>
+    </div>
+
+    <!-- RECORDING SECTION (shown when speech API available) -->
+    <div class="recording-section" id="voice-section">
+
+      <div class="rec-status">
+        <div class="status-indicator" id="status-indicator">
+          <div class="status-dot"></div>
+          <span id="status-text">Klaar om op te nemen</span>
+        </div>
+      </div>
+
+      <div class="record-btn-container">
+        <button class="btn-record" id="btn-record" onclick="toggleRecording()" title="Start opname">
+          🎙️
+        </button>
+      </div>
+
+      <div class="btn-record-label" id="record-hint">
+        Druk op de knop en vertel wat er tijdens de behandeling is gebeurd
+      </div>
+
+      <div class="transcript-label">Transcriptie (live):</div>
+      <div class="transcript-box" id="transcript-box">
+        <span class="transcript-placeholder" id="transcript-placeholder">Je transcriptie verschijnt hier terwijl je praat...</span>
+      </div>
+
+      <div class="mic-notice" id="mic-notice">
+        ⚠️ Microfoon toegang geweigerd of niet beschikbaar. Gebruik het tekstveld hieronder om je memo in te typen.
+      </div>
+
+      <div class="rec-controls" id="rec-controls" style="margin-top: 20px;">
+        <button class="btn-reset" id="btn-clear" onclick="clearTranscript()" style="display:none;">
+          🗑️ Wis transcriptie
+        </button>
+      </div>
+
+    </div>
+
+    <!-- FALLBACK: manual text input -->
+    <div class="fallback-section" id="fallback-section" style="display:none;">
+      <div class="fallback-header">
+        <span style="font-size:24px;">⌨️</span>
+        <div>
+          <h3>Typ je memo</h3>
+          <p>Spraakherkenning is niet beschikbaar in deze browser. Typ je memo hieronder.</p>
+        </div>
+      </div>
+      <textarea class="fallback-input" id="fallback-input" placeholder="Typ hier je gesproken memo... Bijv: 'Patiënt De Vries, 58 jaar, fysiotherapie. Klaagt over rugpijn laag, uitstralend naar linkerbeen. Vandaag oefentherapie gedaan, mobiliteit verbeterd...'"></textarea>
+      <div>
+        <button class="btn-example" onclick="fillExample()">
+          💡 Vul voorbeeldmemo in
+        </button>
+      </div>
+    </div>
+
+    <!-- GENERATE BUTTON -->
+    <button class="btn-generate" id="btn-generate" onclick="generateSOEP()" disabled>
+      <span id="gen-btn-text">✦ Genereer SOEP-rapportage</span>
+    </button>
+
+    <!-- LOADING -->
+    <div class="loading-overlay" id="loading-overlay">
+      <div class="loading-spinner"></div>
+      <div class="loading-title">Rapportage wordt aangemaakt...</div>
+      <div class="loading-sub">AI structureert jouw gesproken memo</div>
+      <div class="loading-steps">
+        <div class="loading-step" id="step-1">
+          <div class="step-icon">1</div>
+          <span>Tekst analyseren</span>
+        </div>
+        <div class="loading-step" id="step-2">
+          <div class="step-icon">2</div>
+          <span>Specialisme herkennen</span>
+        </div>
+        <div class="loading-step" id="step-3">
+          <div class="step-icon">3</div>
+          <span>SOEP-structuur opbouwen</span>
+        </div>
+        <div class="loading-step" id="step-4">
+          <div class="step-icon">4</div>
+          <span>Professionele formulering</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOEP OUTPUT -->
+    <div class="soep-output" id="soep-output">
+
+      <div class="soep-result-header">
+        <div class="soep-result-title">SOEP-rapportage</div>
+        <div class="soep-result-badge">✓ Gegenereerd</div>
+      </div>
+
+      <!-- S -->
+      <div class="soep-block" id="block-S">
+        <div class="soep-block-header">
+          <div class="soep-block-title">
+            <div class="soep-badge-letter S">S</div>
+            <div>
+              <div class="soep-block-name">Subjectief</div>
+              <div class="soep-block-desc">Wat de cliënt rapporteert</div>
+            </div>
+          </div>
+          <button class="btn-copy-block" onclick="copyBlock('S')">📋 Kopieer</button>
+        </div>
+        <div class="soep-block-text" id="text-S"></div>
+      </div>
+
+      <!-- O -->
+      <div class="soep-block" id="block-O">
+        <div class="soep-block-header">
+          <div class="soep-block-title">
+            <div class="soep-badge-letter O">O</div>
+            <div>
+              <div class="soep-block-name">Objectief</div>
+              <div class="soep-block-desc">Meetbare bevindingen</div>
+            </div>
+          </div>
+          <button class="btn-copy-block" onclick="copyBlock('O')">📋 Kopieer</button>
+        </div>
+        <div class="soep-block-text" id="text-O"></div>
+      </div>
+
+      <!-- E -->
+      <div class="soep-block" id="block-E">
+        <div class="soep-block-header">
+          <div class="soep-block-title">
+            <div class="soep-badge-letter E">E</div>
+            <div>
+              <div class="soep-block-name">Evaluatie</div>
+              <div class="soep-block-desc">Beoordeling voortgang</div>
+            </div>
+          </div>
+          <button class="btn-copy-block" onclick="copyBlock('E')">📋 Kopieer</button>
+        </div>
+        <div class="soep-block-text" id="text-E"></div>
+      </div>
+
+      <!-- P -->
+      <div class="soep-block" id="block-P">
+        <div class="soep-block-header">
+          <div class="soep-block-title">
+            <div class="soep-badge-letter P">P</div>
+            <div>
+              <div class="soep-block-name">Plan</div>
+              <div class="soep-block-desc">Vervolgstappen</div>
+            </div>
+          </div>
+          <button class="btn-copy-block" onclick="copyBlock('P')">📋 Kopieer</button>
+        </div>
+        <div class="soep-block-text" id="text-P"></div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="output-actions">
+        <button class="btn-copy-all" id="btn-copy-all" onclick="copyAll()">
+          📄 Kopieer volledige rapportage
+        </button>
+        <button class="btn-new-recording" onclick="resetToStart()">
+          🎙️ Nieuwe opname
+        </button>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <a href="index-static.html">← Terug naar Spreekdossier.nl</a>
+    <p>© 2026 Spreekdossier · AVG-proof · Minder typen. Meer behandelen.</p>
+  </div>
+
+  <script>
+    // ===== STATE =====
+    let recognition = null;
+    let isRecording = false;
+    let finalTranscript = '';
+    let interimTranscript = '';
+    let speechAPIAvailable = false;
+
+    // ===== CHECK SPEECH API =====
+    (function checkSpeechAPI() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        speechAPIAvailable = true;
+        initSpeechRecognition(SpeechRecognition);
+      } else {
+        // Fallback: show text input
+        document.getElementById('voice-section').style.display = 'none';
+        document.getElementById('fallback-section').style.display = 'block';
+        document.getElementById('btn-generate').disabled = false;
+        document.getElementById('fallback-input').addEventListener('input', function() {
+          document.getElementById('btn-generate').disabled = this.value.trim().length < 5;
+        });
+      }
+    })();
+
+    function initSpeechRecognition(SpeechRecognition) {
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'nl-NL';
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = function() {
+        isRecording = true;
+        setRecordingUI(true);
+      };
+
+      recognition.onresult = function(event) {
+        let interim = '';
+        let finalNew = '';
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalNew += transcript + ' ';
+          } else {
+            interim += transcript;
+          }
+        }
+
+        if (finalNew) {
+          finalTranscript += finalNew;
+        }
+
+        interimTranscript = interim;
+        renderTranscript();
+        updateGenerateButton();
+      };
+
+      recognition.onerror = function(event) {
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+          document.getElementById('mic-notice').classList.add('visible');
+          document.getElementById('voice-section').style.display = 'none';
+          document.getElementById('fallback-section').style.display = 'block';
+          document.getElementById('btn-generate').disabled = false;
+          document.getElementById('fallback-input').addEventListener('input', function() {
+            document.getElementById('btn-generate').disabled = this.value.trim().length < 5;
+          });
+        } else if (event.error !== 'aborted') {
+          console.warn('Speech error:', event.error);
+        }
+        if (isRecording) {
+          isRecording = false;
+          setRecordingUI(false);
+        }
+      };
+
+      recognition.onend = function() {
+        if (isRecording) {
+          // Auto-restart if still supposed to be recording
+          try {
+            recognition.start();
+          } catch(e) {
+            isRecording = false;
+            setRecordingUI(false);
+            updateGenerateButton();
+          }
+        } else {
+          updateGenerateButton();
+        }
+      };
+    }
+
+    function toggleRecording() {
+      if (!isRecording) {
+        startRecording();
+      } else {
+        stopRecording();
+      }
+    }
+
+    function startRecording() {
+      finalTranscript = '';
+      interimTranscript = '';
+      renderTranscript();
+
+      document.getElementById('btn-clear').style.display = 'none';
+      document.getElementById('btn-generate').disabled = true;
+
+      try {
+        recognition.start();
+      } catch(e) {
+        // May throw if already started
+        console.warn(e);
+      }
+    }
+
+    function stopRecording() {
+      isRecording = false;
+      try {
+        recognition.stop();
+      } catch(e) {}
+      setRecordingUI(false);
+      interimTranscript = '';
+      renderTranscript();
+      updateGenerateButton();
+
+      if (finalTranscript.trim()) {
+        document.getElementById('btn-clear').style.display = 'inline-flex';
+      }
+    }
+
+    function setRecordingUI(active) {
+      const btn = document.getElementById('btn-record');
+      const indicator = document.getElementById('status-indicator');
+      const statusText = document.getElementById('status-text');
+      const hint = document.getElementById('record-hint');
+      const transcriptBox = document.getElementById('transcript-box');
+
+      if (active) {
+        btn.classList.add('recording');
+        btn.innerHTML = '⏹️';
+        btn.title = 'Stop opname';
+        indicator.classList.add('recording');
+        indicator.classList.remove('listening');
+        statusText.textContent = 'Opname bezig...';
+        hint.textContent = 'Druk op ⏹️ om te stoppen';
+        transcriptBox.classList.add('active');
+        document.getElementById('btn-generate').disabled = true;
+      } else {
+        btn.classList.remove('recording');
+        btn.innerHTML = '🎙️';
+        btn.title = 'Start opname';
+        indicator.classList.remove('recording', 'listening');
+        statusText.textContent = finalTranscript.trim() ? 'Opname gestopt' : 'Klaar om op te nemen';
+        hint.textContent = finalTranscript.trim() ? 'Klik op "Genereer" of neem opnieuw op' : 'Druk op de knop en vertel wat er tijdens de behandeling is gebeurd';
+        transcriptBox.classList.remove('active');
+      }
+    }
+
+    function renderTranscript() {
+      const box = document.getElementById('transcript-box');
+      const placeholder = document.getElementById('transcript-placeholder');
+
+      if (!finalTranscript && !interimTranscript) {
+        box.innerHTML = '<span class="transcript-placeholder" id="transcript-placeholder">Je transcriptie verschijnt hier terwijl je praat...</span>';
+        return;
+      }
+
+      let html = '';
+      if (finalTranscript) {
+        html += `<span class="transcript-final">${escapeHtml(finalTranscript)}</span>`;
+      }
+      if (interimTranscript) {
+        html += `<span class="transcript-interim"> ${escapeHtml(interimTranscript)}</span>`;
+      }
+      box.innerHTML = html;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function clearTranscript() {
+      finalTranscript = '';
+      interimTranscript = '';
+      renderTranscript();
+      document.getElementById('btn-clear').style.display = 'none';
+      document.getElementById('btn-generate').disabled = true;
+      document.getElementById('status-text').textContent = 'Klaar om op te nemen';
+      document.getElementById('record-hint').textContent = 'Druk op de knop en vertel wat er tijdens de behandeling is gebeurd';
+    }
+
+    function updateGenerateButton() {
+      const hasContent = finalTranscript.trim().length > 5;
+      document.getElementById('btn-generate').disabled = !hasContent;
+    }
+
+    function getMemoText() {
+      if (speechAPIAvailable) {
+        return finalTranscript.trim();
+      } else {
+        return document.getElementById('fallback-input').value.trim();
+      }
+    }
+
+    // ===== SOEP GENERATION =====
+
+    const EXAMPLES = {
+      fysio: {
+        S: (memo) => {
+          const pain = extractPain(memo);
+          const bodypart = extractBodyPart(memo);
+          const patient = extractPatient(memo);
+          return `${patient}Patiënt rapporteert ${pain ? pain : 'klachten'} ter hoogte van ${bodypart ? bodypart : 'het aangedane gewricht'}${extractPijnScore(memo)}. Patiënt geeft aan beperkingen te ervaren in dagelijkse activiteiten als gevolg van de klachten.${extractExtra(memo, 'slecht|goed|beter|moe|rust') ? ' Patiënt meldt ' + extractExtra(memo, 'slecht|goed|beter|moe|rust') + '.' : ''}`;
+        },
+        O: (memo) => {
+          const treatment = extractTreatment(memo);
+          return `Behandeling bestond uit ${treatment ? treatment : 'oefentherapie en manuele technieken'}. Zorgverlener observeert${extractImprovement(memo) ? ' ' + extractImprovement(memo) : ' de actuele functionele status van de patiënt'}. Bewegingsonderzoek uitgevoerd.`;
+        },
+        E: (memo) => {
+          return `De klachten tonen ${extractProgress(memo)}tekenen van verbetering op basis van de gerapporteerde klachten en de klinische observaties tijdens de behandelsessie. Continuering van het huidige behandelbeleid is geïndiceerd.`;
+        },
+        P: (memo) => {
+          const next = extractNextAppointment(memo);
+          return `${next ? 'Volgende behandelsessie ' + next + '.' : 'Volgende afspraak wordt ingepland.'} Thuisoefenprogramma besproken en geïnstrueerd.${extractReferral(memo) ? ' ' + extractReferral(memo) : ''} Behandelvoortgang monitoren en indien nodig beleid bijstellen.`;
+        }
+      },
+      thuiszorg: {
+        S: (memo) => {
+          const client = extractClient(memo);
+          const complaints = extractComplaints(memo);
+          return `${client}Cliënt rapporteert ${complaints ? complaints : 'actuele klachten en zorgbehoeften'}. ${extractExtra(memo, 'nacht|slapen|pijn|onrustig') ? 'Cliënt meldt: ' + extractExtra(memo, 'nacht|slapen|pijn|onrustig') + '.' : 'Stemming en welzijn in kaart gebracht.'}`;
+        },
+        O: (memo) => {
+          const wound = extractWound(memo);
+          const meds = extractMeds(memo);
+          return `${wound ? 'Wond geïnspecteerd: ' + wound + '. ' : ''}${meds ? 'Medicatie: ' + meds + '. ' : ''}Zorgverlener observeert actuele situatie van cliënt. Vitale parameters${extractVitals(memo) ? ': ' + extractVitals(memo) : ' gecontroleerd'}.`;
+        },
+        E: (memo) => {
+          return `De zorgsituatie verloopt ${extractProgress(memo) ? extractProgress(memo) : 'conform verwachting'}. ${extractConcerns(memo) ? 'Aandachtspunt: ' + extractConcerns(memo) + '.' : 'Geen acute bijzonderheden geconstateerd.'} Continuering van de zorgverlening is geïndiceerd.`;
+        },
+        P: (memo) => {
+          const next = extractNextVisit(memo);
+          return `${next ? 'Volgende visite ' + next + '.' : 'Volgende visite wordt gepland conform zorgplan.'} ${extractAction(memo) ? extractAction(memo) + '.' : 'Zorgplan continueren.'} Eventuele veranderingen in de gezondheidssituatie monitoren en zo nodig coördineren met behandelend arts.`;
+        }
+      },
+      generiek: {
+        S: (memo) => {
+          return `Cliënt/patiënt rapporteert actuele klachten en zorgbehoeften. ${extractSubjectief(memo)}`;
+        },
+        O: (memo) => {
+          return `Zorgverlener heeft de actuele situatie beoordeeld. ${extractObjectief(memo)}Behandeling/interventie uitgevoerd conform zorgplan.`;
+        },
+        E: (memo) => {
+          return `Behandelvoortgang geëvalueerd. ${extractProgress(memo) ? 'Er zijn tekenen van ' + extractProgress(memo) + '.' : 'Situatie is stabiel en verloopt conform verwachting.'} Beleid wordt gecontinueerd.`;
+        },
+        P: (memo) => {
+          const next = extractNextAppointment(memo) || extractNextVisit(memo);
+          return `${next ? 'Volgend contact gepland: ' + next + '.' : 'Volgend contact wordt ingepland.'} Huidige behandeling en begeleiding continueren. Eventuele veranderingen evalueren bij volgend contact.`;
+        }
+      }
+    };
+
+    function detectType(memo) {
+      const lower = memo.toLowerCase();
+      // Fysiotherapie keywords
+      if (/pijn|klacht|heup|knie|schouder|rug|nek|enkel|fysiotherap|mobilisati|oefentherapie|manuele|spier|gewricht|beweging|revalidat|sport/.test(lower)) {
+        return 'fysio';
+      }
+      // Thuiszorg keywords
+      if (/wond|dressing|thuiszorg|cliënt|client|medicijn|medicatie|bloeddruk|visite|zorgplan|zorgverlener|helpende|verpleeg/.test(lower)) {
+        return 'thuiszorg';
+      }
+      return 'generiek';
+    }
+
+    // === EXTRACTION HELPERS ===
+    function extractPatient(memo) {
+      const m = memo.match(/patiënt\s+([A-Z][a-z]+)/i);
+      return m ? `Patiënt ${m[1]}: ` : 'Patiënt: ';
+    }
+
+    function extractClient(memo) {
+      const m = memo.match(/cliënt(?:e)?\s+([A-Z][a-z]+)/i);
+      return m ? `Cliënte/cliënt ${m[1]}: ` : 'Cliënt: ';
+    }
+
+    function extractPain(memo) {
+      const lower = memo.toLowerCase();
+      if (/rugpijn|lage rug/.test(lower)) return 'lage rugpijn';
+      if (/kniepijn|knie/.test(lower)) return 'pijn ter hoogte van het kniegewricht';
+      if (/heuppijn|heup/.test(lower)) return 'pijn ter hoogte van het heupgewricht';
+      if (/schouderpijn|schouder/.test(lower)) return 'pijn ter hoogte van het schoudergewricht';
+      if (/nekpijn|nek/.test(lower)) return 'nekklachten';
+      if (/enkelpijn|enkel/.test(lower)) return 'pijn ter hoogte van de enkel';
+      if (/pijn/.test(lower)) return 'pijnklachten';
+      return null;
+    }
+
+    function extractBodyPart(memo) {
+      const lower = memo.toLowerCase();
+      if (/lage rug|rugpijn|wervelkolom/.test(lower)) return 'de lumbale wervelkolom';
+      if (/knie/.test(lower)) return 'het kniegewricht';
+      if (/heup/.test(lower)) return 'het heupgewricht';
+      if (/schouder/.test(lower)) return 'het schoudergewricht';
+      if (/nek|cervicaal/.test(lower)) return 'de cervicale wervelkolom';
+      if (/enkel/.test(lower)) return 'de enkel';
+      if (/pols/.test(lower)) return 'het polsgewricht';
+      return null;
+    }
+
+    function extractPijnScore(memo) {
+      const m = memo.match(/(\d+)\s*(?:op\s*(?:een\s*)?|\/\s*)10|pijnscore\s*(\d+)|nrs\s*(\d+)/i);
+      if (m) {
+        const score = m[1] || m[2] || m[3];
+        return `, pijnscore ${score}/10 (NRS)`;
+      }
+      return '';
+    }
+
+    function extractTreatment(memo) {
+      const lower = memo.toLowerCase();
+      let parts = [];
+      if (/oefentherapie|oefeningen/.test(lower)) parts.push('oefentherapie');
+      if (/manuele therapie|manueel/.test(lower)) parts.push('manuele therapie');
+      if (/mobilisati/.test(lower)) parts.push('mobiliserende technieken');
+      if (/massage/.test(lower)) parts.push('massage');
+      if (/ulo|ultrageluid/.test(lower)) parts.push('ultrageluidbehandeling');
+      if (/tape|taping|kinesio/.test(lower)) parts.push('taping');
+      if (/kernstabilisatie/.test(lower)) parts.push('kernstabilisatieoefeningen');
+      return parts.length ? parts.join(', ') : null;
+    }
+
+    function extractImprovement(memo) {
+      const lower = memo.toLowerCase();
+      if (/verbeterd|verbetering/.test(lower)) {
+        if (/bewegingsboog|bewegingsomvang/.test(lower)) return 'verbeterde bewegingsomvang';
+        if (/kracht/.test(lower)) return 'verbeterde spierkracht';
+        return 'progressie ten opzichte van vorige sessie';
+      }
+      return null;
+    }
+
+    function extractProgress(memo) {
+      const lower = memo.toLowerCase();
+      if (/beter|verbetering|verbeterd|vooruitgang/.test(lower)) return 'positieve ';
+      if (/stabiel|onveranderd/.test(lower)) return 'stabiele ';
+      if (/slechter|achteruit|verslechterd/.test(lower)) return 'achteruitgang en beperkte ';
+      return '';
+    }
+
+    function extractNextAppointment(memo) {
+      const days = ['maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag','zondag'];
+      const lower = memo.toLowerCase();
+      for (const d of days) {
+        if (lower.includes(d)) return `op ${d}`;
+      }
+      const m = memo.match(/volgende\s+(?:week|sessie|afspraak)\s+([a-z]+dag)/i);
+      if (m) return `op ${m[1]}`;
+      const m2 = memo.match(/over\s+(\d+)\s+(?:dag|week)/i);
+      if (m2) return `over ${m2[1]} ${m2[0].toLowerCase().includes('week') ? 'week' : 'dagen'}`;
+      return null;
+    }
+
+    function extractNextVisit(memo) {
+      const lower = memo.toLowerCase();
+      const m2 = memo.match(/over\s+(\d+)\s+(?:dag|week)/i);
+      if (m2) return `over ${m2[1]} ${m2[0].toLowerCase().includes('week') ? 'week' : 'dagen'}`;
+      const days = ['maandag','dinsdag','woensdag','donderdag','vrijdag'];
+      for (const d of days) {
+        if (lower.includes(d)) return `op ${d}`;
+      }
+      return null;
+    }
+
+    function extractReferral(memo) {
+      const lower = memo.toLowerCase();
+      if (/doorverwijz|specialist|arts/.test(lower)) {
+        return 'Doorverwijzing naar specialist overwegen bij uitblijven van verdere verbetering.';
+      }
+      return null;
+    }
+
+    function extractExtra(memo, pattern) {
+      const lower = memo.toLowerCase();
+      const re = new RegExp(`(\\w+\\s+){0,3}(${pattern})(\\s+\\w+){0,4}`, 'i');
+      const m = memo.match(re);
+      if (m) {
+        return m[0].trim().replace(/[.,!?].*$/, '').toLowerCase();
+      }
+      return null;
+    }
+
+    function extractComplaints(memo) {
+      const lower = memo.toLowerCase();
+      if (/pijn/.test(lower)) return extractPain(memo) || 'pijnklachten';
+      if (/wond/.test(lower)) return 'wondklachten';
+      if (/moe|vermoeid/.test(lower)) return 'vermoeidheidsklachten';
+      return 'klachten en zorgbehoeften';
+    }
+
+    function extractWound(memo) {
+      const lower = memo.toLowerCase();
+      if (/wond/.test(lower)) {
+        if (/schoon|verbeterd|genezing|genezen/.test(lower)) return 'wond toont tekenen van herstel, geen tekenen van infectie, dressing vervangen conform protocol';
+        if (/rood|infectie|etter/.test(lower)) return 'wond toont tekenen van ontsteking, dressing vervangen, arts geïnformeerd';
+        return 'wond geïnspecteerd en verzorgd conform wondprotocol';
+      }
+      return null;
+    }
+
+    function extractMeds(memo) {
+      const lower = memo.toLowerCase();
+      if (/medicijn|medicatie|pijnstiller|tablet/.test(lower)) {
+        return 'medicatie toegediend conform medicatieoverzicht';
+      }
+      return null;
+    }
+
+    function extractVitals(memo) {
+      const lower = memo.toLowerCase();
+      let parts = [];
+      const bp = memo.match(/bloeddruk\s*(\d+\/\d+)/i);
+      if (bp) parts.push(`bloeddruk ${bp[1]} mmHg`);
+      const sat = memo.match(/saturatie\s*(\d+)/i);
+      if (sat) parts.push(`saturatie ${sat[1]}%`);
+      const pols = memo.match(/pols\s*(\d+)/i);
+      if (pols) parts.push(`polsfrequentie ${pols[1]} slagen/min`);
+      return parts.length ? parts.join(', ') : null;
+    }
+
+    function extractConcerns(memo) {
+      const lower = memo.toLowerCase();
+      if (/verward|desoriëntatie|niet herkend/.test(lower)) return 'geobserveerde desoriëntatie bij cliënt';
+      if (/gevallen|val/.test(lower)) return 'valrisico aanwezig';
+      if (/eenzaam|alleen/.test(lower)) return 'sociaal isolement';
+      return null;
+    }
+
+    function extractAction(memo) {
+      const lower = memo.toLowerCase();
+      if (/familie|mantelzorg/.test(lower)) return 'Familie/mantelzorg informeren over actuele situatie';
+      if (/arts|huisarts/.test(lower)) return 'Overleggen met behandelend arts';
+      if (/zorgplan/.test(lower)) return 'Zorgplan evalueren en indien nodig aanpassen';
+      return null;
+    }
+
+    function extractSubjectief(memo) {
+      // Extract first relevant sentence
+      const sentences = memo.split(/[.!?]/);
+      if (sentences.length > 1) {
+        return `Klacht beschreven als: "${sentences[0].trim()}."`;
+      }
+      return '';
+    }
+
+    function extractObjectief(memo) {
+      const lower = memo.toLowerCase();
+      let obs = [];
+      if (/verbetering|beter/.test(lower)) obs.push('Verbetering geobserveerd ten opzichte van vorig contact');
+      if (/oefening|behandeling/.test(lower)) obs.push('Behandeling uitgevoerd');
+      return obs.length ? obs.join('. ') + '. ' : '';
+    }
+
+    function buildSOEP(memo) {
+      const type = detectType(memo);
+      const template = EXAMPLES[type];
+      return {
+        S: template.S(memo),
+        O: template.O(memo),
+        E: template.E(memo),
+        P: template.P(memo),
+        type: type
+      };
+    }
+
+    // ===== GENERATE =====
+    async function generateSOEP() {
+      const memo = getMemoText();
+      if (!memo || memo.length < 5) return;
+
+      // Hide output, show loading
+      document.getElementById('soep-output').classList.remove('visible');
+      document.getElementById('loading-overlay').classList.add('visible');
+      document.getElementById('btn-generate').disabled = true;
+
+      // Animate loading steps
+      const steps = ['step-1', 'step-2', 'step-3', 'step-4'];
+      for (let i = 0; i < steps.length; i++) {
+        await new Promise(r => setTimeout(r, 600));
+        document.getElementById(steps[i]).classList.add('active');
+        if (i > 0) {
+          document.getElementById(steps[i-1]).classList.add('done');
+          document.getElementById(steps[i-1]).querySelector('.step-icon').textContent = '✓';
+        }
+      }
+
+      // Wait a bit more for realism
+      await new Promise(r => setTimeout(r, 700));
+      document.getElementById(steps[steps.length-1]).classList.add('done');
+      document.getElementById(steps[steps.length-1]).querySelector('.step-icon').textContent = '✓';
+      await new Promise(r => setTimeout(r, 400));
+
+      // Generate SOEP
+      const data = buildSOEP(memo);
+
+      // Fill output
+      document.getElementById('text-S').textContent = data.S;
+      document.getElementById('text-O').textContent = data.O;
+      document.getElementById('text-E').textContent = data.E;
+      document.getElementById('text-P').textContent = data.P;
+
+      // Hide loading, show output
+      document.getElementById('loading-overlay').classList.remove('visible');
+      document.getElementById('soep-output').classList.add('visible');
+
+      // Reset loading steps for next time
+      steps.forEach(s => {
+        const el = document.getElementById(s);
+        el.classList.remove('active', 'done');
+        el.querySelector('.step-icon').textContent = s.replace('step-', '');
+      });
+
+      // Scroll to output
+      document.getElementById('soep-output').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // ===== COPY =====
+    function copyBlock(letter) {
+      const labels = { S: 'Subjectief', O: 'Objectief', E: 'Evaluatie', P: 'Plan' };
+      const text = document.getElementById('text-' + letter).textContent;
+      const full = `${labels[letter]}:\n${text}`;
+      navigator.clipboard.writeText(full).then(() => {
+        const btn = document.querySelector(`#block-${letter} .btn-copy-block`);
+        const prev = btn.innerHTML;
+        btn.innerHTML = '✓ Gekopieerd';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerHTML = prev;
+          btn.classList.remove('copied');
+        }, 2000);
+      }).catch(() => {
+        // Fallback for browsers without clipboard API
+        const ta = document.createElement('textarea');
+        ta.value = full;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      });
+    }
+
+    function copyAll() {
+      const S = document.getElementById('text-S').textContent;
+      const O = document.getElementById('text-O').textContent;
+      const E = document.getElementById('text-E').textContent;
+      const P = document.getElementById('text-P').textContent;
+      const full = `Subjectief:\n${S}\n\nObjectief:\n${O}\n\nEvaluatie:\n${E}\n\nPlan:\n${P}`;
+
+      const copyFn = () => {
+        const btn = document.getElementById('btn-copy-all');
+        const prev = btn.innerHTML;
+        btn.innerHTML = '✓ Volledige rapportage gekopieerd!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerHTML = prev;
+          btn.classList.remove('copied');
+        }, 2500);
+      };
+
+      navigator.clipboard.writeText(full).then(copyFn).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = full;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        copyFn();
+      });
+    }
+
+    // ===== RESET =====
+    function resetToStart() {
+      // Hide output
+      document.getElementById('soep-output').classList.remove('visible');
+
+      // Reset transcript
+      finalTranscript = '';
+      interimTranscript = '';
+      if (speechAPIAvailable) {
+        renderTranscript();
+        document.getElementById('btn-clear').style.display = 'none';
+        document.getElementById('btn-generate').disabled = true;
+        document.getElementById('status-text').textContent = 'Klaar om op te nemen';
+        document.getElementById('record-hint').textContent = 'Druk op de knop en vertel wat er tijdens de behandeling is gebeurd';
+        document.getElementById('status-indicator').className = 'status-indicator';
+      } else {
+        document.getElementById('fallback-input').value = '';
+        document.getElementById('btn-generate').disabled = true;
+      }
+
+      // Scroll to top of page
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ===== FALLBACK EXAMPLE =====
+    function fillExample() {
+      const EXAMPLE = `Patiënt De Vries, 58 jaar, fysiotherapie. Klaagt over aanhoudende lage rugpijn met uitstraling naar het linkerbeen, pijnscore 7 op 10. Zit moeilijk meer dan 20 minuten. Vandaag oefentherapie gedaan: kernstabilisatie en mobiliserende oefeningen wervelkolom. Bewegingsboog verbeterd ten opzichte van vorige sessie. Patiënt geeft aan slaap beter is gegaan afgelopen week. Plan: volgende sessie donderdag, thuisoefeningen meegeven, evalueren of doorverwijzing naar specialist nodig is bij uitblijven verbetering.`;
+      const input = document.getElementById('fallback-input');
+      if (input) {
+        input.value = EXAMPLE;
+        document.getElementById('btn-generate').disabled = false;
+      }
+    }
+  </script>
+
+</body>
+</html>

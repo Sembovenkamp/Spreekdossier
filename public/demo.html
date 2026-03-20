@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spreekdossier — Live Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #00A896;
+      --primary-dark: #008a7a;
+      --primary-light: #e6f7f5;
+      --accent: #F4A261;
+      --bg: #FAFAF8;
+      --text: #1A1A2E;
+      --text-muted: #6b7280;
+      --border: #e5e7eb;
+    }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 40px 20px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 800; font-size: 22px; color: var(--text);
+      margin-bottom: 8px; text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 10px; display: flex; align-items: center;
+      justify-content: center; color: white; font-size: 18px;
+    }
+    .subtitle {
+      font-size: 14px; color: var(--text-muted); margin-bottom: 40px;
+    }
+    .demo-card {
+      background: white; border-radius: 20px;
+      border: 1.5px solid var(--border);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.07);
+      width: 100%; max-width: 720px; padding: 36px;
+    }
+    .demo-section-title {
+      font-size: 12px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--primary);
+      margin-bottom: 12px;
+    }
+    textarea {
+      width: 100%; padding: 16px; border-radius: 12px;
+      border: 1.5px solid var(--border); font-family: 'Inter', sans-serif;
+      font-size: 14px; line-height: 1.6; color: var(--text);
+      background: var(--bg); resize: vertical;
+      transition: border-color 0.2s;
+    }
+    textarea:focus { outline: none; border-color: var(--primary); }
+    .controls {
+      display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap;
+    }
+    .btn-example {
+      padding: 10px 20px; border-radius: 100px; font-size: 14px;
+      font-weight: 600; cursor: pointer; border: 1.5px solid var(--border);
+      background: white; color: var(--text); transition: all 0.2s;
+    }
+    .btn-example:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-generate {
+      padding: 12px 28px; border-radius: 100px; font-size: 15px;
+      font-weight: 700; cursor: pointer; border: none;
+      background: var(--primary); color: white;
+      box-shadow: 0 4px 16px rgba(0,168,150,0.3);
+      transition: all 0.2s; display: flex; align-items: center; gap: 8px;
+    }
+    .btn-generate:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .btn-generate:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white; border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .soep-output { margin-top: 28px; display: none; }
+    .soep-output.visible { display: block; }
+    .soep-block {
+      border: 1.5px solid var(--border); border-radius: 14px;
+      padding: 20px; margin-bottom: 12px; background: var(--bg);
+    }
+    .soep-header {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 12px;
+    }
+    .soep-letter-wrap { display: flex; align-items: center; gap: 10px; }
+    .soep-badge {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 15px; color: white; flex-shrink: 0;
+    }
+    .soep-badge.S { background: var(--primary); }
+    .soep-badge.O { background: #3b82f6; }
+    .soep-badge.E { background: #8b5cf6; }
+    .soep-badge.P { background: var(--accent); }
+    .soep-label { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+    .soep-text {
+      font-size: 14px; line-height: 1.7; color: var(--text);
+      white-space: pre-wrap;
+    }
+    .btn-copy {
+      padding: 6px 14px; border-radius: 100px; font-size: 12px;
+      font-weight: 700; cursor: pointer;
+      border: 1px solid rgba(0,168,150,0.3);
+      background: var(--primary-light); color: var(--primary-dark);
+      transition: all 0.2s; white-space: nowrap;
+    }
+    .btn-copy:hover { background: var(--primary); color: white; }
+    .btn-copy-all {
+      width: 100%; padding: 14px; border-radius: 12px; font-size: 15px;
+      font-weight: 700; cursor: pointer; border: 2px solid var(--primary);
+      background: var(--primary-light); color: var(--primary-dark);
+      transition: all 0.2s; margin-top: 8px;
+    }
+    .btn-copy-all:hover { background: var(--primary); color: white; }
+    .demo-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(244,162,97,0.15);
+      border: 1px solid rgba(244,162,97,0.3);
+      color: #c2621e; font-size: 12px; font-weight: 600;
+      padding: 5px 14px; border-radius: 100px; margin-bottom: 20px;
+    }
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--text-muted); text-decoration: none; font-size: 14px;
+      font-weight: 500; margin-bottom: 32px; transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--primary); }
+    .processing-indicator {
+      text-align: center; padding: 32px;
+      color: var(--text-muted); font-size: 14px;
+      display: none;
+    }
+    .processing-indicator.visible { display: block; }
+    .processing-dots { 
+      display: flex; justify-content: center; gap: 6px; margin-top: 16px;
+    }
+    .dot {
+      width: 8px; height: 8px; background: var(--primary);
+      border-radius: 50%; animation: bounce 1.4s ease-in-out infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+    .demo-note {
+      text-align: center; margin-top: 24px;
+      font-size: 13px; color: var(--text-muted); line-height: 1.6;
+    }
+    .demo-note strong { color: var(--text); }
+  </style>
+</head>
+<body>
+
+  <a href="../spreekdossier-site/index-static.html" class="back-link">← Terug naar landingspagina</a>
+
+  <a href="#" class="logo">
+    <div class="logo-icon">🎙</div>
+    Spreekdossier
+  </a>
+  <p class="subtitle">Minder typen. Meer behandelen.</p>
+
+  <div class="demo-card">
+    <div class="demo-badge">⚡ Interactieve demo — simulatie</div>
+
+    <div class="demo-section-title">Jouw gesproken memo</div>
+    <textarea id="memo-input" rows="5" placeholder="Typ of plak hier je gesproken memo...
+Bijv: 'Patiënt De Vries, 58 jaar, fysiotherapie. Klaagt over rugpijn laag, uitstralend naar linkerbeen. Vandaag oefentherapie gedaan, mobiliteit verbeterd. Volgende sessie donderdag.'"></textarea>
+
+    <div class="controls">
+      <button class="btn-example" onclick="fillExample()">💡 Fysiotherapie voorbeeld</button>
+      <button class="btn-example" onclick="fillExampleThuiszorg()">💡 Thuiszorg voorbeeld</button>
+      <button class="btn-generate" id="generate-btn" onclick="generateSOEP()">
+        <span id="btn-text">✦ Genereer SOEP-rapportage</span>
+        <div class="spinner" id="spinner" style="display:none;"></div>
+      </button>
+    </div>
+
+    <div class="processing-indicator" id="processing">
+      <div>Spreekdossier verwerkt je memo...</div>
+      <div class="processing-dots">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      </div>
+    </div>
+
+    <div class="soep-output" id="soep-output">
+      <div class="soep-block" id="block-S">
+        <div class="soep-header">
+          <div class="soep-letter-wrap">
+            <div class="soep-badge S">S</div>
+            <span class="soep-label">Subjectief — wat de cliënt rapporteert</span>
+          </div>
+          <button class="btn-copy" onclick="copyBlock('S')">📋 Kopieer</button>
+        </div>
+        <div class="soep-text" id="text-S"></div>
+      </div>
+      <div class="soep-block" id="block-O">
+        <div class="soep-header">
+          <div class="soep-letter-wrap">
+            <div class="soep-badge O">O</div>
+            <span class="soep-label">Objectief — meetbare bevindingen</span>
+          </div>
+          <button class="btn-copy" onclick="copyBlock('O')">📋 Kopieer</button>
+        </div>
+        <div class="soep-text" id="text-O"></div>
+      </div>
+      <div class="soep-block" id="block-E">
+        <div class="soep-header">
+          <div class="soep-letter-wrap">
+            <div class="soep-badge E">E</div>
+            <span class="soep-label">Evaluatie — beoordeling voortgang</span>
+          </div>
+          <button class="btn-copy" onclick="copyBlock('E')">📋 Kopieer</button>
+        </div>
+        <div class="soep-text" id="text-E"></div>
+      </div>
+      <div class="soep-block" id="block-P">
+        <div class="soep-header">
+          <div class="soep-letter-wrap">
+            <div class="soep-badge P">P</div>
+            <span class="soep-label">Plan — vervolgstappen</span>
+          </div>
+          <button class="btn-copy" onclick="copyBlock('P')">📋 Kopieer</button>
+        </div>
+        <div class="soep-text" id="text-P"></div>
+      </div>
+      <button class="btn-copy-all" onclick="copyAll()">📄 Kopieer volledige rapportage</button>
+    </div>
+
+    <div class="demo-note">
+      <strong>Dit is een interactieve simulatie</strong> — de echte app gebruikt spraakherkenning + AI.<br>
+      Spreek in → rapportage in 30 seconden. Volledig AVG-proof.
+    </div>
+  </div>
+
+  <script>
+    // Realistische voorbeeldmemo's
+    const EXAMPLE_FYSIO = `Patiënt De Vries, 58 jaar, fysiotherapie. Klaagt over aanhoudende lage rugpijn met uitstraling naar het linkerbeen, pijnscore 7 op 10. Zit moeilijk meer dan 20 minuten. Vandaag oefentherapie gedaan: kernstabilisatie en mobiliserende oefeningen wervelkolom. Bewegingsomvang lumbaalsegment verbeterd ten opzichte van vorige sessie. Patiënt geeft aan dat slaap beter is gegaan afgelopen week. Plan: volgende sessie donderdag, thuisoefeningen meegeven, evalueren of doorverwijzing naar specialist nodig is bij uitblijven verbetering.`;
+
+    const EXAMPLE_THUISZORG = `Mevrouw Van den Berg, 81 jaar, thuiszorg. Ze klaagt over pijn in haar rechterheup, ze zegt een 5 op de pijnschaal. Wond op haar hiel ziet er beter uit, minder roodheid dan vorige keer. Heb de dressing vervangen. Ze is vandaag wat verward, herkende me niet meteen bij binnenkomst. Familie heeft gebeld dat ze gisteren slecht geslapen heeft. Medicatie ingenomen, wel moeilijk geslikt. Volgende visite overmorgen.`;
+
+    // Gesimuleerde SOEP responses per voorbeeld
+    const SOEP_RESPONSES = {
+      fysio: {
+        S: `Patiënt rapporteert aanhoudende lage rugpijn met uitstraling naar het linkerbeen, pijnscore 7/10 (NRS). Patiënt geeft aan niet langer dan 20 minuten te kunnen zitten. Patiënt meldt verbeterde slaapkwaliteit afgelopen week.`,
+        O: `Behandeling bestond uit oefentherapie: kernstabilisatieoefeningen en mobiliserende oefeningen van de wervelkolom. Zorgverlener observeert verbeterde bewegingsomvang van het lumbaalsegment ten opzichte van de vorige sessie.`,
+        E: `De rugklachten met radiculaire uitstraling naar het linkerbeen tonen tekenen van geleidelijke verbetering, gezien de verbeterde bewegingsomvang en de positieve slaaprapportage. De pijnintensiteit (7/10) blijft evenwel significant en vereist continuering van het behandelbeleid.`,
+        P: `Volgende behandelsessie gepland op donderdag. Thuisoefenprogramma meegeven en instrueren. Evalueren of doorverwijzing naar medisch specialist geïndiceerd is bij het uitblijven van verdere verbetering.`
+      },
+      thuiszorg: {
+        S: `Cliënte rapporteert pijn ter hoogte van het rechter heupgewricht, pijnscore 5/10 (NRS). Cliënte heeft naar eigen zeggen de afgelopen nacht slecht geslapen (bevestigd door familie). Cliënte ervaart moeite bij het innemen van medicatie (slikproblemen gemeld).`,
+        O: `Wond op de hiel toont tekenen van herstel: verminderde erytheem ten opzichte van vorige visite. Dressing vervangen conform wondprotocol. Medicatie toegediend. Zorgverlener observeert desoriëntatie in persoon bij aanvang van het bezoek (herkende zorgverlener aanvankelijk niet).`,
+        E: `De wondsituatie ter hoogte van de hiel vertoont een positief herstelverloop. De geobserveerde verwardheid en desoriëntatie in combinatie met het gerapporteerde slaaptekort vereisen nadere monitoring. De slikproblemen bij medicatie-inname zijn een nieuw aandachtspunt.`,
+        P: `Controlevisite over 2 dagen. Wondstatus hiel monitoren. Familie informeren over observatie desoriëntatie. Pijnklachten rechterheup en slikproblemen evalueren bij volgend contact; bij persisteren overleggen met behandelend arts of huisarts.`
+      }
+    };
+
+    function fillExample() {
+      document.getElementById('memo-input').value = EXAMPLE_FYSIO;
+    }
+
+    function fillExampleThuiszorg() {
+      document.getElementById('memo-input').value = EXAMPLE_THUISZORG;
+    }
+
+    function detectType(memo) {
+      const lower = memo.toLowerCase();
+      if (lower.includes('thuiszorg') || lower.includes('wond') || lower.includes('dressing') || lower.includes('hiel') || lower.includes('visite')) return 'thuiszorg';
+      return 'fysio';
+    }
+
+    function generateCustomSOEP(memo) {
+      // Slimme simulatie: genereer een plausibele SOEP op basis van de input
+      // Dit is puur demo-logica, geen echte AI
+      const type = detectType(memo);
+      if (memo.trim() === EXAMPLE_FYSIO.trim()) return SOEP_RESPONSES.fysio;
+      if (memo.trim() === EXAMPLE_THUISZORG.trim()) return SOEP_RESPONSES.thuiszorg;
+
+      // Genereer een generieke maar realistische respons
+      const name = extractName(memo);
+      const pijn = extractPain(memo);
+      
+      return {
+        S: `${name}rapporteert de volgende klachten en bevindingen: ${summarizeSubjective(memo)}`,
+        O: `Zorgverlener observeert en voert uit: ${summarizeObjective(memo)}`,
+        E: `Op basis van de beschikbare informatie wordt de situatie als volgt beoordeeld: ${summarizeEvaluation(memo)}`,
+        P: `Vervolgbeleid: ${summarizePlan(memo)}`
+      };
+    }
+
+    function extractName(memo) {
+      const match = memo.match(/(?:patiënt|cliënt(?:e)?|mevrouw|meneer|de heer)\s+([A-Z][a-z]+(?: [a-z]+ [A-Z][a-z]+)?)/i);
+      if (match) return `${match[0]} `;
+      return 'Cliënt ';
+    }
+
+    function extractPain(memo) {
+      const match = memo.match(/pijn(?:score)?\s*(\d+)/i);
+      return match ? match[1] + '/10' : null;
+    }
+
+    function summarizeSubjective(memo) {
+      const sentences = memo.split(/[.!?]+/).filter(s => s.trim().length > 10);
+      const subjective = sentences.filter(s => 
+        /klaagt|geeft aan|zegt|rapporteert|vertelt|ervaart|slecht|beter|pijn|moe/i.test(s)
+      ).slice(0, 2);
+      if (subjective.length === 0) return memo.split('.')[0].trim() + '.';
+      return subjective.map(s => s.trim()).join('. ') + '.';
+    }
+
+    function summarizeObjective(memo) {
+      const sentences = memo.split(/[.!?]+/).filter(s => s.trim().length > 10);
+      const objective = sentences.filter(s =>
+        /gedaan|vervangen|gemeten|observeer|uitgevoerd|behandeling|oefening|wond|dressing|medicatie/i.test(s)
+      ).slice(0, 2);
+      if (objective.length === 0) return '[Niet expliciet vermeld in memo — zie behandelnota]';
+      return objective.map(s => s.trim()).join('. ') + '.';
+    }
+
+    function summarizeEvaluation(memo) {
+      const hasBetter = /beter|verbeter|herstel|positief/i.test(memo);
+      const hasWorse = /slechter|vererg|toegenomen|erger/i.test(memo);
+      if (hasBetter && !hasWorse) return 'Het verloop toont tekenen van verbetering. Continuering van het huidige beleid is geïndiceerd.';
+      if (hasWorse) return 'De situatie vereist nadere monitoring. Evaluatie van het behandelbeleid is aangewezen.';
+      return 'De situatie is stabiel. Continuering van het huidige behandelbeleid wordt geadviseerd, met aandacht voor de gemelde klachten.';
+    }
+
+    function summarizePlan(memo) {
+      const sentences = memo.split(/[.!?]+/).filter(s => s.trim().length > 10);
+      const plan = sentences.filter(s =>
+        /volgende|plan|evalueren|doorverwijz|contact|overleg|controle|monitoren|meegeven/i.test(s)
+      ).slice(0, 2);
+      if (plan.length === 0) return 'Volgend contact inplannen en situatie evalueren. Indien geen verbetering: overleg met behandelend arts.';
+      return plan.map(s => s.trim()).join('. ') + '.';
+    }
+
+    async function generateSOEP() {
+      const memo = document.getElementById('memo-input').value.trim();
+      const output = document.getElementById('soep-output');
+      const btn = document.getElementById('generate-btn');
+      const btnText = document.getElementById('btn-text');
+      const spinner = document.getElementById('spinner');
+      const processing = document.getElementById('processing');
+
+      if (!memo) {
+        alert('Vul eerst een memo in of klik op een van de voorbeeldknoppen.');
+        return;
+      }
+
+      // Loading state
+      btn.disabled = true;
+      btnText.textContent = 'Verwerken...';
+      spinner.style.display = 'block';
+      output.classList.remove('visible');
+      processing.classList.add('visible');
+
+      // Simuleer verwerkingstijd (realistisch: 2 seconden)
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      const result = generateCustomSOEP(memo);
+
+      document.getElementById('text-S').textContent = result.S;
+      document.getElementById('text-O').textContent = result.O;
+      document.getElementById('text-E').textContent = result.E;
+      document.getElementById('text-P').textContent = result.P;
+
+      processing.classList.remove('visible');
+      output.classList.add('visible');
+      output.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      btn.disabled = false;
+      btnText.textContent = '✦ Genereer opnieuw';
+      spinner.style.display = 'none';
+    }
+
+    function copyBlock(letter) {
+      const text = document.getElementById('text-' + letter).textContent;
+      const labels = { S: 'Subjectief', O: 'Objectief', E: 'Evaluatie', P: 'Plan' };
+      navigator.clipboard.writeText(`${labels[letter]}:\n${text}`).then(() => {
+        const btn = document.querySelector(`#block-${letter} .btn-copy`);
+        const orig = btn.textContent;
+        btn.textContent = '✓ Gekopieerd';
+        setTimeout(() => { btn.textContent = orig; }, 2000);
+      });
+    }
+
+    function copyAll() {
+      const S = document.getElementById('text-S').textContent;
+      const O = document.getElementById('text-O').textContent;
+      const E = document.getElementById('text-E').textContent;
+      const P = document.getElementById('text-P').textContent;
+      const full = `Subjectief:\n${S}\n\nObjectief:\n${O}\n\nEvaluatie:\n${E}\n\nPlan:\n${P}`;
+      navigator.clipboard.writeText(full).then(() => {
+        const btn = document.querySelector('.btn-copy-all');
+        btn.textContent = '✓ Gekopieerd naar klembord!';
+        setTimeout(() => { btn.textContent = '📄 Kopieer volledige rapportage'; }, 2500);
+      });
+    }
+
+    // Ctrl+Enter shortcut
+    document.getElementById('memo-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) generateSOEP();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1699 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spreekdossier — Minder typen. Meer behandelen.</title>
+  <meta name="description" content="AI-rapportageassistent voor Nederlandse zorgverleners. Spreek 2 minuten in → complete SOEP-rapportage in 30 seconden. AVG-proof." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #00A896;
+      --primary-dark: #008a7a;
+      --primary-light: #e6f7f5;
+      --accent: #F4A261;
+      --accent-dark: #e8874a;
+      --bg: #FAFAF8;
+      --bg-card: #ffffff;
+      --text: #1A1A2E;
+      --text-muted: #6b7280;
+      --text-light: #9ca3af;
+      --border: #e5e7eb;
+      --shadow: 0 4px 24px rgba(0,0,0,0.07);
+      --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, 'SF Pro Display', BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ===== NAV ===== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(250,250,248,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,168,150,0.1);
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-logo-dot {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--primary); }
+
+    .nav-cta {
+      background: var(--primary) !important;
+      color: white !important;
+      padding: 8px 20px;
+      border-radius: 100px;
+      font-weight: 600 !important;
+      transition: all 0.2s !important;
+    }
+
+    .nav-cta:hover {
+      background: var(--primary-dark) !important;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(0,168,150,0.3);
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+    }
+
+    /* ===== SECTIONS ===== */
+    section { padding: 100px 24px; }
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    /* ===== HERO ===== */
+    #hero {
+      padding-top: 160px;
+      padding-bottom: 100px;
+      background: linear-gradient(160deg, #f0faf9 0%, #fafaf8 40%, #fff8f3 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #hero::before {
+      content: '';
+      position: absolute;
+      top: -200px; right: -200px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(0,168,150,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    #hero::after {
+      content: '';
+      position: absolute;
+      bottom: -100px; left: -100px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(244,162,97,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      text-align: center;
+      max-width: 780px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 28px;
+      border: 1px solid rgba(0,168,150,0.2);
+    }
+
+    .hero-badge span { font-size: 16px; }
+
+    h1 {
+      font-size: clamp(40px, 7vw, 72px);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+      color: var(--text);
+    }
+
+    h1 .highlight {
+      background: linear-gradient(135deg, var(--primary), #00c9b5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: clamp(16px, 2.5vw, 20px);
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 40px;
+      line-height: 1.6;
+    }
+
+    .hero-sub strong { color: var(--text); font-weight: 600; }
+
+    .hero-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 56px;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary);
+      color: white;
+      font-weight: 700;
+      font-size: 16px;
+      padding: 16px 32px;
+      border-radius: 100px;
+      text-decoration: none;
+      transition: all 0.25s;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,168,150,0.3);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0,168,150,0.4);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 15px;
+      padding: 14px 28px;
+      border-radius: 100px;
+      text-decoration: none;
+      transition: all 0.25s;
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .hero-stats {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .stat-dot {
+      width: 20px; height: 20px;
+      background: var(--primary-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+
+    .stat-divider {
+      width: 1px; height: 20px;
+      background: var(--border);
+    }
+
+    /* ===== PROBLEM SECTION ===== */
+    #problem {
+      background: white;
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+
+    .section-body {
+      font-size: 18px;
+      color: var(--text-muted);
+      max-width: 640px;
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+
+    .section-body strong { color: var(--text); font-weight: 600; }
+
+    .problem-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .problem-content { grid-template-columns: 1fr; gap: 40px; }
+    }
+
+    .pain-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .pain-card {
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      padding: 20px 24px;
+      border: 1.5px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      transition: all 0.25s;
+    }
+
+    .pain-card:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      transform: translateX(4px);
+    }
+
+    .pain-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .pain-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+
+    .pain-card p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ===== HOW IT WORKS ===== */
+    #how {
+      background: var(--bg);
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      gap: 0;
+      align-items: center;
+    }
+
+    @media (max-width: 900px) {
+      .steps-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+      .step-arrow { display: none !important; }
+    }
+
+    .step-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 36px 28px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      border: 1.5px solid var(--border);
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .step-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary);
+    }
+
+    .step-number {
+      position: absolute;
+      top: -12px; left: 50%;
+      transform: translateX(-50%);
+      width: 28px; height: 28px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .step-icon {
+      width: 72px; height: 72px;
+      background: var(--primary-light);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 20px;
+    }
+
+    .step-card h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .step-card p {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .step-card .step-quote {
+      margin-top: 16px;
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-style: italic;
+      border-left: 3px solid var(--primary);
+      text-align: left;
+    }
+
+    .step-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      font-size: 28px;
+      padding: 0 16px;
+      opacity: 0.5;
+    }
+
+    /* ===== DEMO ===== */
+    #demo {
+      background: white;
+    }
+
+    .demo-wrapper {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .demo-box {
+      background: var(--bg);
+      border-radius: 20px;
+      padding: 32px;
+      border: 1.5px solid var(--border);
+    }
+
+    .demo-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 12px;
+    }
+
+    .demo-input-area {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 140px;
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      font-family: inherit;
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.6;
+      resize: vertical;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    textarea:focus { border-color: var(--primary); }
+    textarea::placeholder { color: var(--text-light); }
+
+    .demo-controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .btn-example {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: white;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 10px 18px;
+      border-radius: 100px;
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-example:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-generate {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary);
+      color: white;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 12px 28px;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s;
+      box-shadow: 0 4px 16px rgba(0,168,150,0.25);
+    }
+
+    .btn-generate:hover:not(:disabled) {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0,168,150,0.35);
+    }
+
+    .btn-generate:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Loading spinner */
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2.5px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Output area */
+    .soep-output {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .soep-output.visible { display: flex; }
+
+    .soep-block {
+      background: white;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1.5px solid var(--border);
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    .soep-block:nth-child(1) { animation-delay: 0.05s; }
+    .soep-block:nth-child(2) { animation-delay: 0.1s; }
+    .soep-block:nth-child(3) { animation-delay: 0.15s; }
+    .soep-block:nth-child(4) { animation-delay: 0.2s; }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .soep-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .soep-letter {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .soep-badge {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 14px;
+      color: white;
+    }
+
+    .soep-badge.S { background: #00A896; }
+    .soep-badge.O { background: #0891b2; }
+    .soep-badge.E { background: #7c3aed; }
+    .soep-badge.P { background: #F4A261; }
+
+    .soep-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .btn-copy-block {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-copy-block:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-copy-block.copied { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
+
+    .soep-text {
+      padding: 16px;
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    .soep-actions {
+      margin-top: 8px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-copy-all {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--text);
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px 24px;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-copy-all:hover { background: #2d2d3a; transform: translateY(-1px); }
+
+    .demo-error {
+      display: none;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      font-size: 14px;
+      color: #dc2626;
+      margin-top: 12px;
+    }
+
+    /* ===== PRICING ===== */
+    #pricing {
+      background: var(--bg);
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 1000px) {
+      .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .pricing-grid { grid-template-columns: 1fr; }
+    }
+
+    .pricing-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      border: 1.5px solid var(--border);
+      position: relative;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pricing-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .pricing-card.popular {
+      border-color: var(--primary);
+      box-shadow: 0 8px 32px rgba(0,168,150,0.15);
+    }
+
+    .popular-badge {
+      position: absolute;
+      top: -12px; left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 100px;
+      white-space: nowrap;
+      letter-spacing: 0.04em;
+    }
+
+    .pricing-tier {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .pricing-price {
+      margin-bottom: 4px;
+    }
+
+    .pricing-price .amount {
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .pricing-price .currency {
+      font-size: 24px;
+      font-weight: 700;
+      vertical-align: top;
+      line-height: 1.4;
+      color: var(--text);
+    }
+
+    .pricing-price .period {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .pricing-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .pricing-features {
+      list-style: none;
+      margin-bottom: 28px;
+      flex: 1;
+    }
+
+    .pricing-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text);
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .pricing-features li::before {
+      content: '✓';
+      color: var(--primary);
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .pricing-cta {
+      display: block;
+      text-align: center;
+      padding: 12px 20px;
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: 2px solid var(--border);
+      color: var(--text);
+    }
+
+    .pricing-card.popular .pricing-cta {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .pricing-cta:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .pricing-card.popular .pricing-cta:hover {
+      background: var(--primary-dark);
+      color: white;
+    }
+
+    /* ===== TESTIMONIALS ===== */
+    #testimonials {
+      background: white;
+    }
+
+    .testimonials-coming {
+      text-align: center;
+      padding: 16px 24px;
+      background: var(--primary-light);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      color: var(--primary-dark);
+      font-weight: 600;
+      margin-bottom: 40px;
+      display: inline-block;
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .testimonials-grid { grid-template-columns: 1fr; }
+    }
+
+    .testimonial-card {
+      background: var(--bg);
+      border-radius: var(--radius);
+      padding: 28px;
+      border: 1.5px solid var(--border);
+      transition: all 0.25s;
+    }
+
+    .testimonial-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+      border-color: rgba(0,168,150,0.2);
+    }
+
+    .stars {
+      color: var(--accent);
+      font-size: 16px;
+      margin-bottom: 14px;
+      letter-spacing: 2px;
+    }
+
+    .testimonial-text {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.7;
+      font-style: italic;
+      margin-bottom: 20px;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .author-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: white;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .author-name {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .author-role {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    /* ===== PRIVACY ===== */
+    #privacy {
+      background: linear-gradient(160deg, #f0faf9 0%, var(--bg) 100%);
+    }
+
+    .privacy-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-top: 48px;
+    }
+
+    @media (max-width: 900px) {
+      .privacy-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 500px) {
+      .privacy-grid { grid-template-columns: 1fr; }
+    }
+
+    .privacy-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 28px 20px;
+      text-align: center;
+      border: 1.5px solid var(--border);
+      transition: all 0.25s;
+    }
+
+    .privacy-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+    }
+
+    .privacy-icon {
+      font-size: 36px;
+      margin-bottom: 14px;
+      display: block;
+    }
+
+    .privacy-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .privacy-card p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ===== FINAL CTA ===== */
+    #cta {
+      background: linear-gradient(135deg, var(--primary) 0%, #008a7a 50%, #006b60 100%);
+      color: white;
+      text-align: center;
+      padding: 100px 24px;
+    }
+
+    #cta h2 { color: white; }
+
+    #cta .section-label { color: rgba(255,255,255,0.7); }
+
+    .cta-sub {
+      font-size: 18px;
+      color: rgba(255,255,255,0.85);
+      max-width: 520px;
+      margin: 16px auto 40px;
+      line-height: 1.6;
+    }
+
+    .btn-cta-white {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: white;
+      color: var(--primary-dark);
+      font-weight: 800;
+      font-size: 17px;
+      padding: 18px 40px;
+      border-radius: 100px;
+      text-decoration: none;
+      transition: all 0.25s;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+
+    .btn-cta-white:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    }
+
+    .cta-note {
+      margin-top: 20px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--text);
+      color: rgba(255,255,255,0.6);
+      padding: 48px 24px 32px;
+    }
+
+    .footer-content {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-logo-mark {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .footer-logo-text {
+      font-weight: 700;
+      font-size: 16px;
+      color: white;
+    }
+
+    .footer-logo-sub {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      margin-top: 1px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: white; }
+
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 24px auto 0;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      font-size: 13px;
+      color: rgba(255,255,255,0.3);
+    }
+
+    /* ===== SCROLL ANIMATIONS ===== */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .fade-in-delay-1 { transition-delay: 0.1s; }
+    .fade-in-delay-2 { transition-delay: 0.2s; }
+    .fade-in-delay-3 { transition-delay: 0.3s; }
+    .fade-in-delay-4 { transition-delay: 0.4s; }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAV ===== -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-dot">🎙</div>
+      Spreekdossier
+    </a>
+    <ul class="nav-links">
+      <li><a href="#how">Hoe het werkt</a></li>
+      <li><a href="#demo">Demo</a></li>
+      <li><a href="#pricing">Prijzen</a></li>
+      <li><a href="voice-demo.html" class="nav-cta">🎙️ Probeer gratis</a></li>
+    </ul>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <section id="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span>✨</span>
+          AI-rapportageassistent voor zorgverleners
+        </div>
+        <h1>Minder typen.<br /><span class="highlight">Meer behandelen.</span></h1>
+        <p class="hero-sub">
+          Spreek <strong>2 minuten in</strong> na een behandeling → complete SOEP-rapportage in <strong>30 seconden</strong>. AVG-proof. Nederlands. Voor zorgverleners.
+        </p>
+        <div class="hero-buttons">
+          <a href="voice-demo.html" class="btn-primary">
+            🎙️ Probeer de live demo
+          </a>
+          <a href="#how" class="btn-secondary">
+            ▶ Hoe het werkt
+          </a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-dot">⏱</div>
+            1 uur per dag bespaard
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <div class="stat-dot">🔒</div>
+            AVG-proof
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <div class="stat-dot">⚡</div>
+            30 sec per rapportage
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PROBLEM ===== -->
+  <section id="problem">
+    <div class="container">
+      <div class="problem-content">
+        <div class="fade-in">
+          <p class="section-label">Het probleem</p>
+          <h2>Je hebt gekozen voor de zorg. Niet voor de laptop.</h2>
+          <p class="section-body">
+            Jij hebt gekozen voor de zorg. Niet voor een administratiebaan.
+          </p>
+          <p class="section-body">
+            Toch gaat gemiddeld <strong>31% van je werkweek naar rapportages, dossiers en formulieren</strong>. Elke dag weer.
+          </p>
+          <p class="section-body">
+            Na een drukke dag vol patiëntcontacten ga je thuis zitten om de rapportages bij te werken. Je kinderen zien je aan de laptop. Je avond verdwijnt in een EPD. <strong>Dat moet anders kunnen.</strong>
+          </p>
+        </div>
+        <div class="pain-cards fade-in fade-in-delay-2">
+          <div class="pain-card">
+            <div class="pain-icon">⏰</div>
+            <div>
+              <h3>Tijdverlies</h3>
+              <p>Gemiddeld 15–20 minuten per rapportage. Bij 10 cliënten per dag: 2,5–3 uur administratie. Elke dag opnieuw.</p>
+            </div>
+          </div>
+          <div class="pain-card">
+            <div class="pain-icon">😰</div>
+            <div>
+              <h3>Kwaliteitsangst</h3>
+              <p>Is mijn rapportage volledig genoeg? Gebruik ik de juiste termen? Wat als de inspectie langskomt?</p>
+            </div>
+          </div>
+          <div class="pain-card">
+            <div class="pain-icon">🔋</div>
+            <div>
+              <h3>Uitputting</h3>
+              <p>Schrijven na een volle zorgdag vreet je energie. Je hebt dit werk niet gekozen voor de bureaucratie.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HOW IT WORKS ===== -->
+  <section id="how">
+    <div class="container">
+      <div class="section-header fade-in">
+        <p class="section-label">Hoe het werkt</p>
+        <h2>3 stappen. 3 minuten. Klaar.</h2>
+        <p class="section-body" style="margin: 0 auto; text-align:center;">
+          Geen ingewikkelde software. Geen training. Open, spreek, kopieer.
+        </p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card fade-in fade-in-delay-1">
+          <div class="step-number">1</div>
+          <div class="step-icon">🎙️</div>
+          <h3>Inspreek</h3>
+          <p>Open Spreekdossier op je telefoon en praat vrij over wat er tijdens het contact was. Geen format nodig — gewoon praten.</p>
+          <div class="step-quote">"Mevrouw Jansen, 72 jaar, thuiszorg. Pijn bij heup rechts, score 6/10. Wond schoon, dressing vervangen..."</div>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step-card fade-in fade-in-delay-2">
+          <div class="step-number">2</div>
+          <div class="step-icon">🤖</div>
+          <h3>AI structureert</h3>
+          <p>Spreekdossier zet jouw gesproken woord om in een volledige SOEP-rapportage — Subjectief, Objectief, Evaluatie, Plan.</p>
+          <div class="step-quote">"S: Cliënte rapporteert pijn ter hoogte van het rechter heupgewricht, pijnscore 6/10..."</div>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step-card fade-in fade-in-delay-3">
+          <div class="step-number">3</div>
+          <div class="step-icon">✅</div>
+          <h3>Kopieer naar EPD</h3>
+          <p>Lees de rapportage door in 30 seconden. Pas eventueel iets aan. Kopieer naar je EPD. Klaar — je avond is van jou.</p>
+          <div class="step-quote">Van ingesproken memo → complete rapportage in minder dan 30 seconden.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== LIVE DEMO ===== -->
+  <section id="demo">
+    <div class="container">
+      <div class="section-header fade-in">
+        <p class="section-label">Live demo</p>
+        <h2>Probeer het zelf</h2>
+        <p class="section-body" style="margin: 0 auto; text-align:center;">
+          Spreek in via de microfoon — of typ een gesproken memo — en zie hoe Spreekdossier er een professionele SOEP-rapportage van maakt.
+        </p>
+        <div style="text-align:center; margin-top: 28px; margin-bottom: -20px;">
+          <a href="voice-demo.html" class="btn-primary" style="font-size:17px; padding: 18px 38px; text-decoration:none;">
+            🎙️ Probeer de live spraakdemo →
+          </a>
+          <p style="margin-top: 12px; font-size: 13px; color: var(--text-muted);">Opent een nieuwe pagina · Geen account nodig · Werkt op iPhone &amp; Android</p>
+        </div>
+      </div>
+      <div class="demo-wrapper fade-in" style="margin-top: 48px;">
+        <div class="demo-box">
+          <div class="demo-label">Jouw gesproken memo</div>
+          <div class="demo-input-area">
+            <textarea id="memo-input" placeholder="Typ of plak hier je gesproken memo... Bijv: 'Patiënt De Vries, 58 jaar, fysiotherapie. Klaagt over rugpijn laag, uitstralend naar linkerbeen. Vandaag oefentherapie gedaan, mobiliteit verbeterd. Volgende sessie donderdag.'"
+            rows="5"></textarea>
+          </div>
+          <div class="demo-controls">
+            <button class="btn-example" onclick="fillExample()">
+              💡 Vul voorbeeldmemo in
+            </button>
+            <button class="btn-generate" id="generate-btn" onclick="generateSOEP()">
+              <span id="btn-text">✦ Genereer SOEP-rapportage</span>
+              <div class="spinner" id="spinner" style="display:none;"></div>
+            </button>
+          </div>
+          <div class="demo-error" id="demo-error"></div>
+          <div class="soep-output" id="soep-output">
+            <div class="soep-block" id="block-S">
+              <div class="soep-header">
+                <div class="soep-letter">
+                  <div class="soep-badge S">S</div>
+                  <span class="soep-label">Subjectief — wat de cliënt rapporteert</span>
+                </div>
+                <button class="btn-copy-block" onclick="copyBlock('S')">📋 Kopieer</button>
+              </div>
+              <div class="soep-text" id="text-S"></div>
+            </div>
+            <div class="soep-block" id="block-O">
+              <div class="soep-header">
+                <div class="soep-letter">
+                  <div class="soep-badge O">O</div>
+                  <span class="soep-label">Objectief — meetbare bevindingen</span>
+                </div>
+                <button class="btn-copy-block" onclick="copyBlock('O')">📋 Kopieer</button>
+              </div>
+              <div class="soep-text" id="text-O"></div>
+            </div>
+            <div class="soep-block" id="block-E">
+              <div class="soep-header">
+                <div class="soep-letter">
+                  <div class="soep-badge E">E</div>
+                  <span class="soep-label">Evaluatie — beoordeling voortgang</span>
+                </div>
+                <button class="btn-copy-block" onclick="copyBlock('E')">📋 Kopieer</button>
+              </div>
+              <div class="soep-text" id="text-E"></div>
+            </div>
+            <div class="soep-block" id="block-P">
+              <div class="soep-header">
+                <div class="soep-letter">
+                  <div class="soep-badge P">P</div>
+                  <span class="soep-label">Plan — vervolgstappen</span>
+                </div>
+                <button class="btn-copy-block" onclick="copyBlock('P')">📋 Kopieer</button>
+              </div>
+              <div class="soep-text" id="text-P"></div>
+            </div>
+            <div class="soep-actions">
+              <button class="btn-copy-all" onclick="copyAll()">
+                📄 Kopieer volledige rapportage
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PRICING ===== -->
+  <section id="pricing">
+    <div class="container">
+      <div class="section-header fade-in">
+        <p class="section-label">Tarieven</p>
+        <h2>Minder dan een cappuccino per dag.</h2>
+        <p class="section-body" style="margin: 0 auto; text-align:center;">
+          Terugverdiend in de eerste rapportage. Geen verplichtingen. Maandelijks opzegbaar.
+        </p>
+      </div>
+      <div class="pricing-grid">
+
+        <!-- Solo -->
+        <div class="pricing-card fade-in fade-in-delay-1">
+          <div class="pricing-tier">Solo</div>
+          <div class="pricing-price">
+            <span class="currency">€</span><span class="amount">39</span>
+            <span class="period">/maand</span>
+          </div>
+          <p class="pricing-desc">Voor de zelfstandige zorgverlener die direct wil starten.</p>
+          <ul class="pricing-features">
+            <li>Onbeperkte SOEP-rapportages</li>
+            <li>Professioneel Nederlands</li>
+            <li>Alle zorgspecialismen</li>
+            <li>Kopieer naar elk EPD</li>
+            <li>30 dagen gratis proberen</li>
+          </ul>
+          <a href="#demo" class="pricing-cta">Start 30 dagen gratis</a>
+        </div>
+
+        <!-- Praktijk S — POPULAR -->
+        <div class="pricing-card popular fade-in fade-in-delay-2">
+          <div class="popular-badge">⭐ Meest gekozen</div>
+          <div class="pricing-tier">Praktijk S</div>
+          <div class="pricing-price">
+            <span class="currency">€</span><span class="amount">119</span>
+            <span class="period">/maand</span>
+          </div>
+          <p class="pricing-desc">Voor een kleine praktijk met meerdere behandelaars.</p>
+          <ul class="pricing-features">
+            <li>Alles van Solo</li>
+            <li>Tot 3 gebruikers</li>
+            <li>Gedeelde rapportagegeschiedenis</li>
+            <li>Rapportage-templates per specialisme</li>
+            <li>Prioriteit e-mail support</li>
+            <li>Verwerkersovereenkomst</li>
+          </ul>
+          <a href="#demo" class="pricing-cta">Start 30 dagen gratis</a>
+        </div>
+
+        <!-- Praktijk M -->
+        <div class="pricing-card fade-in fade-in-delay-3">
+          <div class="pricing-tier">Praktijk M</div>
+          <div class="pricing-price">
+            <span class="currency">€</span><span class="amount">229</span>
+            <span class="period">/maand</span>
+          </div>
+          <p class="pricing-desc">Voor middelgrote praktijken met een groter team.</p>
+          <ul class="pricing-features">
+            <li>Alles van Praktijk S</li>
+            <li>Tot 8 gebruikers</li>
+            <li>Aangepaste templates</li>
+            <li>Rapportage-export (PDF/Word)</li>
+            <li>Telefoon support</li>
+            <li>API-integratie beschikbaar</li>
+          </ul>
+          <a href="#demo" class="pricing-cta">Start 30 dagen gratis</a>
+        </div>
+
+        <!-- Praktijk L -->
+        <div class="pricing-card fade-in fade-in-delay-4">
+          <div class="pricing-tier">Praktijk L</div>
+          <div class="pricing-price">
+            <span class="currency">€</span><span class="amount">349</span>
+            <span class="period">/maand</span>
+          </div>
+          <p class="pricing-desc">Voor grote praktijken en zorgorganisaties.</p>
+          <ul class="pricing-features">
+            <li>Alles van Praktijk M</li>
+            <li>Onbeperkt gebruikers</li>
+            <li>EPD-koppeling op maat</li>
+            <li>Dedicated accountmanager</li>
+            <li>SLA 99,9% uptime</li>
+            <li>Custom implementatie</li>
+          </ul>
+          <a href="#demo" class="pricing-cta">Neem contact op</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TESTIMONIALS ===== -->
+  <section id="testimonials">
+    <div class="container">
+      <div class="section-header fade-in">
+        <p class="section-label">Ervaringen</p>
+        <h2>Wat zorgverleners zeggen</h2>
+        <div style="text-align:center;">
+          <span class="testimonials-coming">✉️ Binnenkort: ervaringen van onze eerste gebruikers</span>
+        </div>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card fade-in fade-in-delay-1">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-text">"Ik was dagelijks minstens 2 uur aan het typen. Nu is het 20 minuten. Mijn avonden zijn eindelijk van mij. Ik kan niet geloven dat ik dit zo lang zonder gedaan heb."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">L</div>
+            <div>
+              <div class="author-name">Laura V.</div>
+              <div class="author-role">Wijkverpleegkundige, ZZP</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card fade-in fade-in-delay-2">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-text">"Ik was altijd bang dat mijn rapportages niet volledig genoeg waren. Nu heb ik er vertrouwen in. De structuur is precies goed — ik check even na en kopieer."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">S</div>
+            <div>
+              <div class="author-name">Sandra K.</div>
+              <div class="author-role">Fysiotherapeut, ZZP</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card fade-in fade-in-delay-3">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-text">"Als iemand me dit had laten zien toen ik startte als ZZP, had ik direct ja gezegd. Dit had ik jaren geleden al willen hebben. Aanrader voor elke thuiszorgverlener."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">M</div>
+            <div>
+              <div class="author-name">Martijn D.</div>
+              <div class="author-role">Thuiszorgbegeleider, ZZP</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PRIVACY ===== -->
+  <section id="privacy">
+    <div class="container">
+      <div class="section-header fade-in">
+        <p class="section-label">Privacy & veiligheid</p>
+        <h2>Jouw data is van jou. Punt.</h2>
+        <p class="section-body" style="margin: 0 auto; text-align:center;">
+          We begrijpen dat zorgdata gevoelig is. Spreekdossier is gebouwd met privacy als fundament — niet als afterthought.
+        </p>
+      </div>
+      <div class="privacy-grid">
+        <div class="privacy-card fade-in fade-in-delay-1">
+          <span class="privacy-icon">🌍</span>
+          <h3>EU-servers</h3>
+          <p>Alle data wordt verwerkt en opgeslagen op servers binnen de Europese Unie. Nooit buiten Europa.</p>
+        </div>
+        <div class="privacy-card fade-in fade-in-delay-2">
+          <span class="privacy-icon">🗑️</span>
+          <h3>Audio direct verwijderd</h3>
+          <p>Opnames worden direct na transcriptie verwijderd. We bewaren nooit meer dan nodig is.</p>
+        </div>
+        <div class="privacy-card fade-in fade-in-delay-3">
+          <span class="privacy-icon">🚫</span>
+          <h3>Geen AI-training</h3>
+          <p>Jouw data wordt nooit gebruikt om AI-modellen te trainen. Contractueel vastgelegd.</p>
+        </div>
+        <div class="privacy-card fade-in fade-in-delay-4">
+          <span class="privacy-icon">📋</span>
+          <h3>AVG-proof</h3>
+          <p>Verwerkersovereenkomst inbegrepen. NEN-7510-compatibel. Klaar voor IGJ-inspectie.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FINAL CTA ===== -->
+  <section id="cta">
+    <div class="container">
+      <p class="section-label">Klaar om te starten?</p>
+      <h2>Win je avonden terug.</h2>
+      <p class="cta-sub">
+        30 dagen gratis proberen. Geen creditcard nodig. Als Spreekdossier jouw rapportages niet sneller en beter maakt — heb je niets te verliezen.
+      </p>
+      <a href="#demo" class="btn-cta-white">
+        ✦ Start nu gratis — geen creditcard nodig
+      </a>
+      <p class="cta-note">Maandelijks opzegbaar · AVG-proof · Werkt op iPhone & Android</p>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-logo">
+        <div class="footer-logo-mark">🎙</div>
+        <div>
+          <div class="footer-logo-text">Spreekdossier</div>
+          <div class="footer-logo-sub">spreekdossier.nl · KvK: in aanvraag</div>
+        </div>
+      </div>
+      <ul class="footer-links">
+        <li><a href="#">Privacybeleid</a></li>
+        <li><a href="#">Algemene voorwaarden</a></li>
+        <li><a href="#">Verwerkersovereenkomst</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-bottom">
+      © 2026 Spreekdossier. Alle rechten voorbehouden. · Minder typen. Meer behandelen.
+    </div>
+  </footer>
+
+  <script>
+    // ===== SCROLL ANIMATIONS =====
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // ===== DEMO =====
+    const EXAMPLE_MEMO = `Patiënt De Vries, 58 jaar, fysiotherapie. Klaagt over aanhoudende lage rugpijn met uitstraling naar het linkerbeen, pijnscore 7 op 10. Zit moeilijk meer dan 20 minuten. Vandaag oefentherapie gedaan: kernstabilisatie en mobiliserende oefeningen wervelkolom. Bewegingsomvang lumbaalsegment verbeterd ten opzichte van vorige sessie. Patiënt geeft aan slaap beter is gegaan afgelopen week. Plan: volgende sessie donderdag, thuisoefeningen meegeven, evalueren of doorverwijzing naar specialist nodig is bij uitblijven verbetering.`;
+
+    function fillExample() {
+      document.getElementById('memo-input').value = EXAMPLE_MEMO;
+    }
+
+    // === GESIMULEERDE DEMO (standalone, geen server nodig) ===
+    const SOEP_FYSIO = {
+      S: `Patiënt rapporteert aanhoudende lage rugpijn met uitstraling naar het linkerbeen, pijnscore 7/10 (NRS). Patiënt geeft aan niet langer dan 20 minuten te kunnen zitten. Patiënt meldt verbeterde slaapkwaliteit de afgelopen week.`,
+      O: `Behandeling bestond uit oefentherapie: kernstabilisatieoefeningen en mobiliserende oefeningen van de wervelkolom. Zorgverlener observeert verbeterde bewegingsomvang van het lumbaalsegment ten opzichte van de vorige sessie.`,
+      E: `De lumbale rugklachten met radiculaire uitstraling naar het linkerbeen tonen tekenen van geleidelijke verbetering gezien de verbeterde bewegingsomvang en de positieve slaaprapportage van patiënt. De pijnintensiteit (7/10) blijft significant en vereist continuering van het behandelbeleid.`,
+      P: `Volgende behandelsessie gepland op donderdag. Thuisoefenprogramma meegeven en instrueren. Bij het uitblijven van verdere verbetering evalueren of doorverwijzing naar medisch specialist geïndiceerd is.`
+    };
+
+    const SOEP_THUISZORG = {
+      S: `Cliënte rapporteert pijn ter hoogte van het rechter heupgewricht, pijnscore 5/10 (NRS). Cliënte heeft de afgelopen nacht slecht geslapen (bevestigd door familie telefonisch).`,
+      O: `Wond op de hiel toont tekenen van herstel: verminderde erytheem ten opzichte van vorige visite. Dressing vervangen conform wondprotocol. Zorgverlener observeert desoriëntatie in persoon bij aanvang van het bezoek (cliënte herkende zorgverlener aanvankelijk niet).`,
+      E: `De wondsituatie ter hoogte van de hiel vertoont een positief herstelverloop. De geobserveerde verwardheid in combinatie met het gerapporteerde slaaptekort vereisen nadere monitoring; een mogelijk verband met de slaapverslechtering is niet uit te sluiten.`,
+      P: `Controlevisite over 2 dagen. Wondstatus hiel monitoren en fotografisch vastleggen. Familie informeren over geobserveerde desoriëntatie. Pijnklachten rechterheup evalueren bij volgend contact; bij persisteren overleggen met behandelend arts.`
+    };
+
+    function detectSOEPType(memo) {
+      const lower = memo.toLowerCase();
+      if (lower.includes('thuiszorg') || lower.includes('wond') || lower.includes('dressing') || lower.includes('hiel') || lower.includes('visite') || lower.includes('cliënt')) return 'thuiszorg';
+      return 'fysio';
+    }
+
+    function generateSimulatedSOEP(memo) {
+      // Gebruik het meest relevante voorbeeld op basis van de input
+      const type = detectSOEPType(memo);
+      if (type === 'thuiszorg') return SOEP_THUISZORG;
+      return SOEP_FYSIO;
+    }
+
+    async function generateSOEP() {
+      const memo = document.getElementById('memo-input').value.trim();
+      const errorEl = document.getElementById('demo-error');
+      const output = document.getElementById('soep-output');
+      const btn = document.getElementById('generate-btn');
+      const btnText = document.getElementById('btn-text');
+      const spinner = document.getElementById('spinner');
+
+      errorEl.style.display = 'none';
+      output.classList.remove('visible');
+
+      if (!memo) {
+        errorEl.textContent = 'Vul eerst een memo in of klik op "Vul voorbeeldmemo in".';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      // Loading state
+      btn.disabled = true;
+      btnText.textContent = 'Bezig met verwerken...';
+      spinner.style.display = 'block';
+
+      // Simuleer verwerkingstijd (2 seconden — realistisch voor de echte versie)
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      const data = generateSimulatedSOEP(memo);
+
+      document.getElementById('text-S').textContent = data.S;
+      document.getElementById('text-O').textContent = data.O;
+      document.getElementById('text-E').textContent = data.E;
+      document.getElementById('text-P').textContent = data.P;
+
+      output.classList.add('visible');
+      output.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      btn.disabled = false;
+      btnText.textContent = '✦ Genereer SOEP-rapportage';
+      spinner.style.display = 'none';
+    }
+
+    function copyBlock(letter) {
+      const text = document.getElementById('text-' + letter).textContent;
+      const labels = { S: 'Subjectief', O: 'Objectief', E: 'Evaluatie', P: 'Plan' };
+      const full = `${labels[letter]}:\n${text}`;
+      navigator.clipboard.writeText(full).then(() => {
+        const btn = document.querySelector(`#block-${letter} .btn-copy-block`);
+        btn.textContent = '✓ Gekopieerd';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = '📋 Kopieer';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    function copyAll() {
+      const S = document.getElementById('text-S').textContent;
+      const O = document.getElementById('text-O').textContent;
+      const E = document.getElementById('text-E').textContent;
+      const P = document.getElementById('text-P').textContent;
+
+      const full = `Subjectief:\n${S}\n\nObjectief:\n${O}\n\nEvaluatie:\n${E}\n\nPlan:\n${P}`;
+      navigator.clipboard.writeText(full).then(() => {
+        const btn = document.querySelector('.btn-copy-all');
+        btn.textContent = '✓ Volledige rapportage gekopieerd!';
+        setTimeout(() => { btn.textContent = '📄 Kopieer volledige rapportage'; }, 2500);
+      });
+    }
+
+    // Allow Enter key in textarea to not submit, but Ctrl+Enter to generate
+    document.getElementById('memo-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        generateSOEP();
+      }
+    });
+  </script>
+</body>
+</html>
