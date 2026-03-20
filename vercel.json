@@ -1,14 +1,6 @@
 {
-  "version": 2,
-  "framework": null,
-  "builds": [
-    { "src": "*.html", "use": "@vercel/static" },
-    { "src": "public/**", "use": "@vercel/static" }
-  ],
-  "routes": [
-    { "src": "/", "dest": "/index.html" },
-    { "src": "/voice-demo", "dest": "/voice-demo.html" },
-    { "src": "/demo", "dest": "/demo.html" },
-    { "src": "/(.*\\.html)", "dest": "/$1" }
-  ]
+  "buildCommand": null,
+  "outputDirectory": "public",
+  "installCommand": null,
+  "framework": null
 }
