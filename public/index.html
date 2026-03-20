@@ -1003,6 +1003,54 @@
       line-height: 1.5;
     }
 
+    /* ===== WAITLIST FORM ===== */
+    .waitlist-form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-width: 460px;
+      margin: 28px auto 0;
+    }
+    .waitlist-form input, .waitlist-form select {
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 2px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.15);
+      color: white;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .waitlist-form input::placeholder { color: rgba(255,255,255,0.65); }
+    .waitlist-form input:focus, .waitlist-form select:focus {
+      border-color: rgba(255,255,255,0.7);
+    }
+    .waitlist-form select { color: rgba(255,255,255,0.9); cursor: pointer; }
+    .waitlist-form select option { color: #1a1a2e; background: white; }
+    .waitlist-submit {
+      padding: 16px 28px;
+      background: white;
+      color: var(--primary);
+      border: none;
+      border-radius: 100px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .waitlist-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+    .waitlist-submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+    .waitlist-msg {
+      margin-top: 12px;
+      font-size: 15px;
+      font-weight: 500;
+      min-height: 20px;
+    }
+    .waitlist-msg.success { color: #a7f3d0; }
+    .waitlist-msg.error { color: #fca5a5; }
+
     /* ===== FINAL CTA ===== */
     #cta {
       background: linear-gradient(135deg, var(--primary) 0%, #008a7a 50%, #006b60 100%);
@@ -1543,10 +1591,25 @@
       <p class="cta-sub">
         30 dagen gratis proberen. Geen creditcard nodig. Als Spreekdossier jouw rapportages niet sneller en beter maakt — heb je niets te verliezen.
       </p>
-      <a href="#demo" class="btn-cta-white">
-        ✦ Start nu gratis — geen creditcard nodig
-      </a>
-      <p class="cta-note">Maandelijks opzegbaar · AVG-proof · Werkt op iPhone & Android</p>
+      <form class="waitlist-form" id="waitlist-form" onsubmit="submitWaitlist(event)">
+        <input type="text" id="wl-name" placeholder="Jouw naam" required autocomplete="name" />
+        <input type="email" id="wl-email" placeholder="E-mailadres" required autocomplete="email" />
+        <select id="wl-specialisme" required>
+          <option value="" disabled selected>Specialisme</option>
+          <option value="fysiotherapeut">Fysiotherapeut</option>
+          <option value="thuiszorg">Thuiszorgverlener</option>
+          <option value="verpleegkundige">Verpleegkundige</option>
+          <option value="ergotherapeut">Ergotherapeut</option>
+          <option value="logopedist">Logopedist</option>
+          <option value="diëtist">Diëtist</option>
+          <option value="psycholoog">Psycholoog / GGZ</option>
+          <option value="huisarts">Huisarts / POH</option>
+          <option value="anders">Anders</option>
+        </select>
+        <button type="submit" class="waitlist-submit" id="wl-btn">✦ Zet me op de wachtlijst — gratis</button>
+        <div class="waitlist-msg" id="wl-msg"></div>
+      </form>
+      <p class="cta-note" style="margin-top:16px;">Geen creditcard · AVG-proof · Werkt op iPhone & Android</p>
     </div>
   </section>
 
@@ -1694,6 +1757,58 @@
         generateSOEP();
       }
     });
+
+    // ===== WAITLIST FORM =====
+    async function submitWaitlist(e) {
+      e.preventDefault();
+      const name = document.getElementById('wl-name').value.trim();
+      const email = document.getElementById('wl-email').value.trim();
+      const specialisme = document.getElementById('wl-specialisme').value;
+      const btn = document.getElementById('wl-btn');
+      const msg = document.getElementById('wl-msg');
+
+      btn.disabled = true;
+      btn.textContent = 'Even geduld...';
+      msg.textContent = '';
+      msg.className = 'waitlist-msg';
+
+      try {
+        const res = await fetch('https://nrptxncmaoftkekcivkj.supabase.co/rest/v1/waitlist', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': 'sb_publishable_XkMuL4MXCBDwkdI9-CUkfg_RskqDhVa',
+            'Authorization': 'Bearer sb_publishable_XkMuL4MXCBDwkdI9-CUkfg_RskqDhVa',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({ name, email, specialisme })
+        });
+
+        if (res.ok || res.status === 201) {
+          msg.textContent = '🎉 Je staat op de lijst! We laten het je weten bij launch.';
+          msg.className = 'waitlist-msg success';
+          document.getElementById('waitlist-form').reset();
+          btn.textContent = '✓ Ingeschreven!';
+        } else {
+          const err = await res.json().catch(() => ({}));
+          // Handle duplicate email gracefully
+          if (err.code === '23505' || (err.message && err.message.includes('duplicate'))) {
+            msg.textContent = '📧 Je staat al op de lijst — we sturen je een bericht bij launch!';
+            msg.className = 'waitlist-msg success';
+            btn.disabled = false;
+            btn.textContent = '✦ Zet me op de wachtlijst — gratis';
+          } else {
+            throw new Error(err.message || 'Onbekende fout');
+          }
+        }
+      } catch (err) {
+        console.error('Waitlist error:', err);
+        msg.textContent = 'Er ging iets mis. Stuur een mail naar hallo@spreekdossier.nl';
+        msg.className = 'waitlist-msg error';
+        btn.disabled = false;
+        btn.textContent = '✦ Zet me op de wachtlijst — gratis';
+      }
+    }
   </script>
 </body>
 </html>
