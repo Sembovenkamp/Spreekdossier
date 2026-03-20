@@ -658,8 +658,12 @@ function initSpeechRecognition(SpeechRecognition) {
   recognition.continuous = true;
   recognition.interimResults = true;
   recognition.lang = 'nl-NL';
+  recognition.maxAlternatives = 1;
+
+  let restartTimer = null;
 
   recognition.onstart = () => { isRecording = true; setRecordingUI(true); };
+
   recognition.onresult = (event) => {
     let interim = '', finalNew = '';
     for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -667,11 +671,14 @@ function initSpeechRecognition(SpeechRecognition) {
       if (event.results[i].isFinal) finalNew += t + ' ';
       else interim += t;
     }
-    if (finalNew) finalTranscript += finalNew;
+    if (finalNew) {
+      finalTranscript += finalNew;
+      updateGenerateButton();
+    }
     interimTranscript = interim;
     renderTranscript();
-    updateGenerateButton();
   };
+
   recognition.onerror = (event) => {
     if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
       document.getElementById('mic-notice').classList.add('visible');
@@ -681,14 +688,29 @@ function initSpeechRecognition(SpeechRecognition) {
       document.getElementById('fallback-input').addEventListener('input', function() {
         document.getElementById('btn-generate').disabled = this.value.trim().length < 5;
       });
+      isRecording = false;
+      setRecordingUI(false);
+      return;
     }
+    // network/aborted errors: don't stop recording, just restart
+    if (event.error === 'network' || event.error === 'aborted') return;
     isRecording = false;
     setRecordingUI(false);
   };
+
   recognition.onend = () => {
     if (isRecording) {
-      try { recognition.start(); } catch(e) { isRecording = false; setRecordingUI(false); updateGenerateButton(); }
+      // Debounced restart to prevent rapid restart loop
+      clearTimeout(restartTimer);
+      restartTimer = setTimeout(() => {
+        if (isRecording) {
+          try { recognition.start(); }
+          catch(e) { isRecording = false; setRecordingUI(false); updateGenerateButton(); }
+        }
+      }, 200);
     } else {
+      interimTranscript = '';
+      renderTranscript();
       updateGenerateButton();
     }
   };
