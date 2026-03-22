@@ -1798,15 +1798,22 @@ async function generateDocument() {
     const textarea = document.getElementById('patient-msg-text');
     const badge = document.getElementById('patient-msg-badge');
 
+    const dateStr = new Date().toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' });
+    const directFallback = `Hallo! 👋\n\nBedankt voor uw bezoek vandaag (${dateStr}).\n\nHieronder uw instructies voor thuis:\n\n🏋️ *Oefeningen*\nVoer de oefeningen dagelijks uit zoals besproken.\n\n📅 *Volgende afspraak*\nZoals gepland. Wilt u verzetten? Stuur ons een berichtje!\n\n💬 Vragen? Stel ze gerust!\n\nTot de volgende keer! 🙌\n_Uw fysiotherapeut_`;
+
+    if (textarea) textarea.value = directFallback;
+    if (badge) badge.textContent = '⏳ Persoonlijk bericht wordt geladen...';
+
     if (memoForMsg && memoForMsg.length >= 5) {
-      if (textarea) textarea.value = buildFallbackPatientMsg('whatsapp', memoForMsg);
-      if (badge) badge.textContent = '⏳ AI versie wordt geladen...';
       generatePatientMessage(memoForMsg);
-    } else {
-      if (textarea) textarea.value = 'Spreek een memo in voor een automatisch patiëntbericht.';
-      if (badge) badge.textContent = '—';
     }
-  } catch(e) { console.error('Patiëntbericht tonen mislukt:', e); }
+  } catch(e) {
+    console.error('Patiëntbericht tonen mislukt:', e);
+    const textarea = document.getElementById('patient-msg-text');
+    if (textarea && !textarea.value) {
+      textarea.value = 'Er is een fout opgetreden. Klik op "Opnieuw genereren" om het opnieuw te proberen.';
+    }
+  }
 }
 
 // ===== PATIËNTBERICHT =====
