@@ -93,10 +93,14 @@
     .btn-record-label { text-align: center; font-size: 13px; color: var(--text-muted); margin-bottom: 18px; }
 
     .transcript-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
-    .transcript-box { background: var(--bg); border-radius: var(--radius-sm); padding: 16px; min-height: 90px; font-size: 15px; line-height: 1.7; color: var(--text); border: 1.5px solid var(--border); transition: border-color 0.3s; }
+    .transcript-box { background: var(--bg); border-radius: var(--radius-sm); padding: 16px; min-height: 90px; font-size: 15px; line-height: 1.7; color: var(--text); border: 1.5px solid var(--border); transition: border-color 0.3s; outline: none; }
+    .transcript-box[contenteditable="true"] { cursor: text; }
+    .transcript-box[contenteditable="true"]:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,168,150,0.1); }
     .transcript-box.active { border-color: var(--red); }
-    .transcript-placeholder { color: var(--text-light); font-style: italic; }
+    .transcript-placeholder { color: var(--text-light); font-style: italic; user-select: none; pointer-events: none; }
     .transcript-interim { color: var(--text-light); }
+    .transcript-edit-hint { font-size: 11px; color: var(--primary); margin-top: 6px; display: none; }
+    .transcript-edit-hint.visible { display: block; }
 
     .rec-controls { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; }
     .btn-example { display: inline-flex; align-items: center; gap: 6px; background: var(--bg); color: var(--text-muted); font-size: 13px; font-weight: 500; padding: 9px 16px; border-radius: 100px; border: 1.5px solid var(--border); cursor: pointer; transition: all 0.2s; font-family: inherit; }
@@ -311,10 +315,11 @@
       <button class="btn-record" id="btn-record" onclick="toggleRecording()" title="Start opname">🎙️</button>
     </div>
     <div class="btn-record-label" id="record-hint">Druk op de microfoon en vertel wat er is besproken of gedaan</div>
-    <div class="transcript-label">Transcriptie (live):</div>
-    <div class="transcript-box" id="transcript-box">
+    <div class="transcript-label" id="transcript-label">Transcriptie (live):</div>
+    <div class="transcript-box" id="transcript-box" contenteditable="false" spellcheck="true" oninput="onTranscriptEdit()">
       <span class="transcript-placeholder" id="transcript-placeholder">Je gesproken tekst verschijnt hier terwijl je praat...</span>
     </div>
+    <div class="transcript-edit-hint" id="transcript-edit-hint">✏️ Klik in de tekst om aanpassingen te maken</div>
     <div class="mic-notice" id="mic-notice">⚠️ Microfoon niet beschikbaar. Gebruik het tekstveld hieronder om je memo in te typen.</div>
     <div class="rec-controls">
       <button class="btn-example" onclick="fillExample()" id="btn-example">💡 Vul voorbeeld in</button>
@@ -844,6 +849,13 @@ function toggleRecording() {
 function startRecording() {
   finalTranscript = '';
   interimTranscript = '';
+  // Zet vak terug op read-only tijdens opname
+  const box = document.getElementById('transcript-box');
+  if (box) box.contentEditable = 'false';
+  const hint = document.getElementById('transcript-edit-hint');
+  if (hint) hint.classList.remove('visible');
+  const label = document.getElementById('transcript-label');
+  if (label) label.textContent = 'Transcriptie (live):';
   renderTranscript();
   document.getElementById('btn-clear').style.display = 'none';
   document.getElementById('btn-generate').disabled = true;
@@ -897,14 +909,35 @@ function setRecordingUI(active) {
 
 function renderTranscript() {
   const box = document.getElementById('transcript-box');
+  const hint = document.getElementById('transcript-edit-hint');
+  const label = document.getElementById('transcript-label');
   if (!finalTranscript && !interimTranscript) {
+    box.contentEditable = 'false';
     box.innerHTML = '<span class="transcript-placeholder">Je gesproken tekst verschijnt hier terwijl je praat...</span>';
+    if (hint) hint.classList.remove('visible');
     return;
   }
   let html = '';
   if (finalTranscript) html += `<span>${escapeHtml(finalTranscript)}</span>`;
   if (interimTranscript) html += `<span class="transcript-interim"> ${escapeHtml(interimTranscript)}</span>`;
   box.innerHTML = html;
+
+  // Maak bewerkbaar zodra opname gestopt en er finale tekst is
+  if (finalTranscript && !isRecording) {
+    box.contentEditable = 'true';
+    if (hint) hint.classList.add('visible');
+    if (label) label.textContent = 'Transcriptie (aanpasbaar):';
+  } else {
+    box.contentEditable = 'false';
+    if (hint) hint.classList.remove('visible');
+  }
+}
+
+// Wordt aangeroepen bij handmatige bewerkingen in het tekstvak
+function onTranscriptEdit() {
+  const box = document.getElementById('transcript-box');
+  finalTranscript = box.innerText || box.textContent || '';
+  updateGenerateButton();
 }
 
 function escapeHtml(str) {
@@ -925,7 +958,14 @@ function updateGenerateButton() {
 }
 
 function getMemoText() {
-  if (speechAPIAvailable) return finalTranscript.trim();
+  if (speechAPIAvailable) {
+    // Lees uit het bewerkbare tekstvak — bevat eventuele handmatige aanpassingen
+    const box = document.getElementById('transcript-box');
+    const boxText = box && box.contentEditable === 'true'
+      ? (box.innerText || box.textContent || '').trim()
+      : '';
+    return boxText || finalTranscript.trim();
+  }
   return document.getElementById('fallback-input').value.trim();
 }
 
