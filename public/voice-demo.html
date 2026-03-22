@@ -579,9 +579,11 @@
 
 
 
-    <!-- PATIËNTBERICHT SECTIE (binnen output-container) -->
-    <div class="step-badge" id="step-badge-4" style="display:none; margin: 20px 0 6px;"><span class="step-num">4</span> Stuur patiëntbericht</div>
-    <div class="patient-msg-block" id="patient-msg-block">
+  </div><!-- /output-container -->
+
+  <!-- PATIËNTBERICHT SECTIE -->
+  <div class="step-badge" id="step-badge-4" style="display:none; margin: 20px 0 6px;"><span class="step-num">4</span> Stuur patiëntbericht</div>
+  <div id="patient-msg-block" style="display:none; background: linear-gradient(135deg, rgba(0,201,181,0.06), rgba(255,140,97,0.04)); border: 1.5px solid rgba(0,201,181,0.25); border-radius: 16px; padding: 22px; margin-top: 20px;">
     <div class="patient-msg-header">
       <div>
         <div class="patient-msg-title">📱 Patiëntbericht</div>
@@ -624,8 +626,6 @@
       </div>
     </div>
   </div>
-
-  </div><!-- /output-container -->
 
 </main>
 
@@ -1754,9 +1754,8 @@ async function generateDocument() {
     const badge = document.getElementById('patient-msg-badge');
     const stepBadge4 = document.getElementById('step-badge-4');
 
-    block.classList.add('visible');
     block.style.display = 'block';
-    if (stepBadge4) { stepBadge4.style.cssText = 'display: inline-flex; margin: 20px 0 6px;'; }
+    if (stepBadge4) { stepBadge4.style.display = 'block'; }
 
     if (memoForMsg && memoForMsg.length >= 5) {
       const fallbackWa = buildFallbackPatientMsg('whatsapp', memoForMsg);
@@ -1822,7 +1821,7 @@ async function generatePatientMessage(memoInput) {
   const textarea = document.getElementById('patient-msg-text');
   const badge = document.getElementById('patient-msg-badge');
 
-  block.classList.add('visible');
+  block.style.display = 'block';
   badge.textContent = '⏳ AI versie laden...';
 
   // Zorg altijd voor fallback inhoud
@@ -2347,7 +2346,7 @@ function resetToStart() {
   if (firstEpdBtn) firstEpdBtn.classList.add('active');
 
   // Reset patiëntbericht
-  document.getElementById('patient-msg-block').classList.remove('visible');
+  document.getElementById('patient-msg-block').style.display = 'none';
   const stepBadge4Reset = document.getElementById('step-badge-4');
   if (stepBadge4Reset) stepBadge4Reset.style.display = 'none';
   document.getElementById('patient-msg-text').value = '';
