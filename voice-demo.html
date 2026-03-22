@@ -966,13 +966,14 @@ function renderTranscript() {
     box.contentEditable = 'true';
     if (hint) hint.classList.add('visible');
     if (label) label.textContent = 'Transcriptie (aanpasbaar):';
-    // Toon "Voeg memo toe" knop
-    const addBtn = document.getElementById('btn-add-memo');
-    if (addBtn) addBtn.style.display = 'flex';
   } else {
     box.contentEditable = 'false';
     if (hint) hint.classList.remove('visible');
   }
+
+  // "Memo toevoegen" knop: altijd tonen zodra er tekst is, ook zonder edits
+  const addBtn = document.getElementById('btn-add-memo');
+  if (addBtn) addBtn.style.display = (finalTranscript && !isRecording) ? 'flex' : 'none';
 }
 
 // Wordt aangeroepen bij handmatige bewerkingen in het tekstvak
