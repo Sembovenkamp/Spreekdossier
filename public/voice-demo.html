@@ -1730,7 +1730,7 @@ async function generateDocument() {
   document.getElementById('btn-generate').disabled = false;
   try { renderGemist(); } catch(e) { console.warn('renderGemist fout:', e); }
   try { renderActiepunten(); } catch(e) { console.warn('renderActiepunten fout:', e); }
-  try { renderVergeetNiet(); } catch(e) { console.warn('renderVergeetNiet fout:', e); }
+
   const genSec = ((Date.now() - genStartTime) / 1000).toFixed(1);
   document.getElementById('output-badge').textContent = `✓ Gegenereerd · ${genSec}s`;
 
@@ -2150,70 +2150,6 @@ function renderOutput(tpl) {
   });
 }
 
-// ===== VERGEET NIET =====
-// Toont alleen velden die ontbreken in de gegenereerde output
-function renderVergeetNiet() {
-  const block = document.getElementById('vergeet-niet');
-  const list = document.getElementById('vergeet-niet-list');
-  if (!block || !list) return;
-
-  const output = (document.getElementById('output-blocks')?.textContent || '').toLowerCase();
-
-  // Per template: { label, keywords[] } — toon alleen als GEEN keyword gevonden in output
-  const checks = {
-    intake: [
-      { label: 'ICD-10 diagnose code ontbreekt', kw: ['icd', 'diagnose code', 'icd-10'] },
-      { label: 'Verwijzer niet vermeld', kw: ['verwijzer', 'huisarts', 'specialist', 'verwijzing'] },
-      { label: 'Behandeldoel niet geformuleerd', kw: ['behandeldoel', 'doelstelling', 'doel'] },
-    ],
-    soep: [
-      { label: 'NRS pijnscore niet vermeld', kw: ['nrs', '/10', 'pijnscore'] },
-      { label: 'Objectieve meting ontbreekt', kw: ['rom', 'graden', '°', 'meting', 'kracht', 'cm'] },
-      { label: 'Thuisoefening niet genoteerd', kw: ['thuisoefening', 'oefening', 'huiswerk'] },
-    ],
-    behandelplan: [
-      { label: 'Behandelfrequentie niet vermeld', kw: ['per week', 'frequentie', 'x per'] },
-      { label: 'Prognose ontbreekt', kw: ['prognose', 'verwacht', 'herstel'] },
-      { label: 'SMART-doelen niet geformuleerd', kw: ['smart', 'specifiek', 'meetbaar'] },
-    ],
-    evaluatie: [
-      { label: 'Vergelijking met beginmeting ontbreekt', kw: ['beginmeting', 'intake', 'begin', 't0'] },
-      { label: 'Bijstelling behandelplan niet vermeld', kw: ['bijstell', 'aanpass', 'wijzig'] },
-    ],
-    afsluiting: [
-      { label: 'Terugkoppeling naar verwijzer niet vermeld', kw: ['terugkoppel', 'verwijzer', 'brief'] },
-      { label: 'Ontslagadvies ontbreekt', kw: ['ontslagadvies', 'advies', 'na afsluiting'] },
-    ],
-    administratie: [
-      { label: 'AGB-code ontbreekt', kw: ['agb', 'agb-code'] },
-      { label: 'Prestatiecode niet vermeld', kw: ['prestatiecode', 'nza', '1100'] },
-    ],
-  };
-
-  const items = (checks[currentTemplate] || []).filter(c =>
-    !c.kw.some(kw => output.includes(kw))
-  );
-
-  if (items.length === 0) {
-    list.innerHTML = `<div class="vergeet-niet-item" style="color:#166534; font-weight:600;">✅ Documentatie ziet er compleet uit — goed gedaan!</div>`;
-    block.style.background = 'linear-gradient(135deg,rgba(0,201,181,0.06),rgba(0,201,181,0.02))';
-    block.style.borderLeft = '3px solid #00c9b5';
-    document.getElementById('vergeet-niet-title').style.color = '#00c9b5';
-  } else {
-    list.innerHTML = items.map((item, i) => `
-      <div class="vergeet-niet-item">
-        <input type="checkbox" id="vn-${i}" />
-        <label for="vn-${i}">Mogelijk nog toe te voegen: ${item.label.replace(' ontbreekt','').replace(' niet vermeld','').replace(' niet geformuleerd','').replace(' niet genoteerd','')}</label>
-      </div>
-    `).join('');
-    block.style.background = '';
-    block.style.borderLeft = '';
-    document.getElementById('vergeet-niet-title').style.color = '';
-  }
-
-  block.classList.add('visible');
-}
-
 // ===== MOGELIJK GEMIST =====
 function renderGemist() {
   const checklist = CHECKLISTS[currentTemplate] || [];
@@ -2241,16 +2177,26 @@ function renderGemist() {
     return !keywords[key].some(kw => output.includes(kw));
   });
 
+  gemistBlock.classList.add('visible');
+
   if (missing.length === 0) {
-    gemistBlock.classList.remove('visible');
+    gemistBlock.style.background = 'linear-gradient(135deg,rgba(0,201,181,0.06),rgba(0,201,181,0.02))';
+    gemistBlock.style.borderColor = 'rgba(0,201,181,0.3)';
+    const title = gemistBlock.querySelector('.gemist-title');
+    if (title) { title.style.color = '#00c9b5'; title.textContent = '✅ Documentatie ziet er compleet uit'; }
+    gemistList.innerHTML = '';
     return;
   }
 
-  gemistBlock.classList.add('visible');
+  gemistBlock.style.background = '';
+  gemistBlock.style.borderColor = '';
+  const title = gemistBlock.querySelector('.gemist-title');
+  if (title) { title.style.color = ''; title.textContent = '📋 Mogelijk nog toe te voegen'; }
+
   gemistList.innerHTML = missing.map((q, i) => `
     <div class="gemist-item" id="gemist-${i}">
-      <span class="gemist-q">❓ ${q}</span>
-      <button class="gemist-dismiss" onclick="dismissGemist(${i})">✓ Besproken</button>
+      <span class="gemist-q">💡 ${q}</span>
+      <button class="gemist-dismiss" onclick="dismissGemist(${i})">✓ Verwerkt</button>
     </div>
   `).join('');
 }
