@@ -239,6 +239,9 @@
     footer a { color: var(--primary); text-decoration: none; font-weight: 600; font-size: 14px; }
     footer p { font-size: 13px; color: var(--text-light); margin-top: 6px; }
 
+    @media (max-width: 640px) {
+      .btn-record { width: 80px; height: 80px; min-height: 56px; touch-action: manipulation; }
+    }
     @media (max-width: 480px) {
       main { padding: 16px 14px 60px; }
       .recording-section { padding: 18px 14px; }
@@ -252,6 +255,7 @@
       .btn-copy-patient, #btn-whatsapp-share, .btn-regen-patient { font-size: 12px; padding: 10px 14px; }
       .output-block-title { font-size: 13px; }
       .output-block-content { font-size: 13px; }
+      .btn-record { min-height: 56px; touch-action: manipulation; }
     }
 
     /* PATIËNTBERICHT */
@@ -363,11 +367,18 @@
 
     /* PRINT STYLES — verwijsbrief + output */
     @media print {
+      /* Verberg alles behalve print-frame */
       body > *:not(#print-frame) { display: none !important; }
       #print-frame { display: block !important; position: fixed; inset: 0; background: white; z-index: 9999; padding: 48px 64px; font-family: Arial, sans-serif; font-size: 12pt; color: #000; line-height: 1.7; }
+      #print-frame .print-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #00a896; padding-bottom: 14px; margin-bottom: 24px; }
+      #print-frame .print-header-title { font-size: 22pt; font-weight: 900; color: #00a896; }
+      #print-frame .print-header-meta { font-size: 10pt; color: #666; text-align: right; }
       #print-frame h2 { font-size: 16pt; margin-bottom: 8px; }
-      #print-frame h3 { font-size: 12pt; font-weight: bold; }
-      #print-frame .print-body { white-space: pre-wrap; }
+      #print-frame h3 { font-size: 12pt; font-weight: bold; border-bottom: 1px solid #ddd; padding-bottom: 4px; margin: 18px 0 6px; page-break-after: avoid; }
+      #print-frame .print-section { page-break-inside: avoid; margin-bottom: 20px; }
+      #print-frame .print-body { white-space: pre-wrap; font-size: 11pt; line-height: 1.7; margin: 0; }
+      #print-frame .print-footer { border-top: 1px solid #ccc; margin-top: 40px; padding-top: 12px; font-size: 9pt; color: #999; text-align: center; }
+      @page { margin: 20mm; }
     }
     #print-frame { display: none; }
     .modal-loading { text-align: center; padding: 24px; color: var(--text-muted); font-size: 14px; }
@@ -499,8 +510,11 @@
       <div class="audiometer-bar" id="ab9"></div>
     </div>
     <div class="rec-timer" id="rec-timer">00:00</div>
+    <div style="text-align:center;margin-bottom:10px;">
+      <a href="privacy.html" style="display:inline-flex;align-items:center;gap:6px;background:rgba(0,201,181,0.08);border:1px solid rgba(0,201,181,0.2);border-radius:100px;padding:5px 14px;font-size:12px;font-weight:600;color:var(--primary);text-decoration:none;">🔒 AVG-proof · Geen opslag</a>
+    </div>
     <div class="record-btn-container">
-      <button class="btn-record" id="btn-record" onclick="toggleRecording()" title="Start opname">🎙️</button>
+      <button class="btn-record" id="btn-record" onclick="toggleRecording()" title="Start opname" style="touch-action:manipulation;min-height:90px;">🎙️</button>
     </div>
     <div class="btn-record-label" id="record-hint">Druk op de microfoon en vertel wat er is besproken of gedaan</div>
     <div class="processing-indicator" id="processing-indicator">
@@ -514,7 +528,7 @@
     <div class="transcript-box" id="transcript-box" contenteditable="true" spellcheck="true" oninput="onTranscriptEdit()" data-placeholder="Spreek in via de microfoon, of typ hier direct je memo..."></div>
     <div class="mic-notice" id="mic-notice">⚠️ Microfoon niet beschikbaar. Gebruik het tekstveld hieronder om je memo in te typen.</div>
     <div class="rec-controls">
-      <button class="btn-example" onclick="fillExample()" id="btn-example">💡 Vul voorbeeld in</button>
+      <button class="btn-example" onclick="fillDemoMemo()" id="btn-example">💡 Probeer demo</button>
       <button class="btn-clear" id="btn-clear" onclick="clearTranscript()">🗑️ Wis</button>
     </div>
     <!-- VOEG MEMO TOE knop — verschijnt na een opname -->
@@ -593,6 +607,7 @@
     <div class="output-actions">
       <button class="btn-copy-all" id="btn-copy-all" onclick="copyAll()">📋 Kopieer complete documentatie</button>
       <button class="btn-verwijsbrief" id="btn-verwijsbrief" onclick="openVerwijsbrief()">📄 Verwijsbrief</button>
+      <button class="btn-new" onclick="downloadPDF()" title="Opslaan als PDF">📄 Download PDF</button>
       <button class="btn-new" onclick="printOutput()" title="Afdrukken / opslaan als PDF">🖨️ Print</button>
       <button class="btn-new" onclick="resetToStart()">🔄 Opnieuw beginnen</button>
       <button class="btn-new" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="padding:14px 16px;" title="Naar boven">↑</button>
@@ -695,10 +710,11 @@
   </div>
 </div>
 
-<footer>
-  <a href="index.html">← Terug naar Spreekdossier.nl</a>
-  <p>Werkt op iPhone, Android & desktop · Geen account nodig · AVG-proof</p>
-  <p>© 2026 Spreekdossier · Van intake tot afsluiting</p>
+<footer style="text-align:center;padding:32px 16px;color:var(--text-muted);font-size:12px;border-top:1px solid var(--border);margin-top:48px;">
+  <a href="/" style="color:var(--primary);text-decoration:none;">Spreekdossier.nl</a> ·
+  <a href="/privacy.html" style="color:var(--text-muted);text-decoration:none;">Privacy &amp; AVG</a> ·
+  <a href="/waitlist.html" style="color:var(--text-muted);text-decoration:none;">Vroege toegang</a> ·
+  © 2026 Spreekdossier
 </footer>
 
 <script>
@@ -2400,6 +2416,35 @@ function retryTranscription() {
   finalTranscript = '';
 }
 
+// ===== PDF DOWNLOAD =====
+function downloadPDF() {
+  const tpl = TEMPLATES[currentTemplate];
+  const now = new Date().toLocaleDateString('nl-NL', { day: '2-digit', month: 'long', year: 'numeric' });
+
+  var content = '';
+  content += '<div class="print-header">';
+  content += '<div class="print-header-title">Spreekdossier</div>';
+  content += '<div class="print-header-meta"><strong>' + tpl.icon + ' ' + tpl.name + '</strong><br>Datum: ' + now + '<br>spreekdossier.nl</div>';
+  content += '</div>';
+
+  tpl.sections.forEach(function(section) {
+    var rawText = document.getElementById('output-' + section.key) ? document.getElementById('output-' + section.key).textContent : '';
+    content += '<div class="print-section">';
+    content += '<h3>' + section.label + '</h3>';
+    content += '<p class="print-body">' + rawText + '</p>';
+    content += '</div>';
+  });
+
+  content += '<div class="print-footer">Gegenereerd door Spreekdossier.nl &nbsp;&middot;&nbsp; Niet opgeslagen &nbsp;&middot;&nbsp; AVG-proof</div>';
+
+  var printFrame = document.getElementById('print-frame');
+  if (printFrame) printFrame.innerHTML = content;
+  var oldTitle = document.title;
+  document.title = 'Spreekdossier - ' + tpl.name + ' - ' + now;
+  window.print();
+  document.title = oldTitle;
+}
+
 // ===== PRINT OUTPUT =====
 function printOutput() {
   const tpl = TEMPLATES[currentTemplate];
@@ -2477,6 +2522,34 @@ function resetToStart() {
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+// ===== DEMO MEMO INVULLEN =====
+function fillDemoMemo() {
+  var demoText = 'Patiënt de Vries, 52 jaar. Rugklachten laag, uitstraling naar linkerbeen. NRS 7/10. Vandaag McKenzie behandeling gegeven, mobilisatie L4-L5. Patiënt ervaart verlichting. Thuisoefeningen: extensie in buiklig 3x10 per dag. Volgende afspraak woensdag 10:00.';
+  var box = document.getElementById('transcript-box');
+  if (box) {
+    box.textContent = demoText;
+    finalTranscript = demoText;
+    onTranscriptEdit();
+    document.getElementById('btn-clear').style.display = 'inline-flex';
+    document.getElementById('btn-generate').disabled = false;
+    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+// ===== KOPIEER ALLES (alias) =====
+function copyAllSections() {
+  copyAll();
+}
+
+// ===== SPATIEBALK SHORTCUT =====
+document.addEventListener('keydown', function(e) {
+  if (e.code === 'Space' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+    e.preventDefault();
+    var btn = document.getElementById('btn-record');
+    if (btn && !btn.disabled) { btn.click(); }
+  }
+});
 </script>
 </body>
 </html>

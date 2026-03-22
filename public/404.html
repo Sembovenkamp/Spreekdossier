@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pagina niet gevonden — Spreekdossier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #00C9B5;
+      --bg: #090912;
+      --bg-card: #0f0f1a;
+      --text: #f0f0ff;
+      --text-muted: #8888aa;
+      --border: rgba(255,255,255,0.07);
+    }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center; }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); font-weight: 700; font-size: 18px; margin-bottom: 48px; }
+    .logo-mark { width: 36px; height: 36px; background: linear-gradient(135deg, var(--primary), #FF8C61); border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 16px rgba(0,201,181,0.4); }
+    .error-num { font-size: clamp(80px, 20vw, 160px); font-weight: 900; line-height: 1; letter-spacing: -0.04em; background: linear-gradient(135deg, var(--primary), rgba(0,201,181,0.3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+    h1 { font-size: clamp(22px, 5vw, 34px); font-weight: 800; margin-bottom: 12px; }
+    p { font-size: 16px; color: var(--text-muted); max-width: 400px; margin-bottom: 32px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; background: var(--primary); color: #090912; font-size: 15px; font-weight: 700; padding: 14px 28px; border-radius: 100px; text-decoration: none; transition: all 0.2s; }
+    .btn:hover { background: #00e5cf; transform: translateY(-1px); }
+  </style>
+</head>
+<body>
+  <a href="/" class="logo">
+    <div class="logo-mark">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+    </div>
+    Spreekdossier
+  </a>
+  <div class="error-num">404</div>
+  <h1>Pagina niet gevonden</h1>
+  <p>De pagina die u zoekt bestaat niet of is verplaatst.</p>
+  <a href="/" class="btn">← Terug naar homepage</a>
+</body>
+</html>

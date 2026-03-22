@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /belscript.html
+Disallow: /demo-instructie.html
+
+Sitemap: https://spreekdossier.nl/sitemap.xml

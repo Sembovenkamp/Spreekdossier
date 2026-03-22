@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Belscript — Validatiegesprekken · Spreekdossier</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #00C9B5;
+      --bg: #090912;
+      --bg-card: #0f0f1a;
+      --text: #f0f0ff;
+      --text-muted: #8888aa;
+      --border: rgba(255,255,255,0.07);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
+
+    /* INTERN BADGE */
+    .intern-banner { background: rgba(245,158,11,0.15); border-bottom: 2px solid rgba(245,158,11,0.4); padding: 10px 24px; text-align: center; font-size: 13px; font-weight: 700; color: #fbbf24; letter-spacing: 0.05em; }
+
+    nav { position: sticky; top: 0; z-index: 100; background: rgba(9,9,18,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); font-weight: 700; font-size: 18px; }
+    .nav-logo-mark { width: 32px; height: 32px; background: linear-gradient(135deg, var(--primary), #FF8C61); border-radius: 9px; display: flex; align-items: center; justify-content: center; }
+    .nav-back { color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 500; padding: 8px 16px; border-radius: 100px; border: 1px solid var(--border); transition: all 0.2s; }
+    .nav-back:hover { color: var(--primary); border-color: var(--primary); }
+
+    .page { max-width: 800px; margin: 0 auto; padding: 48px 24px 100px; }
+    .page-header { margin-bottom: 40px; }
+    .page-tag { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #fbbf24; margin-bottom: 10px; }
+    .page-header h1 { font-size: clamp(26px, 5vw, 40px); font-weight: 900; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 12px; }
+    .page-header p { font-size: 16px; color: var(--text-muted); line-height: 1.7; }
+
+    /* OPENING */
+    .opening-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 36px; }
+    .opening-box h3 { font-size: 14px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 12px; }
+    .opening-text { font-size: 15px; color: var(--text); line-height: 1.8; background: rgba(255,255,255,0.03); border-radius: 10px; padding: 16px; border-left: 3px solid var(--primary); }
+
+    /* QUESTIONS */
+    .questions { display: flex; flex-direction: column; gap: 24px; margin-bottom: 36px; }
+    .question-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .q-header { display: flex; align-items: center; gap: 14px; padding: 18px 20px; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border); }
+    .q-num { width: 34px; height: 34px; border-radius: 50%; background: var(--primary); color: #090912; font-size: 15px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .q-text { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.4; font-style: italic; }
+    .q-body { padding: 16px 20px; }
+    .q-tip-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 8px; }
+    .q-tips { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .q-tips li { font-size: 14px; color: var(--text-muted); display: flex; align-items: flex-start; gap: 8px; line-height: 1.5; }
+    .q-tips li::before { content: '→'; color: var(--primary); font-weight: 700; flex-shrink: 0; }
+
+    /* OBJECTION HANDLING */
+    .section-title { font-size: 18px; font-weight: 800; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .objections { display: flex; flex-direction: column; gap: 12px; margin-bottom: 36px; }
+    .objection { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+    .obj-q { font-size: 14px; color: #fbbf24; font-weight: 600; margin-bottom: 6px; }
+    .obj-a { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+    .obj-a strong { color: var(--text); }
+
+    /* SCORINGSFORMULIER */
+    .score-card { background: var(--bg-card); border: 1px solid rgba(0,201,181,0.2); border-radius: 16px; padding: 28px; }
+    .score-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+    @media (max-width: 560px) { .score-grid { grid-template-columns: 1fr; } }
+    .score-field { display: flex; flex-direction: column; gap: 6px; }
+    .score-field label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .score-field input { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; color: var(--text); font-size: 14px; font-family: inherit; outline: none; transition: border-color 0.2s; }
+    .score-field input:focus { border-color: var(--primary); }
+    .score-field textarea { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; color: var(--text); font-size: 14px; font-family: inherit; outline: none; resize: vertical; min-height: 80px; transition: border-color 0.2s; }
+    .score-field textarea:focus { border-color: var(--primary); }
+    .checkboxes { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .checkbox-item { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text-muted); }
+    .checkbox-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; flex-shrink: 0; }
+    .checkbox-item label { cursor: pointer; }
+    .scores-row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
+    .score-input-group { display: flex; flex-direction: column; gap: 6px; min-width: 100px; }
+    .score-input-group label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .score-input-group input[type="number"] { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; color: var(--text); font-size: 18px; font-weight: 700; text-align: center; font-family: inherit; outline: none; width: 80px; transition: border-color 0.2s; }
+    .score-input-group input:focus { border-color: var(--primary); }
+    .vervolgactie { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+    .vervolgactie label { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-muted); cursor: pointer; background: rgba(255,255,255,0.03); padding: 8px 14px; border-radius: 100px; border: 1px solid var(--border); transition: all 0.2s; }
+    .vervolgactie label:hover { border-color: var(--primary); color: var(--text); }
+    .vervolgactie input[type="radio"] { accent-color: var(--primary); }
+    .section-sub { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 10px; }
+
+    .btn-print { display: inline-flex; align-items: center; gap: 8px; background: var(--primary); color: #090912; font-size: 14px; font-weight: 700; padding: 12px 24px; border-radius: 100px; border: none; cursor: pointer; font-family: inherit; transition: all 0.2s; margin-top: 20px; }
+    .btn-print:hover { background: #00e5cf; }
+
+    @media print {
+      .intern-banner, nav, .btn-print { display: none !important; }
+      body { background: white; color: #000; }
+      .score-card { border: 1px solid #ccc; }
+      .score-field input, .score-field textarea, .score-input-group input { background: white; border: 1px solid #ccc; color: #000; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="intern-banner">⚠️ INTERN DOCUMENT — Niet voor externe distributie</div>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <div class="nav-logo-mark">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+    </div>
+    Spreekdossier
+  </a>
+  <a href="/" class="nav-back">← Home</a>
+</nav>
+
+<div class="page">
+  <div class="page-header">
+    <div class="page-tag">Intern · Nyenrode Validatie</div>
+    <h1>Belscript — Validatiegesprekken Fysiotherapeuten</h1>
+    <p>Doel van het gesprek: <strong>validatie</strong>, niet verkopen. Luisteren naar pijnpunten, urgentie meten, en achterhalen of het probleem groot genoeg is om voor te betalen. Geen pitches, geen druk.</p>
+  </div>
+
+  <div class="opening-box">
+    <h3>Opening</h3>
+    <div class="opening-text">
+      "Hallo, mijn naam is Sem van de Bovenkamp, ik studeer aan Nyenrode en bouw een tool voor fysiotherapeuten. Heeft u 5 minuten voor een paar vragen? Het gaat over administratie — ik ben benieuwd hoe u dat nu ervaart. Er is niets te kopen."
+    </div>
+  </div>
+
+  <div class="questions">
+    <div class="question-card">
+      <div class="q-header">
+        <div class="q-num">1</div>
+        <div class="q-text">"Hoeveel tijd besteedt u gemiddeld per dag aan administratie na uw behandelingen?"</div>
+      </div>
+      <div class="q-body">
+        <div class="q-tip-label">Luister op:</div>
+        <ul class="q-tips">
+          <li>Antwoorden boven 45 min/dag zijn een sterk signaal</li>
+          <li>Let op toon — frustratie of berusting?</li>
+          <li>Vraag door: "En na een lange dag, hoe voelt dat?"</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="question-card">
+      <div class="q-header">
+        <div class="q-num">2</div>
+        <div class="q-text">"Wat is voor u het meest tijdrovende onderdeel van uw documentatie?"</div>
+      </div>
+      <div class="q-body">
+        <div class="q-tip-label">Luister op:</div>
+        <ul class="q-tips">
+          <li>SOEP-notities, patiëntberichten, verwijsbrieven — dit zijn onze sterkste features</li>
+          <li>"Typen terwijl de patiënt weg is" = perfect fit</li>
+          <li>Let op: noemen ze EPD-problemen? Dan kan integratie relevant zijn.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="question-card">
+      <div class="q-header">
+        <div class="q-num">3</div>
+        <div class="q-text">"Heeft u wel eens AI-tools geprobeerd voor uw administratie? Zo ja, welke?"</div>
+      </div>
+      <div class="q-body">
+        <div class="q-tip-label">Luister op:</div>
+        <ul class="q-tips">
+          <li>ChatGPT → "Wat miste u daarin? Te generiek?"</li>
+          <li>Specifieke fysio-tools → noteer namen, dit zijn concurrenten</li>
+          <li>Nog niets geprobeerd → kans om als eerste in te spelen</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="question-card">
+      <div class="q-header">
+        <div class="q-num">4</div>
+        <div class="q-text">"Wat zou een tool moeten kunnen om uw documentatie significant te versnellen?"</div>
+      </div>
+      <div class="q-body">
+        <div class="q-tip-label">Luister op:</div>
+        <ul class="q-tips">
+          <li>Noem geen features — laat hen praten</li>
+          <li>Dit zijn gratis product-ideeën</li>
+          <li>Vraag door: "En wat zou u daarvoor overhebben qua tijd en geld?"</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="question-card">
+      <div class="q-header">
+        <div class="q-num">5</div>
+        <div class="q-text">"Als zo'n tool €X per maand kostte en u 45 minuten per dag bespaart — zou dat interessant zijn?"</div>
+      </div>
+      <div class="q-body">
+        <div class="q-tip-label">Luister op:</div>
+        <ul class="q-tips">
+          <li>Ja zonder nadenken = sterke WTP</li>
+          <li>Vraag altijd: "Wat zou een redelijke prijs zijn voor u?"</li>
+          <li>45 min/dag × 5 dagen = 3,75 uur/week besparing — gebruik dit in gesprek</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">⚡ Objection Handling</div>
+  <div class="objections">
+    <div class="objection">
+      <div class="obj-q">❌ "Ik heb geen tijd nu"</div>
+      <div class="obj-a"><strong>→</strong> "Geen probleem! Mag ik u dan een e-mail sturen met de demo link? 30 seconden proberen, geen account nodig."</div>
+    </div>
+    <div class="objection">
+      <div class="obj-q">🔒 "Privacy / AVG"</div>
+      <div class="obj-a"><strong>→</strong> "Begrijpelijk — en terecht. Spreekdossier slaat geen patiëntdata op. U spreekt in, de AI verwerkt direct, klaar. Er blijft niets bewaard op onze servers."</div>
+    </div>
+    <div class="objection">
+      <div class="obj-q">🔄 "Ik gebruik al iets"</div>
+      <div class="obj-a"><strong>→</strong> "Interessant, wat gebruik je? Doet het ook patiëntberichten en verwijsbrieven? Spreekdossier is gebouwd voor de volledige dossiervoering — van intake tot afsluiting."</div>
+    </div>
+    <div class="objection">
+      <div class="obj-q">💰 "Te duur"</div>
+      <div class="obj-a"><strong>→</strong> "Wat betaalt u nu voor uw EPD? En hoeveel tijd verliest u per dag aan notities? Op uurtarief van een fysiotherapeut verdient het zichzelf terug in de eerste week."</div>
+    </div>
+    <div class="objection">
+      <div class="obj-q">🤔 "Ik twijfel"</div>
+      <div class="obj-a"><strong>→</strong> "Kan ik u een gratis demo sturen? 30 seconden proberen zegt meer dan alles wat ik kan vertellen. Geen account, geen creditcard."</div>
+    </div>
+  </div>
+
+  <div class="section-title">📋 Scoringsformulier</div>
+  <div class="score-card" id="score-form">
+    <div class="score-grid">
+      <div class="score-field">
+        <label>Naam praktijk</label>
+        <input type="text" placeholder="Fysiotherapie ..." />
+      </div>
+      <div class="score-field">
+        <label>Telefoon</label>
+        <input type="tel" placeholder="06-..." />
+      </div>
+      <div class="score-field">
+        <label>E-mail</label>
+        <input type="email" placeholder="..." />
+      </div>
+      <div class="score-field">
+        <label>Datum gesprek</label>
+        <input type="date" />
+      </div>
+    </div>
+
+    <div class="section-sub">Checkboxen</div>
+    <div class="checkboxes">
+      <div class="checkbox-item"><input type="checkbox" id="c1"><label for="c1">Ervaart tijdprobleem met administratie</label></div>
+      <div class="checkbox-item"><input type="checkbox" id="c2"><label for="c2">Kent of gebruikt Fysio AI-tools</label></div>
+      <div class="checkbox-item"><input type="checkbox" id="c3"><label for="c3">Wil demo zien</label></div>
+      <div class="checkbox-item"><input type="checkbox" id="c4"><label for="c4">Bereid te betalen</label></div>
+      <div class="checkbox-item"><input type="checkbox" id="c5"><label for="c5">Goede fit voor Spreekdossier</label></div>
+    </div>
+
+    <div class="section-sub">Score 1–5</div>
+    <div class="scores-row">
+      <div class="score-input-group">
+        <label>Urgentie</label>
+        <input type="number" min="1" max="5" placeholder="–" />
+      </div>
+      <div class="score-input-group">
+        <label>WTP</label>
+        <input type="number" min="1" max="5" placeholder="–" />
+      </div>
+      <div class="score-input-group">
+        <label>Fit</label>
+        <input type="number" min="1" max="5" placeholder="–" />
+      </div>
+    </div>
+
+    <div class="score-field" style="margin-bottom:20px;">
+      <label>Notities</label>
+      <textarea placeholder="Belangrijkste inzichten, citaten, context..."></textarea>
+    </div>
+
+    <div class="section-sub">Vervolgactie</div>
+    <div class="vervolgactie">
+      <label><input type="radio" name="actie" value="demo"> Demo sturen</label>
+      <label><input type="radio" name="actie" value="terugbellen"> Terugbellen</label>
+      <label><input type="radio" name="actie" value="niet"> Niet interessant</label>
+    </div>
+
+    <button class="btn-print" onclick="window.print()">🖨️ Print scoringsformulier</button>
+  </div>
+</div>
+
+</body>
+</html>
