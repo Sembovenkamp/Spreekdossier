@@ -239,7 +239,20 @@
     footer a { color: var(--primary); text-decoration: none; font-weight: 600; font-size: 14px; }
     footer p { font-size: 13px; color: var(--text-light); margin-top: 6px; }
 
-    @media (max-width: 480px) { main { padding: 24px 16px 60px; } .recording-section { padding: 20px 16px; } .output-actions { flex-direction: column; } .transcript-box { min-height: 100px; max-height: 200px; } }
+    @media (max-width: 480px) {
+      main { padding: 16px 14px 60px; }
+      .recording-section { padding: 18px 14px; }
+      .output-actions { flex-direction: column; }
+      .transcript-box { min-height: 90px; max-height: 180px; font-size: 14px; }
+      .btn-generate { font-size: 15px; padding: 14px 24px; }
+      h1 { font-size: 26px; }
+      .patient-msg-channels { gap: 6px; }
+      .patient-ch { font-size: 12px; padding: 7px 12px; }
+      .patient-msg-text { min-height: 140px; font-size: 13px; }
+      .btn-copy-patient, #btn-whatsapp-share, .btn-regen-patient { font-size: 12px; padding: 10px 14px; }
+      .output-block-title { font-size: 13px; }
+      .output-block-content { font-size: 13px; }
+    }
 
     /* PATIËNTBERICHT */
     .patient-msg-block { display: none; background: linear-gradient(135deg, rgba(0,201,181,0.06), rgba(255,140,97,0.04)); border: 1.5px solid rgba(0,201,181,0.25); border-radius: var(--radius); padding: 22px; margin-top: 20px; }
@@ -405,6 +418,10 @@
     <div class="demo-badge"><span>🎙️</span> Live demo · 6 templates · Van intake tot afsluiting</div>
     <h1>Spreek in.<br><span class="highlight">Documentatie klaar.</span></h1>
     <p>Selecteer een template, spreek 2 minuten in wat er is besproken, en ontvang complete professionele documentatie — inclusief SOEP-notitie, patiëntbericht én verwijsbrief. Geen typen, geen formatteren.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:16px;align-items:center;">
+      <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(0,201,181,0.1);border:1px solid rgba(0,201,181,0.25);border-radius:100px;padding:7px 14px;font-size:12px;font-weight:600;color:var(--primary);">🔒 Niet opgeslagen · Veilig · AVG-proof</div>
+      <button onclick="shareDemo()" style="display:inline-flex;align-items:center;gap:6px;background:transparent;border:1.5px solid var(--border);border-radius:100px;padding:7px 14px;font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;font-family:inherit;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">📤 Deel demo</button>
+    </div>
   </div>
 
   <!-- TEMPLATE KEUZE -->
@@ -1514,6 +1531,15 @@ function shareWhatsApp() {
   if (!text) return;
   const encoded = encodeURIComponent(text);
   window.open(`https://wa.me/?text=${encoded}`, '_blank');
+}
+
+function shareDemo() {
+  const url = window.location.href.split('?')[0];
+  if (navigator.share) {
+    navigator.share({ title: 'Spreekdossier — Live Demo', text: 'Bekijk deze AI-documentatietool voor fysiotherapeuten:', url }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(url).then(() => showToast('✓ Demo-link gekopieerd!'));
+  }
 }
 
 function escapeHtml(str) {
