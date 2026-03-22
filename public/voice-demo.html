@@ -579,7 +579,7 @@
 
     <!-- VERGEET NIET SECTIE -->
     <div class="vergeet-niet-block" id="vergeet-niet">
-      <div class="vergeet-niet-title">📋 Mogelijk niet vermeld in de memo</div>
+      <div class="vergeet-niet-title" id="vergeet-niet-title">📋 Documentatiecheck</div>
       <div class="vergeet-niet-list" id="vergeet-niet-list"></div>
     </div>
 
@@ -2199,16 +2199,21 @@ function renderVergeetNiet() {
   );
 
   if (items.length === 0) {
-    block.classList.remove('visible');
-    return;
+    list.innerHTML = `<div class="vergeet-niet-item" style="color:#166534; font-weight:600;">✅ Documentatie ziet er compleet uit — goed gedaan!</div>`;
+    block.style.background = 'linear-gradient(135deg,rgba(0,201,181,0.06),rgba(0,201,181,0.02))';
+    block.style.borderLeft = '3px solid #00c9b5';
+    document.getElementById('vergeet-niet-title').style.color = '#00c9b5';
+  } else {
+    list.innerHTML = items.map((item, i) => `
+      <div class="vergeet-niet-item">
+        <input type="checkbox" id="vn-${i}" />
+        <label for="vn-${i}">Mogelijk nog toe te voegen: ${item.label.replace(' ontbreekt','').replace(' niet vermeld','').replace(' niet geformuleerd','').replace(' niet genoteerd','')}</label>
+      </div>
+    `).join('');
+    block.style.background = '';
+    block.style.borderLeft = '';
+    document.getElementById('vergeet-niet-title').style.color = '';
   }
-
-  list.innerHTML = items.map((item, i) => `
-    <div class="vergeet-niet-item">
-      <input type="checkbox" id="vn-${i}" />
-      <label for="vn-${i}">${item.label}</label>
-    </div>
-  `).join('');
 
   block.classList.add('visible');
 }
