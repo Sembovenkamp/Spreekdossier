@@ -1646,22 +1646,26 @@ async function generateDocument() {
   document.getElementById('output-badge').textContent = `✓ Gegenereerd · ${genSec}s`;
   document.getElementById('output-container').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-  // Toon patiëntbericht sectie direct met fallback, genereer AI versie op achtergrond
+  // Toon patiëntbericht sectie — vul direct met fallback, vervang met AI
   const memoForMsg = savedMemo || getMemoText();
   if (memoForMsg && memoForMsg.length >= 5) {
-    // Toon direct — nooit wachten op API
     const block = document.getElementById('patient-msg-block');
     const textarea = document.getElementById('patient-msg-text');
     const badge = document.getElementById('patient-msg-badge');
-    block.style.display = 'block';
     const stepBadge4 = document.getElementById('step-badge-4');
+
+    // Reset zodat generatePatientMessage altijd opnieuw de fallback bouwt
+    patientMessages = { whatsapp: '', email: '', sms: '' };
+
+    // Toon blok en vul direct met fallback
+    block.style.display = 'block';
     if (stepBadge4) stepBadge4.style.display = 'inline-flex';
-    patientMessages.whatsapp = buildFallbackPatientMsg('whatsapp', memoForMsg);
-    patientMessages.email = buildFallbackPatientMsg('email', memoForMsg);
-    patientMessages.sms = buildFallbackPatientMsg('sms', memoForMsg);
-    textarea.value = patientMessages['whatsapp'];
+    const fallbackWa = buildFallbackPatientMsg('whatsapp', memoForMsg);
+    textarea.value = fallbackWa;
+    textarea.style.opacity = '1';
     badge.textContent = '⏳ AI versie wordt geladen...';
-    // Vervang met AI versie op achtergrond
+
+    // Genereer AI versie op achtergrond en vervang textarea
     generatePatientMessage(memoForMsg);
   }
 }
@@ -1721,14 +1725,14 @@ async function generatePatientMessage(memoInput) {
   block.style.display = 'block';
   badge.textContent = '⏳ AI versie laden...';
 
-  // Zorg dat fallback altijd zichtbaar is vóór API call
+  // Zorg altijd voor fallback inhoud
   if (!patientMessages.whatsapp) {
     patientMessages.whatsapp = buildFallbackPatientMsg('whatsapp', memo);
     patientMessages.email = buildFallbackPatientMsg('email', memo);
     patientMessages.sms = buildFallbackPatientMsg('sms', memo);
+    textarea.value = patientMessages.whatsapp;
+    textarea.style.opacity = '1';
   }
-  textarea.value = patientMessages[currentChannel] || patientMessages.whatsapp;
-  textarea.style.opacity = '1';
 
   try {
     const res = await fetch('/api/chat', {
