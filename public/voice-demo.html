@@ -1909,8 +1909,8 @@ async function generatePatientMessage(memoInput) {
   textarea.style.opacity = '1';
   badge.textContent = '✓ Klaar om te versturen';
   // Scroll naar patiëntbericht
-  const block = document.getElementById('patient-msg-block');
-  if (block) block.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  const pmBlock = document.getElementById('patient-msg-block');
+  if (pmBlock) pmBlock.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function buildFallbackPatientMsg(channel, memo) {
