@@ -323,28 +323,6 @@
     .btn-pmsg-apply { background: var(--primary); color: #090912; font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: 100px; border: none; cursor: pointer; font-family: inherit; transition: all 0.2s; margin-top: 4px; }
     .btn-pmsg-apply:hover { background: #00e5cf; }
 
-    /* PATIËNT SELECTIE */
-    .patient-select-bar { display: flex; align-items: center; gap: 10px; background: var(--bg-card); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 16px; position: relative; }
-    .psb-label { font-size: 13px; font-weight: 700; color: var(--text-muted); white-space: nowrap; }
-    .psb-left { flex: 1; position: relative; }
-    .psb-input { width: 100%; background: transparent; border: none; outline: none; font-family: inherit; font-size: 14px; color: var(--text); padding: 0; }
-    .psb-input::placeholder { color: var(--text-light); }
-    .psb-new { background: var(--primary-light); color: var(--primary); font-size: 13px; font-weight: 700; padding: 7px 14px; border-radius: 100px; border: 1px solid var(--border-glow); cursor: pointer; font-family: inherit; white-space: nowrap; transition: all 0.2s; }
-    .psb-new:hover { background: var(--primary); color: #090912; }
-    .psb-suggestions { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: var(--bg-card2); border: 1.5px solid var(--border); border-radius: var(--radius-sm); box-shadow: var(--shadow-lg); z-index: 50; display: none; max-height: 200px; overflow-y: auto; }
-    .psb-suggestions.open { display: block; }
-    .psb-suggestion { padding: 10px 14px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: space-between; gap: 10px; transition: background 0.15s; }
-    .psb-suggestion:hover { background: var(--primary-light); }
-    .psb-suggestion-name { font-weight: 600; color: var(--text); }
-    .psb-suggestion-meta { font-size: 11px; color: var(--text-muted); }
-    .prev-session-bar { display: flex; align-items: center; gap: 14px; background: rgba(0,201,181,0.06); border: 1.5px solid var(--border-glow); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 16px; }
-    .prev-session-icon { font-size: 22px; flex-shrink: 0; }
-    .prev-session-info { flex: 1; min-width: 0; }
-    .prev-session-title { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 2px; }
-    .prev-session-preview { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .prev-session-load { background: var(--primary); color: #090912; font-size: 12px; font-weight: 700; padding: 7px 14px; border-radius: 100px; border: none; cursor: pointer; font-family: inherit; white-space: nowrap; transition: all 0.2s; flex-shrink: 0; }
-    .prev-session-load:hover { background: #00e5cf; }
-
     /* AUTO-DEMO BUTTON */
     .btn-autodemo {
       display: inline-flex; align-items: center; gap: 10px;
@@ -474,25 +452,6 @@
       <div class="ati-sub" id="ati-sub">Spreek de anamnese, klachten en behandeldoelen in voor een nieuwe patiënt of nieuwe behandelepisode.</div>
       <div class="ati-fields" id="ati-fields"></div>
     </div>
-  </div>
-
-  <!-- PATIËNT SELECTIE -->
-  <div class="patient-select-bar" id="patient-select-bar">
-    <div class="psb-left">
-      <span class="psb-label">👤 Patiënt</span>
-      <input class="psb-input" id="psb-input" placeholder="Bijv. Janssen knie (geen echte namen nodig)" autocomplete="off" oninput="onPatientInput()" onfocus="showPatientSuggestions()" />
-      <div class="psb-suggestions" id="psb-suggestions"></div>
-    </div>
-    <button class="psb-new" onclick="newPatient()" title="Nieuwe patiënt">＋ Nieuw</button>
-  </div>
-  <!-- CONTEXT VORIGE SESSIE -->
-  <div class="prev-session-bar" id="prev-session-bar" style="display:none">
-    <span class="prev-session-icon">🕐</span>
-    <div class="prev-session-info">
-      <div class="prev-session-title" id="prev-session-title">Vorige sessie</div>
-      <div class="prev-session-preview" id="prev-session-preview"></div>
-    </div>
-    <button class="prev-session-load" onclick="loadPrevContext()" id="prev-session-load">Gebruik als context →</button>
   </div>
 
   <!-- AUTO-DEMO KNOP -->
@@ -1317,142 +1276,6 @@ const SpeechEngine = (function() {
   document.getElementById('gen-btn-text').textContent = '✦ Maak Intake aan';
 })();
 
-// ===== PATIËNTHISTORIE =====
-const PATIENTS_KEY = 'sd_patients';
-let currentPatientId = null;
-
-function loadPatients() {
-  try { return JSON.parse(localStorage.getItem(PATIENTS_KEY) || '{}'); } catch { return {}; }
-}
-
-function savePatients(patients) {
-  try { localStorage.setItem(PATIENTS_KEY, JSON.stringify(patients)); } catch {}
-}
-
-function getCurrentPatientLabel() {
-  return document.getElementById('psb-input')?.value.trim() || '';
-}
-
-function onPatientInput() {
-  const val = getCurrentPatientLabel();
-  const patients = loadPatients();
-  const matches = Object.values(patients).filter(p =>
-    p.label.toLowerCase().includes(val.toLowerCase()) && val.length > 0
-  ).slice(0, 5);
-  renderPatientSuggestions(matches);
-  // Reset currentPatientId als label verandert
-  currentPatientId = null;
-  document.getElementById('prev-session-bar').style.display = 'none';
-}
-
-function showPatientSuggestions() {
-  const patients = loadPatients();
-  const all = Object.values(patients).slice(0, 8);
-  renderPatientSuggestions(all);
-}
-
-function renderPatientSuggestions(patients) {
-  const box = document.getElementById('psb-suggestions');
-  if (!box) return;
-  if (patients.length === 0) { box.classList.remove('open'); return; }
-  box.innerHTML = patients.map(p => {
-    const last = p.sessions?.length ? new Date(p.sessions[p.sessions.length-1].ts).toLocaleDateString('nl-NL', {day:'numeric',month:'short'}) : '';
-    const count = p.sessions?.length || 0;
-    return `<div class="psb-suggestion" onclick="selectPatient('${p.id}')">
-      <span class="psb-suggestion-name">${escapeHtml(p.label)}</span>
-      <span class="psb-suggestion-meta">${count} sessie${count !== 1 ? 's' : ''}${last ? ' · ' + last : ''}</span>
-    </div>`;
-  }).join('');
-  box.classList.add('open');
-}
-
-function selectPatient(id) {
-  const patients = loadPatients();
-  const p = patients[id];
-  if (!p) return;
-  currentPatientId = id;
-  document.getElementById('psb-input').value = p.label;
-  document.getElementById('psb-suggestions').classList.remove('open');
-  showPrevSession(p);
-}
-
-function showPrevSession(patient) {
-  const bar = document.getElementById('prev-session-bar');
-  const sessions = patient.sessions || [];
-  if (sessions.length === 0) { bar.style.display = 'none'; return; }
-  const last = sessions[sessions.length - 1];
-  const dateStr = new Date(last.ts).toLocaleDateString('nl-NL', {day:'numeric', month:'long'});
-  document.getElementById('prev-session-title').textContent = `Vorige sessie: ${dateStr} · ${last.template}`;
-  document.getElementById('prev-session-preview').textContent = last.preview || last.memo?.substring(0, 100) + '…';
-  bar.style.display = 'flex';
-}
-
-function loadPrevContext() {
-  const patients = loadPatients();
-  const p = patients[currentPatientId];
-  if (!p?.sessions?.length) return;
-  const last = p.sessions[p.sessions.length - 1];
-  // Zet vorige sessie-samenvatting als context bovenin het tekstvak
-  const contextNote = `[Context vorige sessie — ${new Date(last.ts).toLocaleDateString('nl-NL')}]\n${last.memo || last.preview}\n\n[Huidige sessie]\n`;
-  const box = document.getElementById('transcript-box');
-  if (box) {
-    box.textContent = contextNote;
-    finalTranscript = contextNote;
-    box.contentEditable = 'true';
-    updateGenerateButton();
-    box.focus();
-    // Cursor aan het einde
-    const range = document.createRange();
-    range.selectNodeContents(box);
-    range.collapse(false);
-    const sel = window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
-  }
-  document.getElementById('prev-session-bar').style.display = 'none';
-  showToast('✓ Context vorige sessie geladen');
-}
-
-function newPatient() {
-  currentPatientId = null;
-  document.getElementById('psb-input').value = '';
-  document.getElementById('psb-input').focus();
-  document.getElementById('psb-suggestions').classList.remove('open');
-  document.getElementById('prev-session-bar').style.display = 'none';
-}
-
-function saveSessionToPatient(memo, outputSummary) {
-  const label = getCurrentPatientLabel();
-  if (!label) return; // Geen patiëntlabel = niet opslaan
-  const patients = loadPatients();
-
-  // Maak nieuw patiëntprofiel als nodig
-  if (!currentPatientId) {
-    currentPatientId = 'p_' + Date.now();
-    patients[currentPatientId] = { id: currentPatientId, label, sessions: [] };
-  }
-
-  const patient = patients[currentPatientId];
-  patient.sessions = patient.sessions || [];
-  patient.sessions.push({
-    ts: new Date().toISOString(),
-    template: TEMPLATES[currentTemplate]?.name || currentTemplate,
-    memo: memo.substring(0, 300),
-    preview: outputSummary.substring(0, 120)
-  });
-  // Max 10 sessies per patiënt
-  if (patient.sessions.length > 10) patient.sessions = patient.sessions.slice(-10);
-  patients[currentPatientId] = patient;
-  savePatients(patients);
-}
-
-// Sluit suggesties bij klik buiten
-document.addEventListener('click', (e) => {
-  if (!e.target.closest('.patient-select-bar')) {
-    document.getElementById('psb-suggestions')?.classList.remove('open');
-  }
-});
-
 // ===== AUTO-DEMO =====
 async function startAutoDemo() {
   const btn = document.getElementById('btn-autodemo');
@@ -1895,9 +1718,6 @@ async function generateDocument() {
     // Temporarily override tpl.output for renderOutput
     const tplWithOutput = { ...tpl, output: outputData };
     renderOutput(tplWithOutput);
-    // Sla sessie op in patiënthistorie
-    const firstSection = Object.values(outputData)[0] || '';
-    saveSessionToPatient(memo, firstSection.substring(0, 120));
 
   } catch (err) {
     console.error('AI generatie mislukt, fallback op demo-output:', err);
