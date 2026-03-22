@@ -2170,9 +2170,19 @@ AGB-code: [uw AGB-code]
 [Adres en telefoonnummer praktijk]`;
 }
 
+function toggleBlock(key) {
+  const content = document.getElementById('output-' + key);
+  const icon = document.getElementById('toggle-' + key);
+  if (!content) return;
+  const isCollapsed = content.style.display === 'none';
+  content.style.display = isCollapsed ? '' : 'none';
+  if (icon) icon.style.transform = isCollapsed ? '' : 'rotate(-90deg)';
+}
+
 function renderOutput(tpl) {
   document.getElementById('output-title').textContent = `${tpl.icon} ${tpl.name}`;
-  document.getElementById('output-template-label').textContent = `Template: ${tpl.name} · ${tpl.fields.length} secties`;
+  const now = new Date().toLocaleTimeString('nl-NL', {hour:'2-digit', minute:'2-digit'});
+  document.getElementById('output-template-label').textContent = `Template: ${tpl.name} · ${tpl.sections.length} secties · ${now}`;
 
   const blocksEl = document.getElementById('output-blocks');
   blocksEl.innerHTML = '';
@@ -2181,8 +2191,8 @@ function renderOutput(tpl) {
     const text = (tpl.output && tpl.output[section.key]) || outputData?.[section.key] || '[Niet vermeld in memo]';
     const delay = idx * 0.06;
     const blockHtml = `
-      <div class="output-block" style="animation-delay:${delay}s">
-        <div class="block-header">
+      <div class="output-block" id="block-wrap-${section.key}" style="animation-delay:${delay}s">
+        <div class="block-header" onclick="toggleBlock('${section.key}')" style="cursor:pointer;">
           <div class="block-title">
             <div class="block-badge ${section.badgeClass}">${section.badge}</div>
             <div>
@@ -2190,9 +2200,12 @@ function renderOutput(tpl) {
               <div class="block-desc">${section.desc}</div>
             </div>
           </div>
-          <button class="btn-copy-block" onclick="copyBlock('${section.key}', this)">📋 Kopieer</button>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <button class="btn-copy-block" onclick="event.stopPropagation();copyBlock('${section.key}', this)">📋 Kopieer</button>
+            <span class="block-toggle-icon" id="toggle-${section.key}" style="color:var(--text-muted);font-size:12px;transition:transform 0.2s;">▾</span>
+          </div>
         </div>
-        <div class="block-text" id="output-${section.key}">${escapeHtml(text)}</div>
+        <div class="block-text" id="output-${section.key}" style="transition:max-height 0.3s ease,opacity 0.2s;">${escapeHtml(text)}</div>
       </div>
     `;
     blocksEl.insertAdjacentHTML('beforeend', blockHtml);
@@ -2335,10 +2348,13 @@ function copyBlock(key, btn) {
 
   const doCopy = () => {
     const prev = btn.innerHTML;
-    btn.innerHTML = '✓ Gekopieerd';
+    btn.innerHTML = '✓ Klaar';
     btn.classList.add('copied');
-    showToast('✓ Gekopieerd naar klembord');
-    setTimeout(() => { btn.innerHTML = prev; btn.classList.remove('copied'); }, 2000);
+    // Flash het hele blok groen
+    const wrap = btn.closest('.output-block');
+    if (wrap) { wrap.style.borderColor = '#22c55e'; setTimeout(() => { wrap.style.borderColor = ''; }, 1500); }
+    showToast('✓ Gekopieerd' + (selectedEPD !== 'algemeen' ? ` (${EPD_FORMATS[selectedEPD]?.label || selectedEPD} format)` : ''));
+    setTimeout(() => { btn.innerHTML = prev; btn.classList.remove('copied'); }, 1800);
   };
 
   navigator.clipboard.writeText(full).then(doCopy).catch(() => {
