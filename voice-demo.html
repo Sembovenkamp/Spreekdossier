@@ -108,6 +108,56 @@
     .btn-generate:hover:not(:disabled) { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,168,150,0.4); }
     .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
+    /* RECORDING TIMER */
+    .rec-timer { text-align: center; font-size: 18px; font-weight: 700; color: var(--red); letter-spacing: 0.08em; margin-bottom: 6px; font-variant-numeric: tabular-nums; min-height: 24px; }
+
+    /* PATIENT MESSAGE SECTION */
+    .patient-msg-section { margin-top: 20px; background: white; border-radius: var(--radius); border: 1.5px solid rgba(244,162,97,0.35); overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+    .patient-msg-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1.5px solid rgba(244,162,97,0.2); background: #fffbf5; cursor: pointer; }
+    .patient-msg-header-left { display: flex; align-items: center; gap: 12px; }
+    .patient-msg-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #F4A261, #fb923c); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .patient-msg-title { font-size: 15px; font-weight: 700; }
+    .patient-msg-sub { font-size: 12px; color: var(--text-muted); }
+    .patient-msg-toggle { font-size: 13px; font-weight: 600; color: #d97706; padding: 7px 16px; border-radius: 100px; border: 1.5px solid rgba(244,162,97,0.4); background: white; cursor: pointer; font-family: inherit; transition: all 0.2s; white-space: nowrap; }
+    .patient-msg-toggle:hover { background: #fff7ed; border-color: #F4A261; }
+    .patient-msg-body { display: none; padding: 20px; }
+    .patient-msg-body.open { display: block; }
+    .patient-msg-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+    .pmsg-tab { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 100px; border: 1.5px solid var(--border); background: white; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: inherit; color: var(--text-muted); }
+    .pmsg-tab:hover { border-color: #F4A261; color: #d97706; }
+    .pmsg-tab.active { background: #fff7ed; border-color: #F4A261; color: #92400e; }
+    .pmsg-content { display: none; background: #fffbf5; border-radius: var(--radius-sm); padding: 16px; font-size: 14px; line-height: 1.75; color: var(--text); white-space: pre-wrap; border: 1.5px solid rgba(244,162,97,0.2); min-height: 80px; }
+    .pmsg-content.active { display: block; }
+    .pmsg-actions { display: flex; gap: 10px; margin-top: 12px; }
+    .btn-pmsg-copy { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #F4A261; color: white; font-size: 14px; font-weight: 700; padding: 10px 18px; border-radius: 100px; border: none; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+    .btn-pmsg-copy:hover { background: #e8935a; transform: translateY(-1px); }
+    .btn-pmsg-copy.copied { background: var(--primary); }
+    .pmsg-loading { text-align: center; padding: 24px; color: var(--text-muted); font-size: 14px; }
+    .pmsg-loading .mini-spinner { width: 24px; height: 24px; border: 3px solid #fde68a; border-top-color: #F4A261; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 10px; }
+
+    /* SESSION HISTORY */
+    .history-section { margin-top: 28px; }
+    .history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .history-title { font-size: 13px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-muted); }
+    .btn-history-clear { font-size: 12px; color: var(--text-light); background: none; border: none; cursor: pointer; padding: 4px 8px; border-radius: 6px; font-family: inherit; transition: color 0.2s; }
+    .btn-history-clear:hover { color: var(--red); }
+    .history-list { display: flex; flex-direction: column; gap: 8px; }
+    .history-item { background: white; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; transition: all 0.2s; }
+    .history-item:hover { border-color: var(--primary); box-shadow: 0 2px 10px rgba(0,168,150,0.1); }
+    .history-item-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .history-item-icon { font-size: 20px; flex-shrink: 0; }
+    .history-item-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .history-item-memo { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px; }
+    .history-item-time { font-size: 11px; color: var(--text-light); flex-shrink: 0; }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1A1A2E; color: white; font-size: 14px; font-weight: 600; padding: 12px 24px; border-radius: 100px; opacity: 0; transition: all 0.3s ease; z-index: 9999; pointer-events: none; white-space: nowrap; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* STEP BADGES */
+    .step-badge { display: inline-flex; align-items: center; gap: 6px; }
+    .step-num { width: 22px; height: 22px; border-radius: 50%; background: var(--primary); color: white; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
     /* FALLBACK */
     .fallback-section { background: #fffdf5; border: 1.5px solid #fde68a; border-radius: var(--radius); padding: 24px; margin-bottom: 20px; display: none; }
     .fallback-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
@@ -256,6 +306,7 @@
         <span id="status-text">Klaar om op te nemen</span>
       </div>
     </div>
+    <div class="rec-timer" id="rec-timer"></div>
     <div class="record-btn-container">
       <button class="btn-record" id="btn-record" onclick="toggleRecording()" title="Start opname">🎙️</button>
     </div>
@@ -316,9 +367,58 @@
       <button class="btn-copy-all" id="btn-copy-all" onclick="copyAll()">📄 Kopieer volledige documentatie</button>
       <button class="btn-new" onclick="resetToStart()">🎙️ Nieuwe opname</button>
     </div>
+
+    <!-- PATIËNTBERICHT -->
+    <div class="patient-msg-section" id="patient-msg-section">
+      <div class="patient-msg-header" onclick="togglePatientMsg()">
+        <div class="patient-msg-header-left">
+          <div class="patient-msg-icon">💬</div>
+          <div>
+            <div class="patient-msg-title">Patiëntbericht genereren</div>
+            <div class="patient-msg-sub">WhatsApp · E-mail · SMS — direct klaar om te versturen</div>
+          </div>
+        </div>
+        <button class="patient-msg-toggle" id="pmsg-toggle-btn">Genereer bericht ▼</button>
+      </div>
+      <div class="patient-msg-body" id="pmsg-body">
+        <div id="pmsg-inner">
+          <div class="pmsg-loading" id="pmsg-loading" style="display:none;">
+            <div class="mini-spinner"></div>
+            <div>Patiëntbericht wordt aangemaakt...</div>
+          </div>
+          <div id="pmsg-result" style="display:none;">
+            <div class="patient-msg-tabs">
+              <button class="pmsg-tab active" onclick="showPmsgTab('whatsapp',this)">💬 WhatsApp</button>
+              <button class="pmsg-tab" onclick="showPmsgTab('email',this)">📧 E-mail</button>
+              <button class="pmsg-tab" onclick="showPmsgTab('sms',this)">📱 SMS</button>
+            </div>
+            <div class="pmsg-content active" id="pmsg-whatsapp"></div>
+            <div class="pmsg-content" id="pmsg-email"></div>
+            <div class="pmsg-content" id="pmsg-sms"></div>
+            <div class="pmsg-actions">
+              <button class="btn-pmsg-copy" id="btn-pmsg-copy" onclick="copyPatientMsg()">📋 Kopieer bericht</button>
+            </div>
+          </div>
+          <div id="pmsg-idle" style="text-align:center; padding:20px; color:var(--text-muted); font-size:14px;">
+            Klik op "Genereer bericht" om WhatsApp-, e-mail- en SMS-versies te maken op basis van jouw documentatie.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SESSION HISTORY -->
+  <div class="history-section" id="history-section" style="display:none;">
+    <div class="history-header">
+      <div class="history-title">📁 Sessiegeschiedenis</div>
+      <button class="btn-history-clear" onclick="clearHistory()">Wissen</button>
+    </div>
+    <div class="history-list" id="history-list"></div>
   </div>
 
 </main>
+
+<div class="toast" id="toast"></div>
 
 <footer>
   <a href="index.html">← Terug naar Spreekdossier.nl</a>
@@ -326,6 +426,19 @@
 </footer>
 
 <script>
+// ===== TYPE MAPPING =====
+// Maps each template to the "type" param accepted by /api/chat.
+// Templates with multiple distinct sections use 'alle' (JSON output).
+// Single-document templates use their own type (plain text output).
+const TEMPLATE_TYPE = {
+  intake:        'alle',          // multi-section JSON
+  soep:          'soep',          // single plain-text doc
+  behandelplan:  'behandelplan',  // single plain-text doc
+  evaluatie:     'tussenevaluatie', // single plain-text doc
+  afsluiting:    'ontslagbrief',  // single plain-text doc
+  administratie: 'alle'           // multi-section JSON
+};
+
 // ===== TEMPLATE DEFINITIES =====
 const TEMPLATES = {
   intake: {
@@ -631,11 +744,19 @@ let finalTranscript = '';
 let interimTranscript = '';
 let speechAPIAvailable = false;
 let outputData = {};
+let recTimerInterval = null;
+let recTimerStart = 0;
+let pmsgOpen = false;
+let pmsgData = {};
+let pmsgActiveTab = 'whatsapp';
+let generatedMemo = '';
+let genStartTime = 0;
 
 // ===== INIT =====
 (function init() {
   checkSpeechAPI();
   updateTemplateInfo('intake');
+  renderHistory();
 })();
 
 function checkSpeechAPI() {
@@ -745,17 +866,32 @@ function setRecordingUI(active) {
   const statusText = document.getElementById('status-text');
   const hint = document.getElementById('record-hint');
   const tbox = document.getElementById('transcript-box');
+  const timerEl = document.getElementById('rec-timer');
   if (active) {
     btn.classList.add('recording'); btn.innerHTML = '⏹️'; btn.title = 'Stop opname';
     indicator.classList.add('recording'); statusText.textContent = 'Opname bezig...';
     hint.textContent = 'Druk op ⏹️ om te stoppen'; tbox.classList.add('active');
     document.getElementById('btn-generate').disabled = true;
+    // Start timer
+    recTimerStart = Date.now();
+    timerEl.textContent = '00:00';
+    clearInterval(recTimerInterval);
+    recTimerInterval = setInterval(() => {
+      const s = Math.floor((Date.now() - recTimerStart) / 1000);
+      const mm = String(Math.floor(s / 60)).padStart(2, '0');
+      const ss = String(s % 60).padStart(2, '0');
+      timerEl.textContent = `${mm}:${ss}`;
+    }, 1000);
   } else {
     btn.classList.remove('recording'); btn.innerHTML = '🎙️'; btn.title = 'Start opname';
     indicator.classList.remove('recording');
     statusText.textContent = finalTranscript.trim() ? 'Opname gestopt' : 'Klaar om op te nemen';
     hint.textContent = finalTranscript.trim() ? 'Klik op "Genereer" of neem opnieuw op' : 'Druk op de microfoon en vertel wat er is besproken of gedaan';
     tbox.classList.remove('active');
+    // Stop timer
+    clearInterval(recTimerInterval);
+    recTimerInterval = null;
+    if (!finalTranscript.trim()) timerEl.textContent = '';
   }
 }
 
@@ -806,6 +942,9 @@ function fillExample() {
     document.getElementById('fallback-input').value = tpl.example;
     document.getElementById('btn-generate').disabled = false;
   }
+  setTimeout(() => {
+    document.getElementById('btn-generate').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 200);
 }
 
 // ===== GENERATE =====
@@ -813,9 +952,22 @@ async function generateDocument() {
   const memo = getMemoText();
   if (!memo || memo.length < 5) return;
 
+  generatedMemo = memo;
+  genStartTime = Date.now();
+
   document.getElementById('output-container').classList.remove('visible');
   document.getElementById('loading-overlay').classList.add('visible');
   document.getElementById('btn-generate').disabled = true;
+
+  // Reset patient message
+  pmsgData = {};
+  pmsgOpen = false;
+  const pmsgBody = document.getElementById('pmsg-body');
+  pmsgBody.classList.remove('open');
+  document.getElementById('pmsg-toggle-btn').textContent = 'Genereer bericht ▼';
+  document.getElementById('pmsg-idle').style.display = 'block';
+  document.getElementById('pmsg-result').style.display = 'none';
+  document.getElementById('pmsg-loading').style.display = 'none';
 
   const tpl = TEMPLATES[currentTemplate];
   document.getElementById('loading-title').textContent = `${tpl.icon} ${tpl.name} wordt aangemaakt...`;
@@ -828,21 +980,78 @@ async function generateDocument() {
     el.querySelector('.step-icon').textContent = s.replace('step-','');
   });
 
-  for (let i = 0; i < steps.length; i++) {
-    await new Promise(r => setTimeout(r, 550));
-    document.getElementById(steps[i]).classList.add('active');
-    if (i > 0) {
-      document.getElementById(steps[i-1]).classList.add('done');
-      document.getElementById(steps[i-1]).querySelector('.step-icon').textContent = '✓';
-    }
-  }
-  await new Promise(r => setTimeout(r, 600));
-  document.getElementById(steps[3]).classList.add('done');
-  document.getElementById(steps[3]).querySelector('.step-icon').textContent = '✓';
-  await new Promise(r => setTimeout(r, 300));
+  // Resolve the API type for this template
+  const apiType = TEMPLATE_TYPE[currentTemplate] || 'alle';
+  const isSingleType = apiType !== 'alle';
 
-  outputData = tpl.output;
-  renderOutput(tpl);
+  // For multi-section (JSON) templates, pass template field map
+  const templateFields = {};
+  if (!isSingleType) {
+    tpl.sections.forEach(s => { templateFields[s.key] = s.label; });
+  }
+
+  // Animate steps while waiting for API
+  let stepIdx = 0;
+  const stepInterval = setInterval(() => {
+    if (stepIdx > 0) {
+      document.getElementById(steps[stepIdx-1]).classList.add('done');
+      document.getElementById(steps[stepIdx-1]).querySelector('.step-icon').textContent = '✓';
+    }
+    if (stepIdx < steps.length) {
+      document.getElementById(steps[stepIdx]).classList.add('active');
+      stepIdx++;
+    } else {
+      clearInterval(stepInterval);
+    }
+  }, 600);
+
+  try {
+    // Build request body — use "type" param, drop legacy "mode" field
+    const requestBody = isSingleType
+      ? { memo, type: apiType }
+      : { memo, type: 'alle', template: templateFields, templateName: tpl.name };
+
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody)
+    });
+
+    clearInterval(stepInterval);
+    // Mark all steps done
+    steps.forEach(s => {
+      document.getElementById(s).classList.add('active','done');
+      document.getElementById(s).querySelector('.step-icon').textContent = '✓';
+    });
+    await new Promise(r => setTimeout(r, 300));
+
+    if (!res.ok) throw new Error(`API ${res.status}`);
+    const data = await res.json();
+
+    if (isSingleType) {
+      // Plain text response — distribute into sections by splitting on ## headers
+      // or assign the full text to all visible sections (first section gets full doc)
+      outputData = parseSingleTypeOutput(data.output || '', tpl);
+    } else {
+      outputData = data.output || {};
+      // Merge with fallback to static output for any missing keys
+      tpl.sections.forEach(s => {
+        if (!outputData[s.key] && tpl.output[s.key]) outputData[s.key] = tpl.output[s.key];
+      });
+    }
+
+    const elapsed = ((Date.now() - genStartTime) / 1000).toFixed(1);
+    renderOutput(tpl, elapsed);
+    saveToHistory(tpl, memo, outputData);
+
+  } catch (err) {
+    clearInterval(stepInterval);
+    console.error('Generate error:', err);
+    // Fallback to static output
+    outputData = tpl.output;
+    renderOutput(tpl, null, true);
+    showToast('⚠️ Verbinding mislukt — voorbeeldoutput getoond');
+  }
 
   document.getElementById('loading-overlay').classList.remove('visible');
   document.getElementById('output-container').classList.add('visible');
@@ -850,15 +1059,70 @@ async function generateDocument() {
   document.getElementById('output-container').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-function renderOutput(tpl) {
+// ===== PARSE SINGLE-TYPE OUTPUT =====
+// The new /api/chat returns plain text for single-type requests (e.g. type:"soep").
+// This function maps that plain text to the section keys the UI needs.
+// Strategy: the full document goes into the first section; if the template has
+// S/O/E/P keys we split on those headers for a nicer display.
+function parseSingleTypeOutput(text, tpl) {
+  const result = {};
+
+  // Special case: SOEP — split on S:/O:/E:/P: or ## S / ## O headers
+  if (tpl.sections.length === 4 &&
+      tpl.sections.map(s => s.key).join(',') === 'S,O,E,P') {
+    const soepKeys = ['S', 'O', 'E', 'P'];
+    const labels = ['Subjectief', 'Objectief', 'Evaluatie', 'Plan'];
+
+    // Try to split on lines like "S:", "## S", "**S**", etc.
+    const parts = { S: '', O: '', E: '', P: '' };
+    let currentKey = null;
+    for (const line of text.split('\n')) {
+      const match = line.match(/^(?:##\s*|[*]{0,2})([SOEP])[*]{0,2}[:\s]/i);
+      if (match) {
+        currentKey = match[1].toUpperCase();
+        // Strip the header from the line itself
+        parts[currentKey] += line.replace(/^(?:##\s*|[*]{0,2})[SOEP][*]{0,2}[:\s]*/i, '').trim();
+      } else if (currentKey) {
+        parts[currentKey] += (parts[currentKey] ? '\n' : '') + line;
+      }
+    }
+
+    // If we got at least 2 sections, use split result; otherwise dump all into S
+    const populated = soepKeys.filter(k => parts[k].trim().length > 10).length;
+    if (populated >= 2) {
+      soepKeys.forEach(k => { result[k] = parts[k].trim() || '[Niet vermeld]'; });
+    } else {
+      result['S'] = text.trim();
+      result['O'] = ''; result['E'] = ''; result['P'] = '';
+    }
+    return result;
+  }
+
+  // For all other single-type templates (behandelplan, tussenevaluatie, ontslagbrief):
+  // Put the full text in the first section, leave the rest empty.
+  // The API returns one coherent document — this avoids awkward splitting.
+  tpl.sections.forEach((s, idx) => {
+    result[s.key] = idx === 0 ? text.trim() : '';
+  });
+  return result;
+}
+
+function renderOutput(tpl, elapsed, isFallback) {
   document.getElementById('output-title').textContent = `${tpl.icon} ${tpl.name}`;
   document.getElementById('output-template-label').textContent = `Template: ${tpl.name} · ${tpl.fields.length} secties`;
+
+  const badgeEl = document.querySelector('.output-badge');
+  if (badgeEl) {
+    if (isFallback) badgeEl.textContent = '⚠️ Voorbeeldoutput';
+    else if (elapsed) badgeEl.textContent = `✓ Gegenereerd · ${elapsed}s`;
+    else badgeEl.textContent = '✓ Gegenereerd';
+  }
 
   const blocksEl = document.getElementById('output-blocks');
   blocksEl.innerHTML = '';
 
   tpl.sections.forEach((section, idx) => {
-    const text = tpl.output[section.key] || '[Niet vermeld in memo]';
+    const text = outputData[section.key] || '[Niet vermeld in memo]';
     const delay = idx * 0.06;
     const blockHtml = `
       <div class="output-block" style="animation-delay:${delay}s">
@@ -912,6 +1176,7 @@ function copyAll() {
   const doCopy = () => {
     btn.innerHTML = '✓ Volledige documentatie gekopieerd!';
     btn.classList.add('copied');
+    showToast('✓ Gekopieerd naar klembord');
     setTimeout(() => { btn.innerHTML = '📄 Kopieer volledige documentatie'; btn.classList.remove('copied'); }, 2500);
   };
 
@@ -926,6 +1191,12 @@ function copyAll() {
 function resetToStart() {
   document.getElementById('output-container').classList.remove('visible');
   finalTranscript = ''; interimTranscript = '';
+  generatedMemo = '';
+  pmsgData = {};
+  pmsgOpen = false;
+  clearInterval(recTimerInterval);
+  recTimerInterval = null;
+  document.getElementById('rec-timer').textContent = '';
   if (speechAPIAvailable) {
     renderTranscript();
     document.getElementById('btn-clear').style.display = 'none';
@@ -937,7 +1208,212 @@ function resetToStart() {
     document.getElementById('fallback-input').value = '';
     document.getElementById('btn-generate').disabled = true;
   }
+  // Reset EPD selector
+  document.querySelectorAll('.template-btn').forEach(b => b.classList.remove('active'));
+  const firstBtn = document.querySelector('[data-template="intake"]');
+  if (firstBtn) { firstBtn.classList.add('active'); selectTemplate('intake', firstBtn); }
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== PATIENT MESSAGE =====
+function togglePatientMsg() {
+  pmsgOpen = !pmsgOpen;
+  const body = document.getElementById('pmsg-body');
+  const toggleBtn = document.getElementById('pmsg-toggle-btn');
+  if (pmsgOpen) {
+    body.classList.add('open');
+    toggleBtn.textContent = 'Sluiten ▲';
+    // Auto-generate if not yet done
+    if (!pmsgData.whatsapp) generatePatientMsg();
+  } else {
+    body.classList.remove('open');
+    toggleBtn.textContent = 'Genereer bericht ▼';
+  }
+}
+
+async function generatePatientMsg() {
+  if (!generatedMemo) return;
+  document.getElementById('pmsg-idle').style.display = 'none';
+  document.getElementById('pmsg-result').style.display = 'none';
+  document.getElementById('pmsg-loading').style.display = 'block';
+
+  try {
+    // New API: type:"patientbericht" — no legacy mode field needed
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        memo: generatedMemo,
+        type: 'patientbericht'
+      })
+    });
+
+    document.getElementById('pmsg-loading').style.display = 'none';
+
+    if (!res.ok) throw new Error(`API ${res.status}`);
+    const data = await res.json();
+
+    // New API returns plain text for patientbericht.
+    // Parse into 3 variants by splitting on WhatsApp/E-mail/SMS sections if present,
+    // otherwise use the same text for all three tabs.
+    const rawText = typeof data.output === 'string' ? data.output : '';
+    pmsgData = parsePatientBerichtOutput(rawText);
+
+    document.getElementById('pmsg-whatsapp').textContent = pmsgData.whatsapp || '[Niet beschikbaar]';
+    document.getElementById('pmsg-email').textContent = pmsgData.email || '[Niet beschikbaar]';
+    document.getElementById('pmsg-sms').textContent = pmsgData.sms || '[Niet beschikbaar]';
+    document.getElementById('pmsg-result').style.display = 'block';
+    pmsgActiveTab = 'whatsapp';
+
+  } catch (err) {
+    console.error('Patient msg error:', err);
+    document.getElementById('pmsg-loading').style.display = 'none';
+    document.getElementById('pmsg-idle').style.display = 'block';
+    document.getElementById('pmsg-idle').textContent = '⚠️ Kon patiëntbericht niet genereren. Probeer opnieuw.';
+    showToast('⚠️ Patiëntbericht mislukt');
+  }
+}
+
+// Parse plain-text patientbericht response into {whatsapp, email, sms}.
+// The new API returns a single short message (max 5 zinnen) — we use it for all
+// three tabs. If the API ever returns multi-section text we can extend this.
+function parsePatientBerichtOutput(text) {
+  if (!text || !text.trim()) return { whatsapp: '', email: '', sms: '' };
+
+  // If response contains distinct sections, try to split them
+  const wa = text.match(/(?:whatsapp[:\s]*)([\s\S]*?)(?=e-?mail[:\s]|sms[:\s]|$)/i)?.[1]?.trim();
+  const em = text.match(/(?:e-?mail[:\s]*)([\s\S]*?)(?=whatsapp[:\s]|sms[:\s]|$)/i)?.[1]?.trim();
+  const sm = text.match(/(?:sms[:\s]*)([\s\S]*?)(?=whatsapp[:\s]|e-?mail[:\s]|$)/i)?.[1]?.trim();
+
+  if (wa && em && sm) {
+    return { whatsapp: wa, email: em, sms: sm };
+  }
+
+  // Single message — use as-is for all tabs (frontend shows per-tab)
+  return { whatsapp: text.trim(), email: text.trim(), sms: text.trim() };
+}
+
+function showPmsgTab(tab, btn) {
+  pmsgActiveTab = tab;
+  document.querySelectorAll('.pmsg-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.pmsg-content').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('pmsg-' + tab).classList.add('active');
+}
+
+function copyPatientMsg() {
+  const text = document.getElementById('pmsg-' + pmsgActiveTab)?.textContent || '';
+  const tabNames = { whatsapp: 'WhatsApp', email: 'E-mail', sms: 'SMS' };
+  const btn = document.getElementById('btn-pmsg-copy');
+
+  const doCopy = () => {
+    btn.innerHTML = '✓ Gekopieerd!';
+    btn.classList.add('copied');
+    showToast('✓ Gekopieerd naar klembord');
+    setTimeout(() => { btn.innerHTML = '📋 Kopieer bericht'; btn.classList.remove('copied'); }, 2000);
+  };
+
+  navigator.clipboard.writeText(text).then(doCopy).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    doCopy();
+  });
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ===== SESSION HISTORY =====
+const HISTORY_KEY = 'spreekdossier_history';
+
+function saveToHistory(tpl, memo, output) {
+  try {
+    const history = loadHistory();
+    const entry = {
+      id: Date.now(),
+      template: currentTemplate,
+      templateName: tpl.name,
+      templateIcon: tpl.icon,
+      memo: memo.substring(0, 120),
+      output,
+      ts: new Date().toISOString()
+    };
+    history.unshift(entry);
+    // Keep max 10 entries
+    const trimmed = history.slice(0, 10);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(trimmed));
+    renderHistory();
+  } catch(e) { console.warn('History save failed:', e); }
+}
+
+function loadHistory() {
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); }
+  catch { return []; }
+}
+
+function clearHistory() {
+  localStorage.removeItem(HISTORY_KEY);
+  renderHistory();
+  showToast('🗑️ Geschiedenis gewist');
+}
+
+function renderHistory() {
+  const history = loadHistory();
+  const section = document.getElementById('history-section');
+  const list = document.getElementById('history-list');
+  if (!section || !list) return;
+
+  if (history.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = 'block';
+  list.innerHTML = '';
+
+  history.forEach(entry => {
+    const d = new Date(entry.ts);
+    const timeStr = d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' }) + ' ' +
+                    d.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    item.innerHTML = `
+      <div class="history-item-left">
+        <div class="history-item-icon">${entry.templateIcon}</div>
+        <div>
+          <div class="history-item-name">${entry.templateName}</div>
+          <div class="history-item-memo">${escapeHtml(entry.memo)}${entry.memo.length >= 120 ? '…' : ''}</div>
+        </div>
+      </div>
+      <div class="history-item-time">${timeStr}</div>
+    `;
+    item.addEventListener('click', () => restoreFromHistory(entry));
+    list.appendChild(item);
+  });
+}
+
+function restoreFromHistory(entry) {
+  // Switch to that template
+  const tpl = TEMPLATES[entry.template];
+  if (!tpl) return;
+  currentTemplate = entry.template;
+  document.querySelectorAll('.template-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.querySelector(`[data-template="${entry.template}"]`);
+  if (btn) btn.classList.add('active');
+  updateTemplateInfo(entry.template);
+
+  // Restore output
+  outputData = entry.output;
+  renderOutput(tpl, null, false);
+  generatedMemo = entry.memo;
+
+  document.getElementById('output-container').classList.add('visible');
+  document.getElementById('output-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  showToast(`📂 Sessie hersteld: ${tpl.name}`);
 }
 </script>
 </body>
