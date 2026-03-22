@@ -579,7 +579,7 @@
 
     <!-- VERGEET NIET SECTIE -->
     <div class="vergeet-niet-block" id="vergeet-niet">
-      <div class="vergeet-niet-title">📋 Vergeet niet</div>
+      <div class="vergeet-niet-title">📋 Mogelijk niet vermeld in de memo</div>
       <div class="vergeet-niet-list" id="vergeet-niet-list"></div>
     </div>
 
@@ -2155,49 +2155,58 @@ function renderOutput(tpl) {
 }
 
 // ===== VERGEET NIET =====
+// Toont alleen velden die ontbreken in de gegenereerde output
 function renderVergeetNiet() {
   const block = document.getElementById('vergeet-niet');
   const list = document.getElementById('vergeet-niet-list');
   if (!block || !list) return;
 
-  const templateMap = {
+  const output = (document.getElementById('output-blocks')?.textContent || '').toLowerCase();
+
+  // Per template: { label, keywords[] } — toon alleen als GEEN keyword gevonden in output
+  const checks = {
     intake: [
-      '✓ Informed consent besproken?',
-      '✓ ICD-10 code vermeld?',
-      '✓ Verwijzer vermeld?'
+      { label: 'ICD-10 diagnose code ontbreekt', kw: ['icd', 'diagnose code', 'icd-10'] },
+      { label: 'Verwijzer niet vermeld', kw: ['verwijzer', 'huisarts', 'specialist', 'verwijzing'] },
+      { label: 'Behandeldoel niet geformuleerd', kw: ['behandeldoel', 'doelstelling', 'doel'] },
     ],
     soep: [
-      '✓ Thuisoefeningen meegegeven?',
-      '✓ Volgende afspraak gepland?',
-      '✓ Rode vlaggen gecontroleerd?'
+      { label: 'NRS pijnscore niet vermeld', kw: ['nrs', '/10', 'pijnscore'] },
+      { label: 'Objectieve meting ontbreekt', kw: ['rom', 'graden', '°', 'meting', 'kracht', 'cm'] },
+      { label: 'Thuisoefening niet genoteerd', kw: ['thuisoefening', 'oefening', 'huiswerk'] },
     ],
     behandelplan: [
-      '✓ Thuisoefeningen meegegeven?',
-      '✓ Volgende afspraak gepland?',
-      '✓ Rode vlaggen gecontroleerd?'
-    ],
-    afsluiting: [
-      '✓ Terugkoppeling verwijzer verstuurd?',
-      '✓ Ontslagadvies aan patiënt gegeven?'
-    ],
-    administratie: [
-      '✓ AGB-code vermeld?',
-      '✓ Urgentie aangegeven?',
-      '✓ Kopie naar dossier?'
+      { label: 'Behandelfrequentie niet vermeld', kw: ['per week', 'frequentie', 'x per'] },
+      { label: 'Prognose ontbreekt', kw: ['prognose', 'verwacht', 'herstel'] },
+      { label: 'SMART-doelen niet geformuleerd', kw: ['smart', 'specifiek', 'meetbaar'] },
     ],
     evaluatie: [
-      '✓ Doelen geëvalueerd?',
-      '✓ Behandelplan bijgesteld?',
-      '✓ Patiënt geïnformeerd?'
-    ]
+      { label: 'Vergelijking met beginmeting ontbreekt', kw: ['beginmeting', 'intake', 'begin', 't0'] },
+      { label: 'Bijstelling behandelplan niet vermeld', kw: ['bijstell', 'aanpass', 'wijzig'] },
+    ],
+    afsluiting: [
+      { label: 'Terugkoppeling naar verwijzer niet vermeld', kw: ['terugkoppel', 'verwijzer', 'brief'] },
+      { label: 'Ontslagadvies ontbreekt', kw: ['ontslagadvies', 'advies', 'na afsluiting'] },
+    ],
+    administratie: [
+      { label: 'AGB-code ontbreekt', kw: ['agb', 'agb-code'] },
+      { label: 'Prestatiecode niet vermeld', kw: ['prestatiecode', 'nza', '1100'] },
+    ],
   };
 
-  const items = templateMap[currentTemplate] || ['✓ Documentatie compleet?', '✓ Ondertekend?'];
+  const items = (checks[currentTemplate] || []).filter(c =>
+    !c.kw.some(kw => output.includes(kw))
+  );
+
+  if (items.length === 0) {
+    block.classList.remove('visible');
+    return;
+  }
 
   list.innerHTML = items.map((item, i) => `
     <div class="vergeet-niet-item">
       <input type="checkbox" id="vn-${i}" />
-      <label for="vn-${i}">${item}</label>
+      <label for="vn-${i}">${item.label}</label>
     </div>
   `).join('');
 
