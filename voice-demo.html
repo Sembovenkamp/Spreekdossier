@@ -1058,6 +1058,8 @@ async function generateDocument() {
   document.getElementById('output-container').classList.add('visible');
   document.getElementById('btn-generate').disabled = false;
   document.getElementById('output-container').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  // Auto-open en genereer patiëntbericht direct na documentatie
+  setTimeout(() => { if (!pmsgOpen) togglePatientMsg(); }, 500);
 }
 
 // ===== PARSE SINGLE-TYPE OUTPUT =====
