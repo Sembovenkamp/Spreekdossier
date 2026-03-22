@@ -104,6 +104,7 @@
     .transcript-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
     .transcript-box { background: var(--bg); border-radius: var(--radius-sm); padding: 16px; min-height: 120px; max-height: 240px; overflow-y: auto; font-size: 15px; line-height: 1.7; color: var(--text); border: 1.5px solid var(--border); transition: border-color 0.3s; outline: none; }
     .transcript-box[contenteditable="true"]:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,201,181,0.1); }
+    .transcript-box:empty:not(:focus)::before { content: attr(data-placeholder); color: var(--text-light); font-style: italic; pointer-events: none; }
     .transcript-box.active { border-color: var(--red); }
     .transcript-placeholder { color: var(--text-light); font-style: italic; }
     .transcript-interim { color: var(--text-muted); }
@@ -491,9 +492,7 @@
       <span class="processing-text">Audio verwerken — tekst verschijnt zo...</span>
     </div>
     <div class="transcript-label" id="transcript-label">Transcriptie:</div>
-    <div class="transcript-box" id="transcript-box" contenteditable="false" spellcheck="true" oninput="onTranscriptEdit()">
-      <span class="transcript-placeholder" id="transcript-placeholder">Druk op de microfoon, spreek in en druk op stop. Je tekst verschijnt daarna hier.</span>
-    </div>
+    <div class="transcript-box" id="transcript-box" contenteditable="true" spellcheck="true" oninput="onTranscriptEdit()" data-placeholder="Spreek in via de microfoon, of typ hier direct je memo..."></div>
     <div class="mic-notice" id="mic-notice">⚠️ Microfoon niet beschikbaar. Gebruik het tekstveld hieronder om je memo in te typen.</div>
     <div class="rec-controls">
       <button class="btn-example" onclick="fillExample()" id="btn-example">💡 Vul voorbeeld in</button>
@@ -1475,20 +1474,21 @@ function setRecordingUI(active) {
 function renderTranscript() {
   const box = document.getElementById('transcript-box');
   if (!finalTranscript && !interimTranscript) {
-    box.contentEditable = 'false';
-    box.innerHTML = '<span class="transcript-placeholder">Je gesproken tekst verschijnt hier terwijl je praat...</span>';
+    // Leeg + bewerkbaar — placeholder via CSS
+    if (!isRecording) {
+      box.contentEditable = 'true';
+      if (!box.textContent.trim()) box.innerHTML = '';
+    }
+    const addBtn = document.getElementById('btn-add-memo');
+    if (addBtn) addBtn.style.display = 'none';
     return;
   }
   let html = '';
   if (finalTranscript) html += `<span>${escapeHtml(finalTranscript)}</span>`;
   if (interimTranscript) html += `<span class="transcript-interim"> ${escapeHtml(interimTranscript)}</span>`;
   box.innerHTML = html;
-  // Enable editing once there's real content and no live interim transcript
-  if (finalTranscript && !isRecording) {
-    box.contentEditable = 'true';
-  }
+  box.contentEditable = isRecording ? 'false' : 'true';
 
-  // Toon "memo toevoegen" knop altijd zodra er tekst is en niet aan het opnemen
   const addBtn = document.getElementById('btn-add-memo');
   if (addBtn) addBtn.style.display = (finalTranscript && !isRecording) ? 'flex' : 'none';
 }
@@ -1496,9 +1496,14 @@ function renderTranscript() {
 // Called when user manually edits the transcript box
 function onTranscriptEdit() {
   const box = document.getElementById('transcript-box');
-  // Update finalTranscript from edited content (strip HTML)
   finalTranscript = box.innerText || box.textContent || '';
   updateGenerateButton();
+  // Toon memo-knop zodra er tekst is
+  const addBtn = document.getElementById('btn-add-memo');
+  if (addBtn) addBtn.style.display = finalTranscript.trim().length >= 5 ? 'flex' : 'none';
+  // Toon wis-knop
+  const clearBtn = document.getElementById('btn-clear');
+  if (clearBtn) clearBtn.style.display = finalTranscript.trim() ? 'inline-flex' : 'none';
 }
 
 function escapeHtml(str) {
