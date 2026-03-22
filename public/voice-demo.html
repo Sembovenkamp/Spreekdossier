@@ -1646,27 +1646,29 @@ async function generateDocument() {
   document.getElementById('output-badge').textContent = `✓ Gegenereerd · ${genSec}s`;
   document.getElementById('output-container').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-  // Toon patiëntbericht sectie — vul direct met fallback, vervang met AI
+  // Toon patiëntbericht sectie altijd — vul met fallback, vervang met AI op achtergrond
   const memoForMsg = savedMemo || getMemoText();
+  const block = document.getElementById('patient-msg-block');
+  const textarea = document.getElementById('patient-msg-text');
+  const badge = document.getElementById('patient-msg-badge');
+  const stepBadge4 = document.getElementById('step-badge-4');
+
+  // Reset patientMessages voor nieuwe generatie
+  patientMessages = { whatsapp: '', email: '', sms: '' };
+
+  // Altijd tonen — vul met fallback als er memo is, anders generieke tekst
+  block.style.display = 'block';
+  if (stepBadge4) stepBadge4.style.display = 'inline-flex';
+
   if (memoForMsg && memoForMsg.length >= 5) {
-    const block = document.getElementById('patient-msg-block');
-    const textarea = document.getElementById('patient-msg-text');
-    const badge = document.getElementById('patient-msg-badge');
-    const stepBadge4 = document.getElementById('step-badge-4');
-
-    // Reset zodat generatePatientMessage altijd opnieuw de fallback bouwt
-    patientMessages = { whatsapp: '', email: '', sms: '' };
-
-    // Toon blok en vul direct met fallback
-    block.style.display = 'block';
-    if (stepBadge4) stepBadge4.style.display = 'inline-flex';
     const fallbackWa = buildFallbackPatientMsg('whatsapp', memoForMsg);
     textarea.value = fallbackWa;
     textarea.style.opacity = '1';
     badge.textContent = '⏳ AI versie wordt geladen...';
-
-    // Genereer AI versie op achtergrond en vervang textarea
     generatePatientMessage(memoForMsg);
+  } else {
+    textarea.value = 'Spreek eerst een memo in om automatisch een patiëntbericht te genereren.';
+    badge.textContent = '— Geen memo beschikbaar';
   }
 }
 
