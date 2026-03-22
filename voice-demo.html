@@ -226,6 +226,20 @@
     .mic-notice { background: #fffbeb; border: 1.5px solid #fde68a; border-radius: var(--radius-sm); padding: 12px 16px; font-size: 13px; color: #92400e; line-height: 1.5; margin-top: 12px; display: none; }
     .mic-notice.visible { display: block; }
 
+    /* MEMO STACK */
+    .btn-add-memo { display: none; align-items: center; justify-content: center; gap: 8px; width: 100%; margin-top: 12px; padding: 11px 20px; background: white; color: var(--primary); font-size: 14px; font-weight: 600; border: 2px dashed rgba(0,168,150,0.4); border-radius: 100px; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+    .btn-add-memo:hover { background: var(--primary-light); border-color: var(--primary); }
+    .memo-stack { display: none; margin-top: 14px; background: white; border: 1.5px solid rgba(0,168,150,0.2); border-radius: var(--radius); overflow: hidden; }
+    .memo-stack.has-items { display: block; }
+    .memo-stack-header { padding: 10px 16px; background: var(--primary-light); font-size: 12px; font-weight: 700; color: var(--primary-dark); letter-spacing: 0.06em; text-transform: uppercase; }
+    .memo-stack-list { display: flex; flex-direction: column; }
+    .memo-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-top: 1px solid var(--border); }
+    .memo-item:first-child { border-top: none; }
+    .memo-num { width: 24px; height: 24px; border-radius: 50%; background: var(--primary); color: white; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .memo-text { flex: 1; font-size: 13px; color: var(--text); line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .memo-del { background: none; border: none; color: var(--text-light); font-size: 16px; cursor: pointer; padding: 0 4px; line-height: 1; flex-shrink: 0; transition: color 0.15s; }
+    .memo-del:hover { color: var(--red); }
+
     footer { text-align: center; padding: 28px 20px 20px; border-top: 1px solid var(--border); margin-top: 40px; }
     footer a { color: var(--primary); text-decoration: none; font-weight: 600; font-size: 14px; }
     footer p { font-size: 13px; color: var(--text-light); margin-top: 6px; }
@@ -325,6 +339,13 @@
       <button class="btn-example" onclick="fillExample()" id="btn-example">💡 Vul voorbeeld in</button>
       <button class="btn-clear" id="btn-clear" onclick="clearTranscript()">🗑️ Wis</button>
     </div>
+    <button class="btn-add-memo" id="btn-add-memo" onclick="addMemo()">＋ Memo toevoegen voor dezelfde patiënt</button>
+  </div>
+
+  <!-- MEMO STACK -->
+  <div class="memo-stack" id="memo-stack">
+    <div class="memo-stack-header">📝 Opgeslagen memo's — worden samengevoegd bij genereren</div>
+    <div class="memo-stack-list" id="memo-stack-list"></div>
   </div>
 
   <!-- FALLBACK -->
@@ -756,6 +777,7 @@ let pmsgData = {};
 let pmsgActiveTab = 'whatsapp';
 let generatedMemo = '';
 let genStartTime = 0;
+let memoStack = []; // Opgeslagen memo's
 
 // ===== INIT =====
 (function init() {
@@ -927,6 +949,9 @@ function renderTranscript() {
     box.contentEditable = 'true';
     if (hint) hint.classList.add('visible');
     if (label) label.textContent = 'Transcriptie (aanpasbaar):';
+    // Toon "Voeg memo toe" knop
+    const addBtn = document.getElementById('btn-add-memo');
+    if (addBtn) addBtn.style.display = 'flex';
   } else {
     box.contentEditable = 'false';
     if (hint) hint.classList.remove('visible');
@@ -954,19 +979,85 @@ function clearTranscript() {
 }
 
 function updateGenerateButton() {
-  document.getElementById('btn-generate').disabled = finalTranscript.trim().length < 5;
+  const hasCurrent = finalTranscript.trim().length >= 5;
+  const hasStacked = memoStack.length > 0;
+  document.getElementById('btn-generate').disabled = !hasCurrent && !hasStacked;
 }
 
 function getMemoText() {
+  let current = '';
   if (speechAPIAvailable) {
-    // Lees uit het bewerkbare tekstvak — bevat eventuele handmatige aanpassingen
     const box = document.getElementById('transcript-box');
     const boxText = box && box.contentEditable === 'true'
       ? (box.innerText || box.textContent || '').trim()
       : '';
-    return boxText || finalTranscript.trim();
+    current = boxText || finalTranscript.trim();
+  } else {
+    current = document.getElementById('fallback-input').value.trim();
   }
-  return document.getElementById('fallback-input').value.trim();
+  // Combineer opgeslagen memo's + huidige tekst
+  const all = [...memoStack, current].filter(m => m.length > 0);
+  if (all.length === 0) return '';
+  if (all.length === 1) return all[0];
+  return all.map((m, i) => `[Memo ${i + 1}]\n${m}`).join('\n\n');
+}
+
+// ===== MEMO STACK =====
+function addMemo() {
+  const box = document.getElementById('transcript-box');
+  const currentText = (box && box.contentEditable === 'true')
+    ? (box.innerText || box.textContent || '').trim()
+    : finalTranscript.trim();
+
+  if (!currentText || currentText.length < 5) return;
+
+  memoStack.push(currentText);
+  renderMemoStack();
+
+  // Reset transcriptievak voor nieuwe opname
+  finalTranscript = '';
+  interimTranscript = '';
+  if (box) { box.contentEditable = 'false'; }
+  renderTranscript();
+  document.getElementById('btn-clear').style.display = 'none';
+  document.getElementById('btn-add-memo').style.display = 'none';
+  const hint = document.getElementById('transcript-edit-hint');
+  if (hint) hint.classList.remove('visible');
+  const label = document.getElementById('transcript-label');
+  if (label) label.textContent = 'Transcriptie (live):';
+  document.getElementById('status-text').textContent = `Memo ${memoStack.length} opgeslagen — spreek de volgende in`;
+  document.getElementById('record-hint').textContent = 'Druk op de microfoon voor de volgende memo';
+}
+
+function removeMemo(idx) {
+  memoStack.splice(idx, 1);
+  renderMemoStack();
+  updateGenerateButton();
+}
+
+function renderMemoStack() {
+  const stack = document.getElementById('memo-stack');
+  const list = document.getElementById('memo-stack-list');
+  if (!stack || !list) return;
+
+  if (memoStack.length === 0) {
+    stack.classList.remove('has-items');
+    return;
+  }
+  stack.classList.add('has-items');
+  list.innerHTML = '';
+  memoStack.forEach((m, i) => {
+    const preview = m.length > 90 ? m.substring(0, 90) + '…' : m;
+    const item = document.createElement('div');
+    item.className = 'memo-item';
+    item.innerHTML = `
+      <div class="memo-num">${i + 1}</div>
+      <div class="memo-text">${escapeHtml(preview)}</div>
+      <button class="memo-del" onclick="removeMemo(${i})" title="Verwijder">✕</button>
+    `;
+    list.appendChild(item);
+  });
+  updateGenerateButton();
 }
 
 function fillExample() {
@@ -1237,6 +1328,9 @@ function resetToStart() {
   generatedMemo = '';
   pmsgData = {};
   pmsgOpen = false;
+  memoStack = [];
+  renderMemoStack();
+  document.getElementById('btn-add-memo').style.display = 'none';
   clearInterval(recTimerInterval);
   recTimerInterval = null;
   document.getElementById('rec-timer').textContent = '';
