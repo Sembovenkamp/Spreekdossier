@@ -1809,10 +1809,7 @@ async function generateDocument() {
     }
   } catch(e) {
     console.error('Patiëntbericht tonen mislukt:', e);
-    const textarea = document.getElementById('patient-msg-text');
-    if (textarea && !textarea.value) {
-      textarea.value = 'Er is een fout opgetreden. Klik op "Opnieuw genereren" om het opnieuw te proberen.';
-    }
+    // Geen foutmelding in textarea — fallback is al gezet
   }
 }
 
@@ -1867,6 +1864,7 @@ async function generatePatientMessage(memoInput) {
   const block = document.getElementById('patient-msg-block');
   const textarea = document.getElementById('patient-msg-text');
   const badge = document.getElementById('patient-msg-badge');
+  if (!block || !textarea || !badge) return;
 
   block.style.display = 'block';
   badge.textContent = '⏳ AI versie laden...';
