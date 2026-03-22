@@ -589,7 +589,7 @@
 
   <!-- PATIËNTBERICHT SECTIE -->
   <div class="step-badge" id="step-badge-4" style="display:none; margin: 20px 0 14px;"><span class="step-num">4</span> Stuur patiëntbericht</div>
-  <div class="patient-msg-block" id="patient-msg-block" style="display:none">
+  <div class="patient-msg-block" id="patient-msg-block" style="display:none; margin-top: 20px;">
     <div class="patient-msg-header">
       <div>
         <div class="patient-msg-title">📱 Patiëntbericht</div>
@@ -1754,9 +1754,8 @@ async function generateDocument() {
     const badge = document.getElementById('patient-msg-badge');
     const stepBadge4 = document.getElementById('step-badge-4');
 
-    block.setAttribute('style', 'display: block');
-    block.classList.add('pmsg-visible');
-    if (stepBadge4) { stepBadge4.setAttribute('style', 'display: inline-flex; margin: 20px 0 14px;'); }
+    block.style.cssText = 'display: block !important; margin-top: 20px;';
+    if (stepBadge4) { stepBadge4.style.cssText = 'display: inline-flex; margin: 20px 0 14px;'; }
 
     if (memoForMsg && memoForMsg.length >= 5) {
       const fallbackWa = buildFallbackPatientMsg('whatsapp', memoForMsg);
@@ -1822,7 +1821,7 @@ async function generatePatientMessage(memoInput) {
   const textarea = document.getElementById('patient-msg-text');
   const badge = document.getElementById('patient-msg-badge');
 
-  block.style.display = 'block';
+  block.style.cssText = 'display: block !important; margin-top: 20px;';
   badge.textContent = '⏳ AI versie laden...';
 
   // Zorg altijd voor fallback inhoud
@@ -2379,7 +2378,7 @@ function resetToStart() {
   if (firstEpdBtn) firstEpdBtn.classList.add('active');
 
   // Reset patiëntbericht
-  document.getElementById('patient-msg-block').style.display = 'none';
+  document.getElementById('patient-msg-block').style.cssText = 'display: none;';
   const stepBadge4Reset = document.getElementById('step-badge-4');
   if (stepBadge4Reset) stepBadge4Reset.style.display = 'none';
   document.getElementById('patient-msg-text').value = '';
