@@ -1841,19 +1841,27 @@ async function generatePatientMessage(memoInput) {
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ memo, type: 'patientbericht' })
+      body: JSON.stringify({ memo, mode: 'patient_message' })
     });
 
     const result = await res.json();
-    const rawText = result.output || result.result || '';
+    // API retourneert { output: { whatsapp, email, sms } }
+    const out = result.output;
 
-    if (res.ok && rawText) {
-      const parsed = parsePatientBerichtSections(rawText, memo);
-      // Alleen overschrijven als er echte inhoud is
-      if (parsed.whatsapp && parsed.whatsapp.length > 10) {
-        patientMessages.whatsapp = parsed.whatsapp;
-        patientMessages.email = parsed.email;
-        patientMessages.sms = parsed.sms;
+    if (res.ok && out) {
+      if (typeof out === 'object' && out.whatsapp) {
+        // JSON object direct gebruiken
+        if (out.whatsapp.length > 10) patientMessages.whatsapp = out.whatsapp;
+        if (out.email && out.email.length > 10) patientMessages.email = out.email;
+        if (out.sms && out.sms.length > 10) patientMessages.sms = out.sms;
+      } else if (typeof out === 'string' && out.length > 10) {
+        // Fallback: probeer te parsen als tekst met headers
+        const parsed = parsePatientBerichtSections(out, memo);
+        if (parsed.whatsapp && parsed.whatsapp.length > 10) {
+          patientMessages.whatsapp = parsed.whatsapp;
+          patientMessages.email = parsed.email;
+          patientMessages.sms = parsed.sms;
+        }
       }
     }
   } catch(e) {
