@@ -1657,10 +1657,9 @@ async function generateDocument() {
     const badge = document.getElementById('patient-msg-badge');
     const stepBadge4 = document.getElementById('step-badge-4');
 
-    block.style.display = 'block';
-    block.style.removeProperty('display'); // verwijder inline, gebruik class
+    block.setAttribute('style', 'display: block');
     block.classList.add('pmsg-visible');
-    if (stepBadge4) { stepBadge4.style.display = 'inline-flex'; }
+    if (stepBadge4) { stepBadge4.setAttribute('style', 'display: inline-flex; margin: 20px 0 14px;'); }
 
     if (memoForMsg && memoForMsg.length >= 5) {
       const fallbackWa = buildFallbackPatientMsg('whatsapp', memoForMsg);
