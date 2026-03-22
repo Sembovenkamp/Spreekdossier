@@ -490,7 +490,10 @@
       <div class="processing-spinner"></div>
       <span class="processing-text">Audio verwerken — tekst verschijnt zo...</span>
     </div>
-    <div class="transcript-label" id="transcript-label">Transcriptie:</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+      <div class="transcript-label" id="transcript-label">Transcriptie:</div>
+      <div id="char-counter" style="font-size:11px;color:var(--text-light);"></div>
+    </div>
     <div class="transcript-box" id="transcript-box" contenteditable="true" spellcheck="true" oninput="onTranscriptEdit()" data-placeholder="Spreek in via de microfoon, of typ hier direct je memo..."></div>
     <div class="mic-notice" id="mic-notice">⚠️ Microfoon niet beschikbaar. Gebruik het tekstveld hieronder om je memo in te typen.</div>
     <div class="rec-controls">
@@ -598,8 +601,9 @@
     </div>
     <textarea class="patient-msg-text" id="patient-msg-text" rows="10" spellcheck="true"></textarea>
     <div class="patient-msg-actions">
-      <button class="btn-copy-patient" id="btn-copy-patient" onclick="copyPatientMsg()">📋 Kopieer bericht</button>
-      <button class="btn-regen-patient" onclick="regenPatientMsg()">🔄 Opnieuw genereren</button>
+      <button class="btn-copy-patient" id="btn-copy-patient" onclick="copyPatientMsg()">📋 Kopieer</button>
+      <button class="btn-regen-patient" id="btn-whatsapp-share" onclick="shareWhatsApp()" style="background:transparent;color:#25D366;border:1.5px solid #25D366;font-size:13px;font-weight:700;padding:12px 18px;border-radius:100px;cursor:pointer;transition:all 0.2s;font-family:inherit;">💬 WhatsApp</button>
+      <button class="btn-regen-patient" onclick="regenPatientMsg()">🔄 Opnieuw</button>
     </div>
 
     <!-- AANPASBARE TEMPLATE -->
@@ -1493,12 +1497,23 @@ function onTranscriptEdit() {
   const box = document.getElementById('transcript-box');
   finalTranscript = box.innerText || box.textContent || '';
   updateGenerateButton();
-  // Toon memo-knop zodra er tekst is
   const addBtn = document.getElementById('btn-add-memo');
   if (addBtn) addBtn.style.display = finalTranscript.trim().length >= 5 ? 'flex' : 'none';
-  // Toon wis-knop
   const clearBtn = document.getElementById('btn-clear');
   if (clearBtn) clearBtn.style.display = finalTranscript.trim() ? 'inline-flex' : 'none';
+  // Karakterteller
+  const counter = document.getElementById('char-counter');
+  if (counter) {
+    const len = finalTranscript.trim().length;
+    counter.textContent = len > 0 ? `${len} tekens` : '';
+  }
+}
+
+function shareWhatsApp() {
+  const text = document.getElementById('patient-msg-text')?.value;
+  if (!text) return;
+  const encoded = encodeURIComponent(text);
+  window.open(`https://wa.me/?text=${encoded}`, '_blank');
 }
 
 function escapeHtml(str) {
@@ -1866,6 +1881,9 @@ async function generatePatientMessage(memoInput) {
   textarea.value = patientMessages[currentChannel] || patientMessages.whatsapp || buildFallbackPatientMsg(currentChannel, memo);
   textarea.style.opacity = '1';
   badge.textContent = '✓ Klaar om te versturen';
+  // Scroll naar patiëntbericht
+  const block = document.getElementById('patient-msg-block');
+  if (block) block.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function buildFallbackPatientMsg(channel, memo) {
