@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>Spreekdossier — Live Demo · 6 Templates</title>
   <meta name="description" content="Kies je template, spreek 2 minuten in, ontvang complete professionele documentatie. Gratis demo voor fysiotherapeuten." />
+  <meta property="og:title" content="Spreekdossier Demo — Probeer het zelf" />
+  <meta property="og:description" content="Spreek een behandelnotitie in en zie in 15 seconden een complete SOEP-rapportage. Gratis, geen account nodig." />
+  <meta property="og:image" content="https://spreekdossier-site.vercel.app/og-image.png" />
+  <meta property="og:url" content="https://spreekdossier.nl/voice-demo.html" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
@@ -77,7 +81,8 @@
     .ati-field { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 100px; background: var(--primary-light); color: var(--primary); border: 1px solid var(--border-glow); }
 
     /* RECORDING */
-    .recording-section { background: var(--bg-card); border-radius: var(--radius); padding: 28px 24px; border: 1.5px solid var(--border); box-shadow: var(--shadow); margin-bottom: 20px; }
+    .recording-section { background: var(--bg-card); border-radius: var(--radius); padding: 28px 24px; border: 1.5px solid var(--border); box-shadow: var(--shadow); margin-bottom: 20px; transition: border-color 0.3s, box-shadow 0.3s; }
+    .recording-section.recording-active { border-color: rgba(239,68,68,0.3); box-shadow: var(--shadow), 0 0 0 3px rgba(239,68,68,0.06); }
     .rec-status { text-align: center; margin-bottom: 20px; }
     .status-indicator { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--text-muted); padding: 8px 18px; background: var(--bg); border-radius: 100px; border: 1.5px solid var(--border); transition: all 0.3s; }
     .status-indicator.recording { color: var(--red); background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); }
@@ -93,12 +98,36 @@
     @keyframes pulse-record { 0% { box-shadow: 0 6px 24px rgba(239,68,68,0.4), 0 0 0 0 rgba(239,68,68,0.4); } 70% { box-shadow: 0 6px 24px rgba(239,68,68,0.4), 0 0 0 20px rgba(239,68,68,0); } 100% { box-shadow: 0 6px 24px rgba(239,68,68,0.4), 0 0 0 0 rgba(239,68,68,0); } }
     
     .btn-record-label { text-align: center; font-size: 13px; color: var(--text-muted); margin-bottom: 18px; }
+    .rec-timer { display: none; text-align: center; font-size: 20px; font-weight: 800; color: var(--red); letter-spacing: 0.05em; margin-bottom: 6px; font-variant-numeric: tabular-nums; }
+    .rec-timer.active { display: block; }
 
     .transcript-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
-    .transcript-box { background: var(--bg); border-radius: var(--radius-sm); padding: 16px; min-height: 90px; font-size: 15px; line-height: 1.7; color: var(--text); border: 1.5px solid var(--border); transition: border-color 0.3s; }
+    .transcript-box { background: var(--bg); border-radius: var(--radius-sm); padding: 16px; min-height: 120px; max-height: 240px; overflow-y: auto; font-size: 15px; line-height: 1.7; color: var(--text); border: 1.5px solid var(--border); transition: border-color 0.3s; }
     .transcript-box.active { border-color: var(--red); }
     .transcript-placeholder { color: var(--text-light); font-style: italic; }
     .transcript-interim { color: var(--text-muted); }
+
+    /* Audiometer */
+    .audiometer { display: flex; align-items: flex-end; justify-content: center; gap: 4px; height: 48px; margin: 0 auto 16px; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+    .audiometer.active { opacity: 1; }
+    .audiometer-bar { width: 6px; border-radius: 3px; background: var(--red); height: 6px; }
+    /* Pure CSS animation — no JS inline style manipulation needed */
+    @keyframes bar-bounce { 0%, 100% { height: 6px; } 50% { height: 40px; } }
+    .audiometer.active #ab1 { animation: bar-bounce 0.70s ease-in-out infinite; animation-delay: 0.00s; }
+    .audiometer.active #ab2 { animation: bar-bounce 0.90s ease-in-out infinite; animation-delay: 0.10s; }
+    .audiometer.active #ab3 { animation: bar-bounce 0.60s ease-in-out infinite; animation-delay: 0.15s; }
+    .audiometer.active #ab4 { animation: bar-bounce 0.80s ease-in-out infinite; animation-delay: 0.05s; }
+    .audiometer.active #ab5 { animation: bar-bounce 0.75s ease-in-out infinite; animation-delay: 0.20s; }
+    .audiometer.active #ab6 { animation: bar-bounce 0.85s ease-in-out infinite; animation-delay: 0.10s; }
+    .audiometer.active #ab7 { animation: bar-bounce 0.65s ease-in-out infinite; animation-delay: 0.25s; }
+    .audiometer.active #ab8 { animation: bar-bounce 0.90s ease-in-out infinite; animation-delay: 0.05s; }
+    .audiometer.active #ab9 { animation: bar-bounce 0.70s ease-in-out infinite; animation-delay: 0.15s; }
+
+    /* Processing state */
+    .processing-indicator { display: none; align-items: center; gap: 12px; justify-content: center; padding: 14px; background: var(--primary-light); border-radius: var(--radius-sm); border: 1px solid var(--border-glow); margin-bottom: 12px; }
+    .processing-indicator.visible { display: flex; }
+    .processing-spinner { width: 18px; height: 18px; border: 2px solid var(--border-glow); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+    .processing-text { font-size: 14px; font-weight: 600; color: var(--primary); }
 
     .rec-controls { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; }
     .btn-example { display: inline-flex; align-items: center; gap: 6px; background: var(--bg); color: var(--text-muted); font-size: 13px; font-weight: 500; padding: 9px 16px; border-radius: 100px; border: 1.5px solid var(--border); cursor: pointer; transition: all 0.2s; font-family: inherit; }
@@ -106,9 +135,26 @@
     .btn-clear { display: none; background: transparent; color: var(--text-muted); font-size: 13px; padding: 9px 16px; border-radius: 100px; border: 1.5px solid var(--border); cursor: pointer; transition: all 0.2s; font-family: inherit; }
     .btn-clear:hover { border-color: var(--red); color: var(--red); }
 
+    /* MEMO STACK */
+    .btn-add-memo { display: none; align-items: center; justify-content: center; gap: 8px; background: var(--bg-card); color: var(--primary); font-size: 14px; font-weight: 600; padding: 11px 22px; border-radius: 100px; border: 2px dashed rgba(0,201,181,0.35); cursor: pointer; transition: all 0.2s; font-family: inherit; width: 100%; margin-top: 12px; }
+    .btn-add-memo:hover { border-color: var(--primary); background: var(--primary-light); }
+    .memo-stack { display: none; background: var(--bg-card); border: 1.5px solid var(--border-glow); border-radius: var(--radius); padding: 14px 16px; margin-top: 16px; }
+    .memo-stack.has-items { display: block; }
+    .memo-stack-label { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--primary); margin-bottom: 10px; }
+    .memo-stack-list { display: flex; flex-direction: column; gap: 8px; }
+    .memo-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; background: var(--bg); border-radius: var(--radius-sm); border: 1.5px solid var(--border); }
+    .memo-item-num { width: 22px; height: 22px; border-radius: 50%; background: var(--primary); color: #090912; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .memo-item-text { font-size: 13px; color: var(--text); line-height: 1.5; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .memo-item-del { background: none; border: none; color: var(--text-light); font-size: 16px; cursor: pointer; padding: 0 2px; line-height: 1; flex-shrink: 0; transition: color 0.15s; }
+    .memo-item-del:hover { color: var(--red); }
+
     .btn-generate { display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--primary); color: #090912; font-size: 16px; font-weight: 700; padding: 16px 32px; border-radius: 100px; border: none; cursor: pointer; transition: all 0.25s; box-shadow: 0 4px 20px rgba(0,201,181,0.3); width: 100%; font-family: inherit; margin-top: 16px; }
     .btn-generate:hover:not(:disabled) { background: #00e5cf; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,201,181,0.4); }
     .btn-generate:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
+    .btn-generate.shake { animation: shake 0.4s ease; }
+    .btn-generate.ready { animation: btn-ready-pulse 2s ease-in-out infinite; }
+    @keyframes btn-ready-pulse { 0%,100% { box-shadow: 0 4px 20px rgba(0,201,181,0.3); } 50% { box-shadow: 0 4px 32px rgba(0,201,181,0.6), 0 0 0 6px rgba(0,201,181,0.1); } }
 
     /* FALLBACK */
     .fallback-section { background: var(--bg-card); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; display: none; box-shadow: var(--shadow); }
@@ -143,7 +189,8 @@
     .output-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--primary-light); color: var(--primary); font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 100px; border: 1px solid var(--border-glow); }
     .output-template-label { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
 
-    .output-block { background: var(--bg-card); border-radius: var(--radius); overflow: hidden; border: 1.5px solid var(--border); animation: slideUp 0.4s ease both; }
+    .output-block { background: var(--bg-card); border-radius: var(--radius); overflow: hidden; border: 1.5px solid var(--border); animation: slideUp 0.4s ease both; transition: border-color 0.2s; }
+    .output-block:hover { border-color: rgba(0,201,181,0.2); }
     @keyframes slideUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
     .output-block:nth-child(2) { animation-delay: 0.05s; }
     .output-block:nth-child(3) { animation-delay: 0.1s; }
@@ -161,9 +208,11 @@
     .block-badge-4 { background: linear-gradient(135deg, #16a34a, #22c55e); }
     .block-name { font-weight: 700; font-size: 15px; }
     .block-desc { font-size: 12px; color: var(--text-muted); }
-    .block-text { padding: 16px 18px; font-size: 15px; color: var(--text); line-height: 1.75; white-space: pre-line; }
+    .block-text { padding: 16px 18px; font-size: 14px; color: var(--text); line-height: 1.8; white-space: pre-line; font-feature-settings: 'tnum'; user-select: text; -webkit-user-select: text; cursor: text; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-5px)} 40%{transform:translateX(5px)} 60%{transform:translateX(-3px)} 80%{transform:translateX(3px)} }
+    .btn-generate.shake { animation: shake 0.35s ease; }
 
-    .btn-copy-block { display: inline-flex; align-items: center; gap: 5px; background: var(--bg); color: var(--text-muted); font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 100px; border: 1.5px solid var(--border); cursor: pointer; transition: all 0.2s; font-family: inherit; white-space: nowrap; }
+    .btn-copy-block { display: inline-flex; align-items: center; gap: 5px; background: var(--bg); color: var(--text-muted); font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: 100px; border: 1.5px solid var(--border); cursor: pointer; transition: all 0.2s; font-family: inherit; white-space: nowrap; }
     .btn-copy-block:hover { border-color: var(--primary); color: var(--primary); }
     .btn-copy-block.copied { background: var(--primary-light); color: var(--primary); border-color: var(--border-glow); }
 
@@ -177,14 +226,105 @@
     .mic-notice { background: rgba(255,201,0,0.08); border: 1.5px solid rgba(255,201,0,0.2); border-radius: var(--radius-sm); padding: 12px 16px; font-size: 13px; color: #fbbf24; line-height: 1.5; margin-top: 12px; display: none; }
     .mic-notice.visible { display: block; }
 
+    /* EPD SELECTOR */
+    .epd-selector { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+    .epd-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
+    .epd-btn { padding: 6px 14px; border-radius: 100px; border: 1.5px solid var(--border); background: var(--bg); color: var(--text-muted); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+    .epd-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .epd-btn.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+
     footer { text-align: center; padding: 28px 20px 20px; border-top: 1px solid var(--border); margin-top: 40px; }
     footer a { color: var(--primary); text-decoration: none; font-weight: 600; font-size: 14px; }
     footer p { font-size: 13px; color: var(--text-light); margin-top: 6px; }
 
-    @media (max-width: 480px) { main { padding: 24px 16px 60px; } .recording-section { padding: 20px 16px; } .output-actions { flex-direction: column; } }
+    @media (max-width: 480px) { main { padding: 24px 16px 60px; } .recording-section { padding: 20px 16px; } .output-actions { flex-direction: column; } .transcript-box { min-height: 100px; max-height: 200px; } }
+
+    /* PATIËNTBERICHT */
+    .patient-msg-block { background: linear-gradient(135deg, rgba(0,201,181,0.06), rgba(255,140,97,0.04)); border: 1.5px solid rgba(0,201,181,0.25); border-radius: var(--radius); padding: 22px; margin-top: 4px; }
+    .patient-msg-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+    .patient-msg-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+    .patient-msg-sub { font-size: 12px; color: var(--text-muted); }
+    .patient-msg-badge { background: rgba(0,201,181,0.15); color: var(--primary); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 100px; border: 1px solid rgba(0,201,181,0.3); white-space: nowrap; }
+    .patient-msg-channels { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+    .patient-ch { padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); color: var(--text-muted); transition: all 0.18s; user-select: none; }
+    .patient-ch:hover { border-color: var(--primary); color: var(--primary); }
+    .patient-ch.active { background: rgba(0,201,181,0.12); border-color: rgba(0,201,181,0.4); color: var(--primary); }
+    .patient-msg-text { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: inherit; font-size: 13px; line-height: 1.7; padding: 14px 16px; resize: vertical; min-height: 180px; outline: none; transition: border-color 0.2s; }
+    .patient-msg-text:focus { border-color: rgba(0,201,181,0.4); }
+    .patient-msg-actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+    .btn-copy-patient { flex: 1; background: var(--primary); color: #090912; font-size: 14px; font-weight: 700; padding: 12px 20px; border-radius: 100px; border: none; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+    .btn-copy-patient:hover { background: #00e5cf; transform: translateY(-1px); }
+    .btn-copy-patient.copied { background: #22c55e; }
+    .btn-regen-patient { background: transparent; color: var(--text-muted); font-size: 13px; font-weight: 600; padding: 12px 18px; border-radius: 100px; border: 1.5px solid var(--border); cursor: pointer; transition: all 0.2s; font-family: inherit; }
+    .btn-regen-patient:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* MOGELIJK GEMIST */
+    .gemist-block { background: rgba(255,159,10,0.06); border: 1.5px solid rgba(255,159,10,0.2); border-radius: var(--radius); padding: 18px 20px; display: none; }
+    .gemist-block.visible { display: block; }
+    .gemist-title { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #fbbf24; margin-bottom: 12px; }
+    .gemist-list { display: flex; flex-direction: column; gap: 8px; }
+    .gemist-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: rgba(255,159,10,0.06); border-radius: 8px; padding: 10px 14px; }
+    .gemist-q { font-size: 13px; color: rgba(240,240,255,0.8); line-height: 1.4; }
+    .gemist-dismiss { background: none; border: 1px solid rgba(255,159,10,0.3); color: #fbbf24; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 100px; cursor: pointer; white-space: nowrap; font-family: inherit; transition: all 0.2s; }
+    .gemist-dismiss:hover { background: rgba(255,159,10,0.15); }
+    .gemist-dismiss.done { border-color: rgba(52,199,89,0.3); color: #22c55e; text-decoration: line-through; opacity: 0.5; }
+
+    /* ACTIEPUNTEN */
+    .actie-block { background: rgba(0,201,181,0.06); border: 1.5px solid rgba(0,201,181,0.2); border-radius: 16px; padding: 18px 20px; display: none; margin-bottom: 14px; }
+    .actie-block.visible { display: block; }
+    .actie-title { font-size: 13px; font-weight: 700; color: #00C9B5; margin-bottom: 12px; }
+    .actie-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
+    .actie-item:last-child { border-bottom: none; }
+    .actie-check { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid rgba(0,201,181,0.4); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
+    .actie-check.done { background: #00C9B5; border-color: #00C9B5; }
+    .actie-check.done::after { content: '✓'; font-size: 11px; font-weight: 700; color: #090912; }
+    .actie-label { color: rgba(240,240,255,0.85); flex: 1; }
+    .actie-label.done { text-decoration: line-through; opacity: 0.5; }
+
+    /* VERWIJSBRIEF MODAL */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 200; display: none; align-items: center; justify-content: center; }
+    .modal-overlay.visible { display: flex; }
+    .modal-box { background: #0f0f1a; border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; padding: 28px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
+    .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+    .modal-text { font-size: 13px; line-height: 1.8; color: rgba(240,240,255,0.8); white-space: pre-wrap; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 16px; min-height: 120px; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .btn-modal-copy { flex: 1; background: #00C9B5; color: #090912; font-weight: 700; padding: 12px; border-radius: 100px; border: none; cursor: pointer; font-family: inherit; font-size: 14px; transition: all 0.2s; }
+    .btn-modal-copy:hover { background: #00e5cf; }
+    .btn-modal-copy.copied { background: #22c55e; }
+    .btn-modal-close { background: transparent; color: rgba(240,240,255,0.6); padding: 12px 18px; border-radius: 100px; border: 1.5px solid rgba(255,255,255,0.1); cursor: pointer; font-family: inherit; font-size: 14px; transition: all 0.2s; }
+    .btn-modal-close:hover { border-color: rgba(255,255,255,0.25); color: var(--text); }
+    .btn-verwijsbrief { display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--bg-card); color: var(--text); font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 100px; border: 1.5px solid var(--border); cursor: pointer; transition: all 0.2s; font-family: inherit; }
+    .btn-verwijsbrief:hover { border-color: var(--primary); color: var(--primary); }
+    .modal-loading { text-align: center; padding: 24px; color: var(--text-muted); font-size: 14px; }
+
+    /* STEP BADGES */
+    .step-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary); margin-bottom: 14px;
+    }
+    .step-num {
+      width: 22px; height: 22px; border-radius: 50%; background: var(--primary); color: #090912;
+      font-size: 12px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+
+    /* TOAST NOTIFICATION */
+    .copy-toast {
+      position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: rgba(0,201,181,0.95); color: #090912;
+      font-size: 14px; font-weight: 700; padding: 10px 24px; border-radius: 100px;
+      box-shadow: 0 4px 24px rgba(0,201,181,0.4); z-index: 9999;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+      opacity: 0; pointer-events: none; white-space: nowrap;
+    }
+    .copy-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
   </style>
+  <!-- Analytics: privacy-first, geen cookie banner -->
+  <script defer data-domain="spreekdossier.nl" src="https://plausible.io/js/script.js"></script>
 </head>
 <body>
+
+<!-- COPY TOAST -->
+<div class="copy-toast" id="copy-toast">✓ Gekopieerd</div>
 
 <header>
   <a href="index.html" class="logo">
@@ -200,14 +340,14 @@
 <main>
 
   <div class="intro">
-    <div class="demo-badge"><span>🎙️</span> Live demo · 6 templates</div>
+    <div class="demo-badge"><span>🎙️</span> Live demo · 6 templates · Meer dan alleen verslaglegging</div>
     <h1>Kies je template.<br><span class="highlight">Spreek in. Klaar.</span></h1>
-    <p>Van intake tot afsluiting — selecteer het documenttype, spreek 2 minuten in, en ontvang professionele documentatie in 15 seconden.</p>
+    <p>Van intake tot afsluiting — selecteer het documenttype, spreek 2 minuten in, en ontvang professionele documentatie in 15 seconden. Niet alleen SOEP-notities: ook patiëntbericht, verwijsbrief en behandelplan.</p>
   </div>
 
   <!-- TEMPLATE KEUZE -->
   <div class="template-section">
-    <div class="section-label">Stap 1 — Kies je template</div>
+    <div class="step-badge"><span class="step-num">1</span> Kies het documenttype</div>
     <div class="template-grid" id="template-grid">
       <button class="template-btn active" data-template="intake" onclick="selectTemplate('intake', this)">
         <span class="template-icon">🏁</span>
@@ -253,7 +393,7 @@
   </div>
 
   <!-- RECORDING -->
-  <div class="section-label" style="margin-bottom: 14px;">Stap 2 — Spreek in</div>
+  <div class="step-badge" style="margin-bottom: 14px;"><span class="step-num">2</span> Spreek in je memo</div>
   <div class="recording-section" id="voice-section">
     <div class="rec-status">
       <div class="status-indicator" id="status-indicator">
@@ -261,19 +401,37 @@
         <span id="status-text">Klaar om op te nemen</span>
       </div>
     </div>
+    <div class="audiometer" id="audiometer">
+      <div class="audiometer-bar" id="ab1"></div>
+      <div class="audiometer-bar" id="ab2"></div>
+      <div class="audiometer-bar" id="ab3"></div>
+      <div class="audiometer-bar" id="ab4"></div>
+      <div class="audiometer-bar" id="ab5"></div>
+      <div class="audiometer-bar" id="ab6"></div>
+      <div class="audiometer-bar" id="ab7"></div>
+      <div class="audiometer-bar" id="ab8"></div>
+      <div class="audiometer-bar" id="ab9"></div>
+    </div>
+    <div class="rec-timer" id="rec-timer">00:00</div>
     <div class="record-btn-container">
       <button class="btn-record" id="btn-record" onclick="toggleRecording()" title="Start opname">🎙️</button>
     </div>
     <div class="btn-record-label" id="record-hint">Druk op de microfoon en vertel wat er is besproken of gedaan</div>
-    <div class="transcript-label">Transcriptie (live):</div>
+    <div class="processing-indicator" id="processing-indicator">
+      <div class="processing-spinner"></div>
+      <span class="processing-text">Audio verwerken — tekst verschijnt zo...</span>
+    </div>
+    <div class="transcript-label" id="transcript-label">Transcriptie:</div>
     <div class="transcript-box" id="transcript-box">
-      <span class="transcript-placeholder" id="transcript-placeholder">Je gesproken tekst verschijnt hier terwijl je praat...</span>
+      <span class="transcript-placeholder" id="transcript-placeholder">Druk op de microfoon, spreek in en druk op stop. Je tekst verschijnt daarna hier.</span>
     </div>
     <div class="mic-notice" id="mic-notice">⚠️ Microfoon niet beschikbaar. Gebruik het tekstveld hieronder om je memo in te typen.</div>
     <div class="rec-controls">
       <button class="btn-example" onclick="fillExample()" id="btn-example">💡 Vul voorbeeld in</button>
       <button class="btn-clear" id="btn-clear" onclick="clearTranscript()">🗑️ Wis</button>
     </div>
+    <!-- VOEG MEMO TOE knop — verschijnt na een opname -->
+    <button class="btn-add-memo" id="btn-add-memo" onclick="addMemoToStack()">＋ Nog een memo toevoegen</button>
   </div>
 
   <!-- FALLBACK -->
@@ -287,11 +445,20 @@
     </div>
     <textarea class="fallback-input" id="fallback-input" placeholder="Typ of plak hier je gesproken memo, bijv: 'Patiënt meldt pijnafname van 7 naar 4. ROM knieflexie 105 graden...'"></textarea>
     <button class="btn-example" onclick="fillExample()">💡 Vul voorbeeldmemo in</button>
+    <button class="btn-add-memo" id="btn-add-memo-fallback" onclick="addMemoToStackFallback()" style="display:none;">＋ Nog een memo toevoegen</button>
+  </div>
+
+  <!-- OPGESLAGEN MEMO'S -->
+  <div class="memo-stack" id="memo-stack">
+    <div class="memo-stack-label">📝 Opgeslagen memo's</div>
+    <div class="memo-stack-list" id="memo-stack-list"></div>
   </div>
 
   <!-- GENERATE BUTTON -->
-  <button class="btn-generate" id="btn-generate" onclick="generateDocument()" disabled>
-    <span id="gen-btn-text">✦ Genereer documentatie</span>
+  <div class="step-badge" style="margin-bottom: 10px;"><span class="step-num">3</span> Genereer je documentatie</div>
+  <button class="btn-generate" id="btn-generate" onclick="generateDocument()" disabled
+    onmousedown="if(this.disabled){this.classList.remove('shake');void this.offsetWidth;this.classList.add('shake');setTimeout(()=>this.classList.remove('shake'),400);}">
+    <span id="gen-btn-text">✦ Maak documentatie aan</span>
   </button>
 
   <!-- LOADING -->
@@ -314,20 +481,72 @@
         <div class="output-title" id="output-title">Intake Rapportage</div>
         <div class="output-template-label" id="output-template-label">Template: Intake</div>
       </div>
-      <div class="output-badge">✓ Gegenereerd · 15s</div>
+      <div class="output-badge" id="output-badge">✓ Gegenereerd</div>
     </div>
     <div id="output-blocks"></div>
+    <div class="gemist-block" id="gemist-block">
+      <div class="gemist-title">⚠️ Mogelijk gemist — controleer deze punten</div>
+      <div class="gemist-list" id="gemist-list"></div>
+    </div>
+    <div class="actie-block" id="actie-block">
+      <div class="actie-title">✅ Actiepunten na deze sessie</div>
+      <div class="actie-list" id="actie-list"></div>
+    </div>
+    <div class="epd-selector">
+      <span class="epd-label">Jouw EPD:</span>
+      <button class="epd-btn active" onclick="selectEPD('algemeen', this)">Algemeen</button>
+      <button class="epd-btn" onclick="selectEPD('intramed', this)">Intramed</button>
+      <button class="epd-btn" onclick="selectEPD('fysiomanager', this)">Fysiomanager</button>
+      <button class="epd-btn" onclick="selectEPD('spotonmedics', this)">SpotOnMedics</button>
+    </div>
     <div class="output-actions">
-      <button class="btn-copy-all" id="btn-copy-all" onclick="copyAll()">📄 Kopieer volledige documentatie</button>
-      <button class="btn-new" onclick="resetToStart()">🎙️ Nieuwe opname</button>
+      <button class="btn-copy-all" id="btn-copy-all" onclick="copyAll()">📋 Kopieer complete documentatie</button>
+      <button class="btn-verwijsbrief" id="btn-verwijsbrief" onclick="openVerwijsbrief()">📄 Verwijsbrief</button>
+      <button class="btn-new" onclick="resetToStart()">🔄 Opnieuw beginnen</button>
+      <button class="btn-new" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="padding:14px 16px;" title="Naar boven">↑</button>
+    </div>
+
+    <!-- PATIËNTBERICHT SECTIE -->
+    <div class="step-badge" id="step-badge-4" style="display:none; margin-bottom: 14px;"><span class="step-num">4</span> Stuur patiëntbericht</div>
+    <div class="patient-msg-block" id="patient-msg-block" style="display:none">
+      <div class="patient-msg-header">
+        <div>
+          <div class="patient-msg-title">📱 Patiëntbericht</div>
+          <div class="patient-msg-sub">Klaar om te versturen via WhatsApp of e-mail</div>
+        </div>
+        <div class="patient-msg-badge" id="patient-msg-badge">✓ Gegenereerd</div>
+      </div>
+      <div class="patient-msg-channels">
+        <span class="patient-ch active" id="ch-whatsapp" onclick="switchChannel('whatsapp')">💬 WhatsApp</span>
+        <span class="patient-ch" id="ch-email" onclick="switchChannel('email')">📧 E-mail</span>
+        <span class="patient-ch" id="ch-sms" onclick="switchChannel('sms')">📱 SMS</span>
+      </div>
+      <textarea class="patient-msg-text" id="patient-msg-text" rows="10" spellcheck="true"></textarea>
+      <div class="patient-msg-actions">
+        <button class="btn-copy-patient" id="btn-copy-patient" onclick="copyPatientMsg()">📋 Kopieer bericht</button>
+        <button class="btn-regen-patient" onclick="regenPatientMsg()">🔄 Opnieuw genereren</button>
+      </div>
     </div>
   </div>
 
 </main>
 
+<!-- VERWIJSBRIEF MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeVerwijsbrief(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title">📄 Verwijsbrief</div>
+    <div class="modal-text" id="modal-text"><div class="modal-loading">⏳ Brief wordt gegenereerd...</div></div>
+    <div class="modal-actions">
+      <button class="btn-modal-copy" id="btn-modal-copy" onclick="copyVerwijsbrief()">📋 Kopieer brief</button>
+      <button class="btn-modal-close" onclick="document.getElementById('modal-overlay').classList.remove('visible')">✕ Sluiten</button>
+    </div>
+  </div>
+</div>
+
 <footer>
   <a href="index.html">← Terug naar Spreekdossier.nl</a>
-  <p>© 2026 Spreekdossier · AVG-proof · Van intake tot afsluiting</p>
+  <p>Werkt op iPhone, Android & desktop · Geen account nodig · AVG-proof</p>
+  <p>© 2026 Spreekdossier · Van intake tot afsluiting</p>
 </footer>
 
 <script>
@@ -628,170 +847,316 @@ Declaratiestatus: ✓ Klaar voor verwerking in EPD`
   }
 };
 
+// ===== CHECKLIST PER TEMPLATE =====
+const CHECKLISTS = {
+  intake: [
+    "Is de pijnscore (NRS 0-10) vermeld?",
+    "Is informed consent besproken en vastgelegd?",
+    "Zijn behandeldoelen SMART geformuleerd?",
+    "Is de voorgeschiedenis/comorbiditeit uitgevraagd?",
+    "Zijn relevante medicatie en allergieën besproken?",
+  ],
+  soep: [
+    "Is de NRS pijnscore vermeld (begin en einde sessie)?",
+    "Zijn thuisoefeningen besproken en/of meegegeven?",
+    "Is de volgende afspraak gepland?",
+    "Zijn objectieve meetwaarden (ROM, kracht) genoteerd?",
+    "Is de respons op de behandeling van vandaag vastgelegd?",
+  ],
+  behandelplan: [
+    "Is het verwachte aantal sessies vermeld?",
+    "Is de frequentie van behandeling vastgelegd?",
+    "Zijn evaluatiemomenten gepland?",
+    "Is de verwijzer vermeld voor terugkoppeling?",
+  ],
+  evaluatie: [
+    "Zijn begin- en huidige meetwaarden vergeleken?",
+    "Is het behandelplan bijgesteld op basis van voortgang?",
+    "Is de patiënt geïnformeerd over de evaluatie?",
+    "Is een vervolgafspraak of einddatum gepland?",
+  ],
+  afsluiting: [
+    "Is een ontslagbrief naar de verwijzer verstuurd/gepland?",
+    "Zijn thuisoefeningen voor het thuisprogramma meegegeven?",
+    "Zijn terugvalcriteria besproken ('wanneer terug komen')?",
+    "Is de eindmeting vastgelegd ter vergelijking met intake?",
+  ],
+  administratie: [
+    "Is de juiste prestatiecode gebruikt (chronisch/niet-chronisch)?",
+    "Is de AGB-code van de verwijzer correct?",
+    "Is het polisnummer/machtigingsnummer gecontroleerd?",
+    "Is de duur van de sessie correct geregistreerd?",
+  ],
+};
+
 // ===== STATE =====
 let currentTemplate = 'intake';
+let wseMeterStream = null;
+let savedMemo = ''; // Persistent memo for patient message + verwijsbrief
+let memoStack = []; // Meerdere memo's — worden gecombineerd bij genereren
+let verwijsbriefText = '';
+// Persistent session ID for this browser session
+const SESSION_ID = (() => {
+  let s = sessionStorage.getItem('sd_sid');
+  if (!s) { s = Math.random().toString(36).slice(2) + Date.now().toString(36); sessionStorage.setItem('sd_sid', s); }
+  return s;
+})();
 let isRecording = false;
 let finalTranscript = '';
 let interimTranscript = '';
 let speechAPIAvailable = false;
 let outputData = {};
+let selectedEPD = 'algemeen';
 
-// ===== SPEECH RECOGNITION ENGINE =====
-// Bulletproof implementation: creates a fresh object on every start/restart,
-// uses a 300ms debounce restart on auto-stop, ignores aborted/no-speech errors.
+// ===== SPEECH ENGINE — Hybrid: Web Speech API (Chrome) + Whisper (Safari/Firefox) =====
 const SpeechEngine = (function() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) return null;
+  const WebSpeechAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const hasMediaRecorder = !!(navigator.mediaDevices && window.MediaRecorder);
 
-  let activeRec = null;       // currently active recognition object
-  let restartTimer = null;    // debounce timer for auto-restarts
-  let userStopped = false;    // true = user pressed stop, don't restart
+  // ---- Web Speech API engine (Chrome/Edge) ----
+  function buildWebSpeechEngine() {
+    let activeRec = null;
+    let restartTimer = null;
+    let userStopped = false;
 
-  function buildRecognition() {
-    const r = new SpeechRecognition();
-    r.continuous = true;
-    r.interimResults = true;
-    r.lang = 'nl-NL';
-    r.maxAlternatives = 1;
+    function buildRec() {
+      const r = new WebSpeechAPI();
+      r.continuous = true;
+      r.interimResults = true;
+      r.lang = 'nl-NL';
+      r.maxAlternatives = 1;
 
-    r.onstart = () => {
-      isRecording = true;
-      setRecordingUI(true);
-    };
+      r.onstart = () => { isRecording = true; setRecordingUI(true); };
 
-    r.onresult = (event) => {
-      let interim = '', finalNew = '';
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const t = event.results[i][0].transcript;
-        if (event.results[i].isFinal) finalNew += t + ' ';
-        else interim += t;
-      }
-      if (finalNew) {
-        finalTranscript += finalNew;
-        updateGenerateButton();
-      }
-      interimTranscript = interim;
-      renderTranscript();
-    };
-
-    r.onerror = (event) => {
-      const err = event.error;
-      // Hard stop: mic denied
-      if (err === 'not-allowed' || err === 'service-not-allowed') {
-        userStopped = true;
-        isRecording = false;
-        activeRec = null;
-        setRecordingUI(false);
-        document.getElementById('mic-notice').classList.add('visible');
-        document.getElementById('voice-section').style.display = 'none';
-        document.getElementById('fallback-section').style.display = 'block';
-        document.getElementById('btn-generate').disabled = false;
-        document.getElementById('fallback-input').addEventListener('input', function() {
-          document.getElementById('btn-generate').disabled = this.value.trim().length < 5;
-        });
-        return;
-      }
-      // Soft errors: aborted / no-speech — onend will handle restart
-      // (no action needed here; just let onend fire)
-    };
-
-    r.onend = () => {
-      // Prevent stale callbacks from an old recognition object
-      if (r !== activeRec) return;
-      activeRec = null;
-
-      if (userStopped || !isRecording) {
-        // Clean stop: finalize UI
-        interimTranscript = '';
-        renderTranscript();
-        updateGenerateButton();
-        return;
-      }
-
-      // Auto-stop by browser while user still wants to record — restart
-      clearTimeout(restartTimer);
-      restartTimer = setTimeout(() => {
-        if (userStopped || !isRecording) return;
-        try {
-          activeRec = buildRecognition();
-          activeRec.start();
-        } catch (e) {
-          console.warn('Speech restart failed:', e);
-          isRecording = false;
-          setRecordingUI(false);
-          updateGenerateButton();
+      r.onresult = (event) => {
+        let interim = '', finalNew = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const t = event.results[i][0].transcript;
+          if (event.results[i].isFinal) finalNew += t + ' ';
+          else interim += t;
         }
-      }, 300); // 300ms — enough for Chrome to fully release mic before re-acquiring
-    };
+        if (finalNew) { finalTranscript += finalNew; updateGenerateButton(); }
+        interimTranscript = interim;
+        renderTranscript();
+      };
 
-    return r;
+      r.onerror = (event) => {
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+          userStopped = true; isRecording = false; activeRec = null;
+          setRecordingUI(false);
+          showMicError();
+        }
+        // soft errors handled by onend
+      };
+
+      r.onend = () => {
+        if (r !== activeRec) return;
+        activeRec = null;
+        // Save any pending interim text before restart — prevents dropped words
+        if (interimTranscript.trim()) {
+          finalTranscript += interimTranscript.trim() + ' ';
+          interimTranscript = '';
+        }
+        if (userStopped || !isRecording) {
+          renderTranscript(); updateGenerateButton(); return;
+        }
+        clearTimeout(restartTimer);
+        restartTimer = setTimeout(() => {
+          if (userStopped || !isRecording) return;
+          try { activeRec = buildRec(); activeRec.start(); }
+          catch(e) { isRecording = false; setRecordingUI(false); updateGenerateButton(); }
+        }, 50);
+      };
+      return r;
+    }
+
+    return {
+      type: 'webspeech',
+      start() {
+        userStopped = false; clearTimeout(restartTimer);
+        if (activeRec) { try { activeRec.stop(); } catch(_){} activeRec = null; }
+        setTimeout(() => {
+          try { activeRec = buildRec(); activeRec.start(); }
+          catch(e) { isRecording = false; setRecordingUI(false); }
+        }, 50);
+      },
+      stop() {
+        userStopped = true; clearTimeout(restartTimer);
+        if (activeRec) { try { activeRec.stop(); } catch(_){} }
+        isRecording = false; setRecordingUI(false);
+        interimTranscript = ''; renderTranscript(); updateGenerateButton();
+        if (finalTranscript.trim()) document.getElementById('btn-clear').style.display = 'inline-flex';
+      }
+    };
   }
 
-  return {
-    isAvailable: true,
+  // ---- Whisper engine (Safari/Firefox via MediaRecorder) ----
+  function buildWhisperEngine() {
+    let mediaRecorder = null;
+    let chunks = [];
+    let stream = null;
+    let recordingStartTime = 0;
 
-    start() {
-      userStopped = false;
-      clearTimeout(restartTimer);
-      if (activeRec) {
-        try { activeRec.stop(); } catch(_) {}
-        activeRec = null;
-      }
-      // Short delay after any prior stop before starting fresh
-      setTimeout(() => {
+    return {
+      type: 'whisper',
+      async start() {
         try {
-          activeRec = buildRecognition();
-          activeRec.start();
-        } catch (e) {
-          console.error('Speech start failed:', e);
-          isRecording = false;
-          setRecordingUI(false);
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch(e) {
+          isRecording = false; setRecordingUI(false); stopAudiometer();
+          showMicError(); return;
         }
-      }, 50);
-    },
+        chunks = [];
+        recordingStartTime = Date.now();
+        const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus'
+          : MediaRecorder.isTypeSupported('audio/ogg;codecs=opus') ? 'audio/ogg;codecs=opus'
+          : MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4' : '';
+        mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
+        mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+        mediaRecorder.start(250);
+      },
+      stop() {
+        // Synchronous stop — never blocks the button
+        isRecording = false;
+        stopAudiometer();
+        stopTimer();
+        setRecordingUI(false);
+        if (!mediaRecorder || mediaRecorder.state === 'inactive') return;
+        const durationSec = (Date.now() - recordingStartTime) / 1000;
+        mediaRecorder.onstop = async () => {
+          if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
 
-    stop() {
-      userStopped = true;
-      clearTimeout(restartTimer);
-      if (activeRec) {
-        try { activeRec.stop(); } catch(_) {}
-        // Don't null activeRec yet — let onend handle cleanup
+          // Check if audio is too short (<1.5 seconds)
+          if (durationSec < 1.5 || chunks.length === 0) {
+            document.getElementById('transcript-box').innerHTML = '<span style="color:var(--accent)">⚠️ Opname te kort. Spreek minimaal 2 seconden in en probeer opnieuw.</span>';
+            document.getElementById('status-text').textContent = 'Klaar om op te nemen';
+            document.getElementById('record-hint').textContent = 'Druk op de microfoon en vertel wat er is besproken of gedaan';
+            return;
+          }
+
+          document.getElementById('processing-indicator').classList.add('visible');
+          document.getElementById('transcript-box').innerHTML = '';
+          document.getElementById('status-text').textContent = 'Audio omzetten naar tekst...';
+          document.getElementById('record-hint').textContent = 'Even geduld, dit duurt enkele seconden';
+          try {
+            const mimeType = chunks[0]?.type || 'audio/webm';
+            const ext = mimeType.includes('mp4') ? 'mp4' : mimeType.includes('ogg') ? 'ogg' : 'webm';
+            const blob = new Blob(chunks, { type: mimeType });
+            const formData = new FormData();
+            formData.append('audio', blob, `audio.${ext}`);
+            const res = await fetch('/api/transcribe', { method: 'POST', body: formData });
+            if (!res.ok) throw new Error('Transcriptie mislukt');
+            const data = await res.json();
+            finalTranscript = data.transcript || '';
+          } catch(e) {
+            finalTranscript = '';
+            document.getElementById('transcript-box').innerHTML = '<span style="color:var(--red)">⚠️ Transcriptie mislukt. <button onclick="retryTranscription()" style="color:var(--primary);background:none;border:none;cursor:pointer;font-weight:700;font-size:inherit;text-decoration:underline;">Probeer opnieuw</button> of typ hieronder.</span>';
+            document.getElementById('fallback-section').style.display = 'block';
+          }
+          document.getElementById('processing-indicator').classList.remove('visible');
+          document.getElementById('status-text').textContent = finalTranscript ? '✓ Tekst klaar om te genereren' : 'Klaar om op te nemen';
+          document.getElementById('record-hint').textContent = finalTranscript ? 'Controleer de tekst hieronder en klik op Genereer' : 'Druk op de microfoon en vertel wat er besproken of gedaan is';
+          renderTranscript();
+          updateGenerateButton();
+          if (finalTranscript.trim()) document.getElementById('btn-clear').style.display = 'inline-flex';
+        };
+        mediaRecorder.stop();
       }
-      isRecording = false;
-      setRecordingUI(false);
-      interimTranscript = '';
-      renderTranscript();
-      updateGenerateButton();
-      if (finalTranscript.trim()) {
-        document.getElementById('btn-clear').style.display = 'inline-flex';
-      }
-    }
-  };
+    };
+  }
+
+  // ---- Pick best engine ----
+  // Whisper = primary (no time limits, works in all browsers)
+  // Web Speech = fallback only if MediaRecorder unavailable
+  let engine = null;
+  if (hasMediaRecorder) {
+    engine = buildWhisperEngine();
+  } else if (WebSpeechAPI) {
+    engine = buildWebSpeechEngine();
+  }
+
+  return engine ? { ...engine, isAvailable: true } : null;
 })();
 
 // ===== INIT =====
 (function init() {
   checkSpeechAPI();
   updateTemplateInfo('intake');
+  // Set generate button text for default template
+  document.getElementById('gen-btn-text').textContent = '✦ Maak Intake aan';
 })();
+
+// ===== TOAST =====
+let toastTimeout = null;
+function showToast(msg) {
+  const toast = document.getElementById('copy-toast');
+  toast.textContent = msg || '✓ Gekopieerd';
+  toast.classList.add('show');
+  if (toastTimeout) clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, 2200);
+}
+
+// ===== AUDIOMETER =====
+// Pure CSS animation — just toggle .active class, no JS animation loop needed
+
+function startAudiometer() {
+  const el = document.getElementById('audiometer');
+  if (el) el.classList.add('active');
+}
+
+function stopAudiometer() {
+  const el = document.getElementById('audiometer');
+  if (el) el.classList.remove('active');
+}
+
+function startTimer() {
+  const el = document.getElementById('rec-timer');
+  if (!el) return;
+  el.classList.add('active');
+  el.textContent = '00:00';
+  const start = Date.now();
+  timerInterval = setInterval(() => {
+    const s = Math.floor((Date.now() - start) / 1000);
+    const mm = String(Math.floor(s / 60)).padStart(2, '0');
+    const ss = String(s % 60).padStart(2, '0');
+    el.textContent = `${mm}:${ss}`;
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  const el = document.getElementById('rec-timer');
+  if (el) el.classList.remove('active');
+}
 
 function checkSpeechAPI() {
   if (SpeechEngine && SpeechEngine.isAvailable) {
     speechAPIAvailable = true;
+    if (SpeechEngine.type === 'whisper') {
+      document.getElementById('btn-record-label').textContent = 'Spreek in — druk ⏹️ als je klaar bent. Audio wordt dan omgezet naar tekst.';
+    }
   } else {
-    document.getElementById('voice-section').style.display = 'none';
-    document.getElementById('fallback-section').style.display = 'block';
-    document.getElementById('btn-generate').disabled = false;
-    document.getElementById('fallback-input').addEventListener('input', function() {
-      document.getElementById('btn-generate').disabled = this.value.trim().length < 5;
-    });
+    showMicError();
   }
+}
+
+function showMicError() {
+  document.getElementById('mic-notice').textContent = '⚠️ Microfoon niet beschikbaar in deze browser. Typ je memo hieronder.';
+  document.getElementById('mic-notice').classList.add('visible');
+  document.getElementById('btn-record').disabled = true;
+  document.getElementById('fallback-section').style.display = 'block';
+  document.getElementById('fallback-input').addEventListener('input', function() {
+    const hasText = this.value.trim().length >= 5;
+    document.getElementById('btn-generate').disabled = !hasText && memoStack.length === 0;
+    const addBtn = document.getElementById('btn-add-memo-fallback');
+    if (addBtn) addBtn.style.display = hasText ? 'flex' : 'none';
+  });
 }
 
 // ===== TEMPLATE SELECTION =====
 function selectTemplate(templateId, btn) {
   // Stop any active recording cleanly before switching template
-  if (isRecording && SpeechEngine) SpeechEngine.stop();
+  if (isRecording && SpeechEngine) { stopTimer(); SpeechEngine.stop(); }
 
   currentTemplate = templateId;
   document.querySelectorAll('.template-btn').forEach(b => b.classList.remove('active'));
@@ -799,7 +1164,16 @@ function selectTemplate(templateId, btn) {
   updateTemplateInfo(templateId);
   document.getElementById('output-container').classList.remove('visible');
   const tpl = TEMPLATES[templateId];
-  document.getElementById('gen-btn-text').textContent = `✦ Genereer ${tpl.name}`;
+  // Dynamic button label per template
+  const genLabels = {
+    intake: '✦ Maak Intake aan',
+    soep: '✦ Maak SOEP-notitie aan',
+    behandelplan: '✦ Maak Behandelplan aan',
+    evaluatie: '✦ Maak Evaluatie aan',
+    afsluiting: '✦ Maak Afsluiting aan',
+    administratie: '✦ Maak Administratie aan'
+  };
+  document.getElementById('gen-btn-text').textContent = genLabels[templateId] || `✦ Maak ${tpl.name} aan`;
 
   // Reset transcript state for new template
   finalTranscript = '';
@@ -834,10 +1208,17 @@ function startRecording() {
   document.getElementById('btn-generate').disabled = true;
   document.getElementById('output-container').classList.remove('visible');
   document.getElementById('loading-overlay').classList.remove('visible');
+  // Fire UI + bars immediately on click — before any async mic permission
+  isRecording = true;
+  setRecordingUI(true);
+  startAudiometer();
+  startTimer();
   SpeechEngine.start();
 }
 
 function stopRecording() {
+  stopAudiometer();
+  stopTimer();
   SpeechEngine.stop();
 }
 
@@ -851,12 +1232,16 @@ function setRecordingUI(active) {
     btn.classList.add('recording'); btn.innerHTML = '⏹️'; btn.title = 'Stop opname';
     indicator.classList.add('recording'); statusText.textContent = 'Opname bezig...';
     hint.textContent = 'Druk op ⏹️ om te stoppen'; tbox.classList.add('active');
+    document.getElementById('voice-section').classList.add('recording-active');
+    document.getElementById('transcript-label').textContent = 'Live transcriptie:';
     document.getElementById('btn-generate').disabled = true;
   } else {
     btn.classList.remove('recording'); btn.innerHTML = '🎙️'; btn.title = 'Start opname';
     indicator.classList.remove('recording');
+    document.getElementById('voice-section').classList.remove('recording-active');
+    document.getElementById('transcript-label').textContent = 'Transcriptie:';
     statusText.textContent = finalTranscript.trim() ? 'Opname gestopt' : 'Klaar om op te nemen';
-    hint.textContent = finalTranscript.trim() ? 'Klik op "Genereer" of neem opnieuw op' : 'Druk op de microfoon en vertel wat er is besproken of gedaan';
+    hint.textContent = finalTranscript.trim() ? 'Controleer de tekst en klik op Genereer' : 'Druk op de microfoon en vertel wat er besproken of gedaan is';
     tbox.classList.remove('active');
   }
 }
@@ -881,18 +1266,95 @@ function clearTranscript() {
   finalTranscript = ''; interimTranscript = '';
   renderTranscript();
   document.getElementById('btn-clear').style.display = 'none';
-  document.getElementById('btn-generate').disabled = true;
+  document.getElementById('btn-add-memo').style.display = 'none';
+  updateGenerateButton();
   document.getElementById('status-text').textContent = 'Klaar om op te nemen';
   document.getElementById('record-hint').textContent = 'Druk op de microfoon en vertel wat er is besproken of gedaan';
 }
 
 function updateGenerateButton() {
-  document.getElementById('btn-generate').disabled = finalTranscript.trim().length < 5;
+  const currentReady = finalTranscript.trim().length >= 5;
+  const hasStacked = memoStack.length > 0;
+  const ready = currentReady || hasStacked;
+  const btn = document.getElementById('btn-generate');
+  btn.disabled = !ready;
+  if (ready) btn.classList.add('ready');
+  else btn.classList.remove('ready');
+
+  // Toon "nog een memo" knop zodra er een transcript klaar is
+  const addBtn = document.getElementById('btn-add-memo');
+  if (addBtn) addBtn.style.display = currentReady ? 'flex' : 'none';
 }
 
 function getMemoText() {
-  if (speechAPIAvailable) return finalTranscript.trim();
-  return document.getElementById('fallback-input').value.trim();
+  const current = speechAPIAvailable
+    ? finalTranscript.trim()
+    : document.getElementById('fallback-input').value.trim();
+
+  // Combineer opgeslagen memo's met huidige invoer
+  const all = [...memoStack, current].filter(m => m.length > 0);
+  return all.join('\n\n---\n\n');
+}
+
+// ===== MEMO STACK =====
+function addMemoToStack() {
+  const text = speechAPIAvailable ? finalTranscript.trim() : document.getElementById('fallback-input').value.trim();
+  if (!text || text.length < 5) return;
+
+  memoStack.push(text);
+  renderMemoStack();
+
+  // Reset huidige invoer voor nieuwe memo
+  finalTranscript = '';
+  document.getElementById('btn-clear').style.display = 'none';
+  document.getElementById('btn-generate').disabled = true;
+  document.getElementById('btn-add-memo').style.display = 'none';
+  renderTranscript();
+  document.getElementById('status-text').textContent = `Memo ${memoStack.length} opgeslagen — spreek de volgende in`;
+  document.getElementById('record-hint').textContent = 'Druk op de microfoon voor de volgende memo';
+}
+
+function addMemoToStackFallback() {
+  const text = document.getElementById('fallback-input').value.trim();
+  if (!text || text.length < 5) return;
+
+  memoStack.push(text);
+  renderMemoStack();
+
+  document.getElementById('fallback-input').value = '';
+  document.getElementById('btn-generate').disabled = true;
+  document.getElementById('btn-add-memo-fallback').style.display = 'none';
+}
+
+function removeMemoFromStack(idx) {
+  memoStack.splice(idx, 1);
+  renderMemoStack();
+  updateGenerateButton();
+}
+
+function renderMemoStack() {
+  const container = document.getElementById('memo-stack');
+  const list = document.getElementById('memo-stack-list');
+  if (!container || !list) return;
+
+  if (memoStack.length === 0) {
+    container.classList.remove('has-items');
+    return;
+  }
+
+  container.classList.add('has-items');
+  list.innerHTML = '';
+  memoStack.forEach((memo, idx) => {
+    const preview = memo.length > 80 ? memo.substring(0, 80) + '…' : memo;
+    const item = document.createElement('div');
+    item.className = 'memo-item';
+    item.innerHTML = `
+      <div class="memo-item-num">${idx + 1}</div>
+      <div class="memo-item-text">${escapeHtml(preview)}</div>
+      <button class="memo-item-del" onclick="removeMemoFromStack(${idx})" title="Verwijder memo">✕</button>
+    `;
+    list.appendChild(item);
+  });
 }
 
 function fillExample() {
@@ -903,18 +1365,32 @@ function fillExample() {
     document.getElementById('btn-generate').disabled = false;
     document.getElementById('btn-clear').style.display = 'inline-flex';
     document.getElementById('status-text').textContent = 'Voorbeeldtekst geladen';
-    document.getElementById('record-hint').textContent = 'Klik op "Genereer" om de demo te starten';
+    document.getElementById('record-hint').textContent = 'Voorbeeldtekst geladen — klik op Genereer om te starten';
   } else {
     document.getElementById('fallback-input').value = tpl.example;
     document.getElementById('btn-generate').disabled = false;
   }
+  // Auto-scroll to generate button
+  setTimeout(() => {
+    document.getElementById('btn-generate').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 150);
 }
 
 // ===== GENERATE =====
 async function generateDocument() {
+  const btn = document.getElementById('btn-generate');
+  if (btn && btn.disabled) {
+    btn.classList.remove('shake');
+    void btn.offsetWidth; // force reflow
+    btn.classList.add('shake');
+    setTimeout(() => btn.classList.remove('shake'), 450);
+    return;
+  }
   const memo = getMemoText();
   if (!memo || memo.length < 5) return;
+  savedMemo = memo; // Sla op voor patiëntbericht en verwijsbrief
 
+  const genStartTime = Date.now();
   document.getElementById('output-container').classList.remove('visible');
   document.getElementById('loading-overlay').classList.add('visible');
   document.getElementById('btn-generate').disabled = true;
@@ -969,6 +1445,8 @@ async function generateDocument() {
     tpl.sections.forEach(s => {
       outputData[s.key] = apiResult.output?.[s.key] || tpl.output?.[s.key] || '[Niet gegenereerd]';
     });
+    // Track usage (fire and forget)
+    fetch('/api/track', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ template: currentTemplate, session_id: SESSION_ID }) }).catch(()=>{});
 
     // Temporarily override tpl.output for renderOutput
     const tplWithOutput = { ...tpl, output: outputData };
@@ -988,7 +1466,259 @@ async function generateDocument() {
   document.getElementById('loading-overlay').classList.remove('visible');
   document.getElementById('output-container').classList.add('visible');
   document.getElementById('btn-generate').disabled = false;
+  renderGemist();
+  renderActiepunten();
+  const genSec = ((Date.now() - genStartTime) / 1000).toFixed(1);
+  document.getElementById('output-badge').textContent = `✓ Gegenereerd · ${genSec}s`;
   document.getElementById('output-container').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  // Toon patiëntbericht sectie direct met fallback, genereer AI versie op achtergrond
+  const memoForMsg = savedMemo || getMemoText();
+  if (memoForMsg && memoForMsg.length >= 5) {
+    // Toon direct — nooit wachten op API
+    const block = document.getElementById('patient-msg-block');
+    const textarea = document.getElementById('patient-msg-text');
+    const badge = document.getElementById('patient-msg-badge');
+    block.style.display = 'block';
+    const stepBadge4 = document.getElementById('step-badge-4');
+    if (stepBadge4) stepBadge4.style.display = 'inline-flex';
+    patientMessages.whatsapp = buildFallbackPatientMsg('whatsapp', memoForMsg);
+    patientMessages.email = buildFallbackPatientMsg('email', memoForMsg);
+    patientMessages.sms = buildFallbackPatientMsg('sms', memoForMsg);
+    textarea.value = patientMessages['whatsapp'];
+    badge.textContent = '⏳ AI versie wordt geladen...';
+    // Vervang met AI versie op achtergrond
+    generatePatientMessage(memoForMsg);
+  }
+}
+
+// ===== PATIËNTBERICHT =====
+let patientMessages = { whatsapp: '', email: '', sms: '' };
+let currentChannel = 'whatsapp';
+let lastMemoUsed = '';
+
+async function generatePatientMessage(memoInput) {
+  const memo = memoInput || savedMemo || lastMemoUsed || getMemoText();
+  if (!memo || memo.length < 5) return;
+  lastMemoUsed = memo; // sla op voor regenerate
+  savedMemo = memo; // zorg dat savedMemo altijd gevuld is
+
+  const block = document.getElementById('patient-msg-block');
+  const textarea = document.getElementById('patient-msg-text');
+  const badge = document.getElementById('patient-msg-badge');
+
+  block.style.display = 'block';
+  textarea.value = '⏳ Patiëntbericht wordt gegenereerd...';
+  textarea.style.opacity = '0.5';
+  badge.textContent = '⏳ Bezig...';
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ memo, type: 'patientbericht' })
+    });
+
+    const result = await res.json();
+    const rawText = result.output || result.result || '';
+
+    if (res.ok && rawText) {
+      // Parse plain text response met WHATSAPP:/EMAIL:/SMS: labels
+      const wa = rawText.match(/(?:##\s*)?WHATSAPP:\s*([\s\S]*?)(?=(?:##\s*)?EMAIL:|(?:##\s*)?SMS:|$)/i)?.[1]?.trim();
+      const em = rawText.match(/(?:##\s*)?EMAIL:\s*([\s\S]*?)(?=(?:##\s*)?WHATSAPP:|(?:##\s*)?SMS:|$)/i)?.[1]?.trim();
+      const sm = rawText.match(/(?:##\s*)?SMS:\s*([\s\S]*?)(?=(?:##\s*)?WHATSAPP:|(?:##\s*)?EMAIL:|$)/i)?.[1]?.trim();
+      patientMessages.whatsapp = wa || rawText;
+      patientMessages.email = em || buildFallbackPatientMsg('email', memo);
+      patientMessages.sms = sm || buildFallbackPatientMsg('sms', memo);
+    } else {
+      throw new Error(result.error || 'Leeg resultaat');
+    }
+
+  } catch(e) {
+    console.warn('Patiëntbericht API fout, gebruik fallback:', e.message);
+    patientMessages.whatsapp = buildFallbackPatientMsg('whatsapp', memo);
+    patientMessages.email = buildFallbackPatientMsg('email', memo);
+    patientMessages.sms = buildFallbackPatientMsg('sms', memo);
+  }
+
+  textarea.style.opacity = '1';
+  // Zorg dat textarea ALTIJD gevuld is — nooit leeg, nooit "bezig..."
+  const finalMsg = patientMessages[currentChannel] || buildFallbackPatientMsg(currentChannel, memo);
+  textarea.value = finalMsg || buildFallbackPatientMsg(currentChannel, 'behandeling');
+  badge.textContent = '✓ Klaar om te versturen';
+}
+
+function buildFallbackPatientMsg(channel, memo) {
+  const tpl = TEMPLATES[currentTemplate];
+  const date = new Date();
+  const dateStr = date.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' });
+
+  if (channel === 'sms') {
+    return `Beste patiënt,\n\nBedankt voor uw bezoek vandaag (${dateStr}).\nHieronder uw behandelinstructies.\n\nVragen? Bel uw praktijk.\n\nMet vriendelijke groet,\nUw fysiotherapeut`;
+  }
+
+  if (channel === 'email') {
+    return `Onderwerp: Uw behandelinstructies na uw bezoek — ${dateStr}\n\nGeachte heer/mevrouw,\n\nBedankt voor uw bezoek bij onze praktijk op ${dateStr}.\n\nHieronder vindt u een samenvatting van uw behandeling en de instructies voor thuis:\n\n🏋️ OEFENINGEN\nZoals besproken tijdens de sessie, voert u de opgegeven oefeningen thuis uit. Doe dit regelmatig voor het beste resultaat.\n\n⚠️ WAT TE VERMIJDEN\nVermijd bewegingen en activiteiten die de klacht verergeren totdat we opnieuw overleg hebben gehad.\n\n📅 VOLGENDE AFSPRAAK\nUw volgende afspraak is zoals gepland. Heeft u vragen of wilt u een afspraak verzetten? Neem dan contact op met de praktijk.\n\n💬 VRAGEN?\nAarzelt u niet om contact op te nemen als u vragen heeft of als de klachten toenemen.\n\nMet vriendelijke groet,\nUw fysiotherapeut\n\n---\nSpreekdossier · Automatisch gegenereerd na uw behandeling`;
+  }
+
+  // WhatsApp (default)
+  return `Hallo! 👋\n\nBedankt voor uw bezoek vandaag (${dateStr}). Hier zijn uw instructies voor thuis:\n\n🏋️ *Oefeningen*\nZoals besproken: voer de oefeningen dagelijks uit voor het beste resultaat.\n\n⚠️ *Wat te vermijden*\nVermijd bewegingen die de klacht verergeren.\n\n📅 *Volgende afspraak*\nZoals gepland. Wilt u verzetten? Stuur ons dan een berichtje!\n\n💬 Vragen? Stel ze gerust!\n\nTot de volgende keer! 🙌\n_Uw fysiotherapeut_`;
+}
+
+function switchChannel(channel) {
+  currentChannel = channel;
+  ['whatsapp','email','sms'].forEach(c => {
+    document.getElementById('ch-' + c)?.classList.remove('active');
+  });
+  document.getElementById('ch-' + channel)?.classList.add('active');
+  const textarea = document.getElementById('patient-msg-text');
+  if (textarea) textarea.value = patientMessages[channel] || '';
+}
+
+async function regenPatientMsg() {
+  patientMessages = { whatsapp: '', email: '', sms: '' };
+  await generatePatientMessage();
+}
+
+function copyPatientMsg() {
+  const text = document.getElementById('patient-msg-text')?.value;
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('btn-copy-patient');
+    const orig = btn.textContent;
+    btn.textContent = '✓ Gekopieerd!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+    showToast('✓ Patiëntbericht gekopieerd naar klembord');
+  });
+}
+
+// ===== ACTIEPUNTEN =====
+function renderActiepunten() {
+  const block = document.getElementById('actie-block');
+  const list = document.getElementById('actie-list');
+  if (!block || !list) return;
+
+  // Zoek actiepunten in outputData op basis van keywords
+  const outputText = Object.values(outputData).join(' ').toLowerCase();
+  const possibleActies = [];
+
+  const keywordMap = [
+    { kw: ['verwijzing', 'verwijzen', 'doorverwijz'], label: 'Verwijsbrief versturen naar specialist' },
+    { kw: ['meten', 'meting', 'rom', 'goniometrie'], label: 'Meting documenteren in EPD' },
+    { kw: ['contact', 'bellen', 'bereikbaar'], label: 'Contact opnemen met patiënt' },
+    { kw: ['foto', 'fotodocumentatie'], label: 'Fotodocumentatie toevoegen' },
+    { kw: ['brief', 'terugkoppel', 'terugkoppeling'], label: 'Brief sturen naar verwijzer' },
+    { kw: ['follow-up', 'followup', 'volgende afspraak', 'afspraak'], label: 'Volgende afspraak inplannen' },
+    { kw: ['evaluatie', 'evalueer', 'evalueren'], label: 'Evaluatiemoment inplannen' },
+    { kw: ['reminder', 'herinner'], label: 'Reminder instellen voor patiënt' },
+    { kw: ['controleer', 'controle'], label: 'Controle afspraak plannen' },
+  ];
+
+  for (const { kw, label } of keywordMap) {
+    if (kw.some(k => outputText.includes(k))) {
+      possibleActies.push(label);
+    }
+  }
+
+  // Vaste actiepunten
+  const vaste = ['Notitie opgeslagen in EPD', 'Patiëntbericht verstuurd'];
+  const allActies = [...vaste, ...possibleActies].slice(0, 6);
+
+  list.innerHTML = allActies.map((label, i) => `
+    <div class="actie-item" id="actie-item-${i}">
+      <div class="actie-check" id="actie-check-${i}" onclick="toggleActie(${i})" title="Afvinken"></div>
+      <span class="actie-label" id="actie-label-${i}">${label}</span>
+    </div>
+  `).join('');
+
+  block.classList.add('visible');
+}
+
+function toggleActie(i) {
+  const check = document.getElementById('actie-check-' + i);
+  const label = document.getElementById('actie-label-' + i);
+  if (!check || !label) return;
+  check.classList.toggle('done');
+  label.classList.toggle('done');
+}
+
+// ===== VERWIJSBRIEF =====
+async function openVerwijsbrief() {
+  const overlay = document.getElementById('modal-overlay');
+  const textEl = document.getElementById('modal-text');
+  overlay.classList.add('visible');
+  textEl.innerHTML = '<div class="modal-loading">⏳ Brief wordt gegenereerd...</div>';
+  verwijsbriefText = '';
+
+  const memo = savedMemo || getMemoText();
+  if (!memo || memo.length < 5) {
+    textEl.textContent = '⚠️ Geen memo beschikbaar. Genereer eerst een document.';
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        memo,
+        template: { brief: 'Verwijsbrief volledige tekst' },
+        templateName: 'Verwijsbrief',
+        mode: 'verwijsbrief'
+      })
+    });
+    const data = await res.json();
+    verwijsbriefText = data.output?.brief || buildFallbackVerwijsbrief(memo);
+  } catch(e) {
+    verwijsbriefText = buildFallbackVerwijsbrief(memo);
+  }
+
+  textEl.textContent = verwijsbriefText;
+}
+
+function closeVerwijsbrief(event) {
+  if (event && event.target !== document.getElementById('modal-overlay')) return;
+  document.getElementById('modal-overlay').classList.remove('visible');
+  verwijsbriefText = '';
+  document.getElementById('modal-text').innerHTML = '<div class="modal-loading">⏳ Brief wordt gegenereerd...</div>';
+}
+
+function copyVerwijsbrief() {
+  if (!verwijsbriefText) return;
+  navigator.clipboard.writeText(verwijsbriefText).then(() => {
+    const btn = document.getElementById('btn-modal-copy');
+    const orig = btn.textContent;
+    btn.textContent = '✓ Gekopieerd!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+    showToast('✓ Verwijsbrief gekopieerd');
+  });
+}
+
+function buildFallbackVerwijsbrief(memo) {
+  const date = new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' });
+  return `[Plaatsnaam], ${date}
+
+Geachte collega,
+
+Hierbij verwijs ik u vriendelijk een patiënt die bij ons onder behandeling is bij onze fysiotherapiepraktijk.
+
+KLACHT EN AANLEIDING
+${memo.substring(0, 300)}${memo.length > 300 ? '...' : ''}
+
+BEVINDINGEN EN BEHANDELING
+Patiënt is bij ons in behandeling geweest. Op basis van de bevindingen tijdens de behandeling achten wij verdere diagnostiek en/of specialistische begeleiding wenselijk.
+
+REDEN VERWIJZING
+Wij verzoeken u vriendelijk de patiënt te beoordelen en zo nodig aanvullend onderzoek in te stellen dan wel behandeling over te nemen.
+
+Met collegiale groeten,
+
+[Naam fysiotherapeut]
+[Praktijknaam]
+AGB-code: [uw AGB-code]
+[Adres en telefoonnummer praktijk]`;
 }
 
 function renderOutput(tpl) {
@@ -1020,17 +1750,94 @@ function renderOutput(tpl) {
   });
 }
 
+// ===== MOGELIJK GEMIST =====
+function renderGemist() {
+  const checklist = CHECKLISTS[currentTemplate] || [];
+  const output = document.getElementById('output-blocks')?.textContent?.toLowerCase() || '';
+  const gemistList = document.getElementById('gemist-list');
+  const gemistBlock = document.getElementById('gemist-block');
+
+  // Check which items are likely missing from the output
+  const missing = checklist.filter(item => {
+    const keywords = {
+      "NRS pijnscore vermeld?": ['nrs', 'pijnscore', '/10'],
+      "NRS pijnscore vermeld (begin en einde sessie)?": ['nrs', '/10'],
+      "informed consent": ['consent', 'toestemming', 'akkoord'],
+      "SMART geformuleerd": ['smart', 'behandeldoel', 'doelstelling'],
+      "thuisoefeningen besproken": ['thuisoefening', 'huiswerk', 'oefening'],
+      "volgende afspraak gepland": ['volgende', 'afspraak', 'sessie', 'datum'],
+      "objectieve meetwaarden": ['rom', 'graden', '°', 'meting', 'kracht'],
+      "ontslagbrief": ['ontslagbrief', 'brief', 'verwijzer'],
+      "terugvalcriteria": ['terugval', 'wanneer terug', 'rode vlag'],
+      "prestatiecode": ['prestatiecode', '1100', 'nza'],
+    };
+    // Simple heuristic: check if any keyword is in the output
+    const key = Object.keys(keywords).find(k => item.toLowerCase().includes(k.toLowerCase()));
+    if (!key) return false;
+    return !keywords[key].some(kw => output.includes(kw));
+  });
+
+  if (missing.length === 0) {
+    gemistBlock.classList.remove('visible');
+    return;
+  }
+
+  gemistBlock.classList.add('visible');
+  gemistList.innerHTML = missing.map((q, i) => `
+    <div class="gemist-item" id="gemist-${i}">
+      <span class="gemist-q">❓ ${q}</span>
+      <button class="gemist-dismiss" onclick="dismissGemist(${i})">✓ Besproken</button>
+    </div>
+  `).join('');
+}
+
+function dismissGemist(i) {
+  const item = document.getElementById('gemist-' + i);
+  if (!item) return;
+  const btn = item.querySelector('.gemist-dismiss');
+  btn.classList.add('done');
+  btn.textContent = '✓ Afgevinkt';
+  setTimeout(() => {
+    item.style.opacity = '0';
+    item.style.transition = 'opacity 0.3s';
+    setTimeout(() => item.remove(), 300);
+    // Hide block if empty
+    if (!document.getElementById('gemist-list').children.length) {
+      document.getElementById('gemist-block').classList.remove('visible');
+    }
+  }, 800);
+}
+
+// ===== EPD SELECTOR =====
+function selectEPD(epd, btn) {
+  selectedEPD = epd;
+  document.querySelectorAll('.epd-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function toPlainText(text) {
+  // Remove markdown, bullets, dashes — plain text for EPD paste
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/^[—\-•]\s*/gm, '')
+    .replace(/^#{1,6}\s*/gm, '')
+    .trim();
+}
+
 // ===== COPY =====
 function copyBlock(key, btn) {
-  const text = document.getElementById('output-' + key)?.textContent || '';
+  const rawText = document.getElementById('output-' + key)?.textContent || '';
   const tpl = TEMPLATES[currentTemplate];
   const section = tpl.sections.find(s => s.key === key);
-  const full = `${section ? section.label : key}:\n${text}`;
+  const text = selectedEPD !== 'algemeen' ? toPlainText(rawText) : rawText;
+  const full = selectedEPD !== 'algemeen' ? text : `${section ? section.label : key}:\n${text}`;
 
   const doCopy = () => {
     const prev = btn.innerHTML;
     btn.innerHTML = '✓ Gekopieerd';
     btn.classList.add('copied');
+    showToast('✓ Gekopieerd naar klembord');
     setTimeout(() => { btn.innerHTML = prev; btn.classList.remove('copied'); }, 2000);
   };
 
@@ -1043,17 +1850,24 @@ function copyBlock(key, btn) {
 
 function copyAll() {
   const tpl = TEMPLATES[currentTemplate];
-  let full = `${tpl.icon} ${tpl.name.toUpperCase()}\nGegenereerd door Spreekdossier\n${'='.repeat(40)}\n\n`;
+  const now = new Date().toLocaleDateString('nl-NL',{day:'2-digit',month:'2-digit',year:'numeric'});
+  let full = `${tpl.icon} ${tpl.name.toUpperCase()}\nGegenereerd door Spreekdossier.nl · ${now}\n${'='.repeat(40)}\n\n`;
   tpl.sections.forEach(section => {
-    const text = document.getElementById('output-' + section.key)?.textContent || '';
-    full += `${section.label.toUpperCase()}\n${'-'.repeat(section.label.length)}\n${text}\n\n`;
+    const rawText = document.getElementById('output-' + section.key)?.textContent || '';
+    const text = selectedEPD !== 'algemeen' ? toPlainText(rawText) : rawText;
+    if (selectedEPD !== 'algemeen') {
+      full += `${section.label}:\n${text}\n\n`;
+    } else {
+      full += `${section.label.toUpperCase()}\n${'-'.repeat(section.label.length)}\n${text}\n\n`;
+    }
   });
 
   const btn = document.getElementById('btn-copy-all');
   const doCopy = () => {
     btn.innerHTML = '✓ Volledige documentatie gekopieerd!';
     btn.classList.add('copied');
-    setTimeout(() => { btn.innerHTML = '📄 Kopieer volledige documentatie'; btn.classList.remove('copied'); }, 2500);
+    showToast('✓ Alles gekopieerd naar klembord');
+    setTimeout(() => { btn.innerHTML = '📋 Kopieer complete documentatie'; btn.classList.remove('copied'); }, 2500);
   };
 
   navigator.clipboard.writeText(full).then(doCopy).catch(() => {
@@ -1063,13 +1877,26 @@ function copyAll() {
   });
 }
 
+// ===== RETRY TRANSCRIPTION =====
+function retryTranscription() {
+  // Clear error and prompt user to record again
+  document.getElementById('transcript-box').innerHTML = '<span class="transcript-placeholder">Druk op de microfoon en probeer opnieuw...</span>';
+  document.getElementById('status-text').textContent = 'Klaar om op te nemen';
+  document.getElementById('record-hint').textContent = 'Druk op de microfoon en vertel wat er is besproken of gedaan';
+  finalTranscript = '';
+}
+
 // ===== RESET =====
 function resetToStart() {
   // If still recording, stop first
-  if (isRecording) SpeechEngine.stop();
+  if (isRecording) { stopTimer(); SpeechEngine.stop(); }
 
   document.getElementById('output-container').classList.remove('visible');
   finalTranscript = ''; interimTranscript = '';
+  // Reset memo stack
+  memoStack = [];
+  renderMemoStack();
+  document.getElementById('btn-add-memo').style.display = 'none';
   if (speechAPIAvailable) {
     renderTranscript();
     document.getElementById('btn-clear').style.display = 'none';
@@ -1082,7 +1909,35 @@ function resetToStart() {
   } else {
     document.getElementById('fallback-input').value = '';
     document.getElementById('btn-generate').disabled = true;
+    document.getElementById('btn-add-memo-fallback').style.display = 'none';
   }
+  // Reset EPD selector back to "Algemeen"
+  selectedEPD = 'algemeen';
+  document.querySelectorAll('.epd-btn').forEach(b => b.classList.remove('active'));
+  const firstEpdBtn = document.querySelector('.epd-btn');
+  if (firstEpdBtn) firstEpdBtn.classList.add('active');
+
+  // Reset patiëntbericht
+  document.getElementById('patient-msg-block').style.display = 'none';
+  const stepBadge4Reset = document.getElementById('step-badge-4');
+  if (stepBadge4Reset) stepBadge4Reset.style.display = 'none';
+  document.getElementById('patient-msg-text').value = '';
+  patientMessages = { whatsapp: '', email: '', sms: '' };
+  currentChannel = 'whatsapp';
+  lastMemoUsed = '';
+  savedMemo = '';
+  verwijsbriefText = '';
+  ['whatsapp','email','sms'].forEach(c => document.getElementById('ch-'+c)?.classList.remove('active'));
+  document.getElementById('ch-whatsapp')?.classList.add('active');
+
+  // Reset actiepunten
+  const actieBlock = document.getElementById('actie-block');
+  if (actieBlock) actieBlock.classList.remove('visible');
+
+  // Sluit modal
+  const modal = document.getElementById('modal-overlay');
+  if (modal) modal.classList.remove('visible');
+
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 </script>
