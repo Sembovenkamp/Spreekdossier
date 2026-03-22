@@ -1866,18 +1866,16 @@ async function generatePatientMessage(memoInput) {
   const badge = document.getElementById('patient-msg-badge');
   if (!block || !textarea || !badge) return;
 
+  // STAP 1: direct zichtbaar met fallback — altijd, ongeacht wat er daarna gebeurt
   block.style.display = 'block';
-  badge.textContent = '⏳ AI versie laden...';
+  const dateNow = new Date().toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' });
+  const immediateFallback = `Hallo! 👋\n\nBedankt voor uw bezoek vandaag (${dateNow}).\n\nHieronder uw instructies voor thuis:\n\n🏋️ *Oefeningen*\nVoer de oefeningen dagelijks uit zoals besproken.\n\n📅 *Volgende afspraak*\nZoals gepland. Wilt u verzetten? Stuur ons een berichtje!\n\n💬 Vragen? Stel ze gerust!\n\nTot de volgende keer! 🙌\n_Uw fysiotherapeut_`;
 
-  // Zorg altijd voor fallback inhoud
-  if (!patientMessages.whatsapp) {
-    patientMessages.whatsapp = buildFallbackPatientMsg('whatsapp', memo);
-    patientMessages.email = buildFallbackPatientMsg('email', memo);
-    patientMessages.sms = buildFallbackPatientMsg('sms', memo);
-    textarea.value = patientMessages.whatsapp;
-    textarea.style.opacity = '1';
-  }
+  textarea.value = immediateFallback;
+  textarea.style.opacity = '1';
+  badge.textContent = '⏳ Persoonlijk bericht laden...';
 
+  // STAP 2: probeer AI versie op te halen
   try {
     const res = await fetch('/api/chat', {
       method: 'POST',
@@ -1885,37 +1883,29 @@ async function generatePatientMessage(memoInput) {
       body: JSON.stringify({ memo, mode: 'patient_message' })
     });
 
-    const result = await res.json();
-    // API retourneert { output: { whatsapp, email, sms } }
-    const out = result.output;
-
-    if (res.ok && out) {
-      if (typeof out === 'object' && out.whatsapp) {
-        // JSON object direct gebruiken
-        if (out.whatsapp.length > 10) patientMessages.whatsapp = out.whatsapp;
-        if (out.email && out.email.length > 10) patientMessages.email = out.email;
-        if (out.sms && out.sms.length > 10) patientMessages.sms = out.sms;
-      } else if (typeof out === 'string' && out.length > 10) {
-        // Fallback: probeer te parsen als tekst met headers
-        const parsed = parsePatientBerichtSections(out, memo);
-        if (parsed.whatsapp && parsed.whatsapp.length > 10) {
-          patientMessages.whatsapp = parsed.whatsapp;
-          patientMessages.email = parsed.email;
-          patientMessages.sms = parsed.sms;
-        }
+    if (res.ok) {
+      const result = await res.json();
+      const out = result.output;
+      if (out && typeof out === 'object' && out.whatsapp && out.whatsapp.length > 10) {
+        patientMessages.whatsapp = out.whatsapp;
+        patientMessages.email = out.email || immediateFallback;
+        patientMessages.sms = out.sms || immediateFallback;
+        // Update textarea met AI versie
+        textarea.value = patientMessages[currentChannel] || patientMessages.whatsapp;
+        badge.textContent = '✓ Klaar om te versturen';
+      } else {
+        badge.textContent = '✓ Klaar om te versturen';
       }
+    } else {
+      badge.textContent = '✓ Klaar om te versturen';
     }
   } catch(e) {
-    console.warn('Patiëntbericht API fout, fallback blijft staan:', e.message);
+    console.warn('Patiëntbericht API fout:', e.message);
+    badge.textContent = '✓ Klaar om te versturen';
   }
 
-  // Update textarea met beste beschikbare versie
-  textarea.value = patientMessages[currentChannel] || patientMessages.whatsapp || buildFallbackPatientMsg(currentChannel, memo);
-  textarea.style.opacity = '1';
-  badge.textContent = '✓ Klaar om te versturen';
   // Scroll naar patiëntbericht
-  const pmBlock = document.getElementById('patient-msg-block');
-  if (pmBlock) pmBlock.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  block.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function buildFallbackPatientMsg(channel, memo) {
