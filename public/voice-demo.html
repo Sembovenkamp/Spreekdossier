@@ -322,11 +322,37 @@
     .btn-pmsg-apply { background: var(--primary); color: #090912; font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: 100px; border: none; cursor: pointer; font-family: inherit; transition: all 0.2s; margin-top: 4px; }
     .btn-pmsg-apply:hover { background: #00e5cf; }
 
-    /* PRINT STYLES — verwijsbrief */
+    /* AUTO-DEMO BUTTON */
+    .btn-autodemo {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #090912; font-size: 15px; font-weight: 800;
+      padding: 14px 32px; border-radius: 100px; border: none;
+      cursor: pointer; transition: all 0.25s; font-family: inherit;
+      box-shadow: 0 4px 24px rgba(0,201,181,0.35); letter-spacing: -0.01em;
+    }
+    .btn-autodemo:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,201,181,0.5); }
+    .btn-autodemo:active { transform: translateY(0); }
+    .btn-autodemo:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .autodemo-wrap { text-align: center; margin: 20px 0 32px; }
+    .autodemo-hint { font-size: 12px; color: var(--text-muted); margin-top: 8px; }
+
+    /* TIME SAVED BADGE */
+    .time-saved-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(34,197,94,0.12); color: #22c55e;
+      font-size: 13px; font-weight: 700; padding: 6px 14px;
+      border-radius: 100px; border: 1px solid rgba(34,197,94,0.25);
+      animation: fadeIn 0.5s ease both;
+    }
+    .output-badges { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+    /* PRINT STYLES — verwijsbrief + output */
     @media print {
       body > *:not(#print-frame) { display: none !important; }
-      #print-frame { display: block !important; position: fixed; inset: 0; background: white; z-index: 9999; padding: 48px 64px; font-family: 'Times New Roman', serif; font-size: 13pt; color: #000; line-height: 1.7; }
+      #print-frame { display: block !important; position: fixed; inset: 0; background: white; z-index: 9999; padding: 48px 64px; font-family: Arial, sans-serif; font-size: 12pt; color: #000; line-height: 1.7; }
       #print-frame h2 { font-size: 16pt; margin-bottom: 8px; }
+      #print-frame h3 { font-size: 12pt; font-weight: bold; }
       #print-frame .print-body { white-space: pre-wrap; }
     }
     #print-frame { display: none; }
@@ -375,9 +401,9 @@
 <main>
 
   <div class="intro">
-    <div class="demo-badge"><span>🎙️</span> Live demo · 6 templates · Meer dan alleen verslaglegging</div>
-    <h1>Kies je template.<br><span class="highlight">Spreek in. Klaar.</span></h1>
-    <p>Van intake tot afsluiting — selecteer het documenttype, spreek 2 minuten in, en ontvang professionele documentatie in 15 seconden. Niet alleen SOEP-notities: ook patiëntbericht, verwijsbrief en behandelplan.</p>
+    <div class="demo-badge"><span>🎙️</span> Live demo · 6 templates · Van intake tot afsluiting</div>
+    <h1>Spreek in.<br><span class="highlight">Documentatie klaar.</span></h1>
+    <p>Selecteer een template, spreek 2 minuten in wat er is besproken, en ontvang complete professionele documentatie — inclusief SOEP-notitie, patiëntbericht én verwijsbrief. Geen typen, geen formatteren.</p>
   </div>
 
   <!-- TEMPLATE KEUZE -->
@@ -425,6 +451,14 @@
       <div class="ati-sub" id="ati-sub">Spreek de anamnese, klachten en behandeldoelen in voor een nieuwe patiënt of nieuwe behandelepisode.</div>
       <div class="ati-fields" id="ati-fields"></div>
     </div>
+  </div>
+
+  <!-- AUTO-DEMO KNOP -->
+  <div class="autodemo-wrap">
+    <button class="btn-autodemo" id="btn-autodemo" onclick="startAutoDemo()">
+      ▶ Start demo — zie het in actie
+    </button>
+    <div class="autodemo-hint">Vult automatisch een voorbeeld in en genereert de documentatie</div>
   </div>
 
   <!-- RECORDING -->
@@ -516,7 +550,10 @@
         <div class="output-title" id="output-title">Intake Rapportage</div>
         <div class="output-template-label" id="output-template-label">Template: Intake</div>
       </div>
-      <div class="output-badge" id="output-badge">✓ Gegenereerd</div>
+      <div class="output-badges">
+        <div class="output-badge" id="output-badge">✓ Gegenereerd</div>
+        <div class="time-saved-badge" id="time-saved-badge" style="display:none">⏱️ ~7 min bespaard</div>
+      </div>
     </div>
     <div id="output-blocks"></div>
     <div class="gemist-block" id="gemist-block">
@@ -537,6 +574,7 @@
     <div class="output-actions">
       <button class="btn-copy-all" id="btn-copy-all" onclick="copyAll()">📋 Kopieer complete documentatie</button>
       <button class="btn-verwijsbrief" id="btn-verwijsbrief" onclick="openVerwijsbrief()">📄 Verwijsbrief</button>
+      <button class="btn-new" onclick="printOutput()" title="Afdrukken / opslaan als PDF">🖨️ Print</button>
       <button class="btn-new" onclick="resetToStart()">🔄 Opnieuw beginnen</button>
       <button class="btn-new" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="padding:14px 16px;" title="Naar boven">↑</button>
     </div>
@@ -1239,6 +1277,38 @@ const SpeechEngine = (function() {
   document.getElementById('gen-btn-text').textContent = '✦ Maak Intake aan';
 })();
 
+// ===== AUTO-DEMO =====
+async function startAutoDemo() {
+  const btn = document.getElementById('btn-autodemo');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Demo wordt gestart...'; }
+
+  // Reset state
+  resetToStart();
+  await new Promise(r => setTimeout(r, 400));
+
+  // Scroll naar template sectie
+  document.getElementById('template-grid').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  await new Promise(r => setTimeout(r, 600));
+
+  // Selecteer SOEP (meest herkenbaar voor fysio's)
+  const soepBtn = document.querySelector('[data-template="soep"]');
+  if (soepBtn) selectTemplate('soep', soepBtn);
+  await new Promise(r => setTimeout(r, 500));
+
+  // Vul voorbeeld in
+  fillExample();
+  await new Promise(r => setTimeout(r, 400));
+
+  // Scroll naar genereer knop
+  document.getElementById('btn-generate').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  await new Promise(r => setTimeout(r, 700));
+
+  // Genereer
+  await generateDocument();
+
+  if (btn) { btn.disabled = false; btn.innerHTML = '▶ Opnieuw demo starten'; }
+}
+
 // ===== TOAST =====
 let toastTimeout = null;
 function showToast(msg) {
@@ -1574,11 +1644,24 @@ async function generateDocument() {
   document.getElementById('loading-title').textContent = `${tpl.icon} ${tpl.name} wordt aangemaakt...`;
   document.getElementById('loading-sub').textContent = `AI structureert jouw memo als ${tpl.name.toLowerCase()}`;
 
+  // Template-specifieke loading steps
+  const templateStepLabels = {
+    soep: ['Subjectieve klachten extraheren', 'Objectieve bevindingen structureren', 'Klinische evaluatie opmaken', 'Behandelplan formuleren'],
+    intake: ['Anamnese herkennen', 'Diagnose & ICD-10 opmaken', 'SMART-doelen formuleren', 'Consent vastleggen'],
+    behandelplan: ['Klacht & doelen analyseren', 'Behandelmethode selecteren', 'Frequentie & prognose bepalen', 'Verwijsbeleid vastleggen'],
+    evaluatie: ['Voortgang meten t.o.v. doelen', 'Uitkomstmaten vergelijken', 'Bijstelling bepalen', 'Vervolg aanbevelen'],
+    afsluiting: ['Behandelepisode samenvatten', 'Bereikte doelen vastleggen', 'Adviezen formuleren', 'Terugkoppeling voorbereiden'],
+    administratie: ['Sessiegegevens verwerken', 'Prestatiecode bepalen', 'Vergoeding controleren', 'Declaratie klaarmaken'],
+  };
+  const stepLabels = templateStepLabels[currentTemplate] || ['Tekst analyseren', 'Template herkennen', 'Structuur opbouwen', 'Professionele formulering'];
+
   const steps = ['step-1','step-2','step-3','step-4'];
-  steps.forEach(s => {
+  steps.forEach((s, i) => {
     const el = document.getElementById(s);
     el.classList.remove('active','done');
-    el.querySelector('.step-icon').textContent = s.replace('step-','');
+    el.querySelector('.step-icon').textContent = (i + 1).toString();
+    const labelEl = el.querySelector('span');
+    if (labelEl) labelEl.textContent = stepLabels[i] || stepLabels[0];
   });
 
   // Build template fields for API
@@ -1646,6 +1729,16 @@ async function generateDocument() {
   try { renderVergeetNiet(); } catch(e) { console.warn('renderVergeetNiet fout:', e); }
   const genSec = ((Date.now() - genStartTime) / 1000).toFixed(1);
   document.getElementById('output-badge').textContent = `✓ Gegenereerd · ${genSec}s`;
+
+  // Toon tijdsbesparing badge
+  const timeSavedBadge = document.getElementById('time-saved-badge');
+  if (timeSavedBadge) {
+    // Template-specifieke besparingen
+    const timeSaved = { intake: '~12 min', soep: '~7 min', behandelplan: '~10 min', evaluatie: '~8 min', afsluiting: '~9 min', administratie: '~5 min' };
+    timeSavedBadge.textContent = `⏱️ ${timeSaved[currentTemplate] || '~7 min'} bespaard`;
+    timeSavedBadge.style.display = 'inline-flex';
+  }
+
   document.getElementById('output-container').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
   // Patiëntbericht — altijd tonen
@@ -2229,6 +2322,25 @@ function retryTranscription() {
   document.getElementById('status-text').textContent = 'Klaar om op te nemen';
   document.getElementById('record-hint').textContent = 'Druk op de microfoon en vertel wat er is besproken of gedaan';
   finalTranscript = '';
+}
+
+// ===== PRINT OUTPUT =====
+function printOutput() {
+  const tpl = TEMPLATES[currentTemplate];
+  const now = new Date().toLocaleDateString('nl-NL', { day: '2-digit', month: 'long', year: 'numeric' });
+
+  let content = `<h2>${tpl.icon} ${tpl.name}</h2>`;
+  content += `<p style="color:#666; font-size:11pt; margin-bottom: 24px;">Gegenereerd door Spreekdossier.nl · ${now}</p>`;
+
+  tpl.sections.forEach(section => {
+    const rawText = document.getElementById('output-' + section.key)?.textContent || '';
+    content += `<h3 style="font-size:12pt; font-weight:700; margin: 20px 0 6px; border-bottom: 1px solid #ccc; padding-bottom: 4px;">${section.label}</h3>`;
+    content += `<p style="font-size:11pt; white-space:pre-wrap; line-height:1.7;">${rawText}</p>`;
+  });
+
+  const printBody = document.getElementById('print-body');
+  if (printBody) printBody.innerHTML = content;
+  window.print();
 }
 
 // ===== RESET =====
