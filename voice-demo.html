@@ -1031,9 +1031,10 @@ async function generateDocument() {
     if (isSingleType) {
       // Plain text response — distribute into sections by splitting on ## headers
       // or assign the full text to all visible sections (first section gets full doc)
-      outputData = parseSingleTypeOutput(data.output || '', tpl);
+      const singleText = data.output || data.result || '';
+      outputData = parseSingleTypeOutput(singleText, tpl);
     } else {
-      outputData = data.output || {};
+      outputData = data.output || data.result || {};
       // Merge with fallback to static output for any missing keys
       tpl.sections.forEach(s => {
         if (!outputData[s.key] && tpl.output[s.key]) outputData[s.key] = tpl.output[s.key];
@@ -1238,7 +1239,6 @@ async function generatePatientMsg() {
   document.getElementById('pmsg-loading').style.display = 'block';
 
   try {
-    // New API: type:"patientbericht" — no legacy mode field needed
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1256,7 +1256,7 @@ async function generatePatientMsg() {
     // New API returns plain text for patientbericht.
     // Parse into 3 variants by splitting on WhatsApp/E-mail/SMS sections if present,
     // otherwise use the same text for all three tabs.
-    const rawText = typeof data.output === 'string' ? data.output : '';
+    const rawText = typeof data.output === 'string' ? data.output : (typeof data.result === 'string' ? data.result : '');
     pmsgData = parsePatientBerichtOutput(rawText);
 
     document.getElementById('pmsg-whatsapp').textContent = pmsgData.whatsapp || '[Niet beschikbaar]';
@@ -1280,16 +1280,20 @@ async function generatePatientMsg() {
 function parsePatientBerichtOutput(text) {
   if (!text || !text.trim()) return { whatsapp: '', email: '', sms: '' };
 
-  // If response contains distinct sections, try to split them
-  const wa = text.match(/(?:whatsapp[:\s]*)([\s\S]*?)(?=e-?mail[:\s]|sms[:\s]|$)/i)?.[1]?.trim();
-  const em = text.match(/(?:e-?mail[:\s]*)([\s\S]*?)(?=whatsapp[:\s]|sms[:\s]|$)/i)?.[1]?.trim();
-  const sm = text.match(/(?:sms[:\s]*)([\s\S]*?)(?=whatsapp[:\s]|e-?mail[:\s]|$)/i)?.[1]?.trim();
+  // Match labelled sections — handle both "WHATSAPP:" and "## WHATSAPP:" prefixes
+  const wa = text.match(/(?:##\s*)?WHATSAPP:\s*([\s\S]*?)(?=(?:##\s*)?EMAIL:|(?:##\s*)?SMS:|$)/i)?.[1]?.trim();
+  const em = text.match(/(?:##\s*)?EMAIL:\s*([\s\S]*?)(?=(?:##\s*)?WHATSAPP:|(?:##\s*)?SMS:|$)/i)?.[1]?.trim();
+  const sm = text.match(/(?:##\s*)?SMS:\s*([\s\S]*?)(?=(?:##\s*)?WHATSAPP:|(?:##\s*)?EMAIL:|$)/i)?.[1]?.trim();
 
-  if (wa && em && sm) {
-    return { whatsapp: wa, email: em, sms: sm };
+  if (wa || em || sm) {
+    return {
+      whatsapp: wa || text.trim(),
+      email: em || text.trim(),
+      sms: sm || text.trim()
+    };
   }
 
-  // Single message — use as-is for all tabs (frontend shows per-tab)
+  // Fallback: use full text for all tabs
   return { whatsapp: text.trim(), email: text.trim(), sms: text.trim() };
 }
 

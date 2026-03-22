@@ -1,0 +1,46 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#090912"/>
+      <stop offset="100%" style="stop-color:#0f0f1a"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00C9B5"/>
+      <stop offset="100%" style="stop-color:#FF8C61"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Subtle glow -->
+  <ellipse cx="200" cy="200" rx="400" ry="300" fill="#00C9B5" opacity="0.04"/>
+  <ellipse cx="1000" cy="450" rx="350" ry="250" fill="#FF8C61" opacity="0.04"/>
+  
+  <!-- Logo mark -->
+  <rect x="80" y="80" width="56" height="56" rx="14" fill="url(#accent)"/>
+  <text x="108" y="118" font-family="Arial" font-size="28" text-anchor="middle" fill="white">🎙</text>
+  
+  <!-- Brand name -->
+  <text x="152" y="103" font-family="-apple-system,Arial,sans-serif" font-size="22" font-weight="800" fill="white">Spreekdossier</text>
+  <text x="152" y="124" font-family="-apple-system,Arial,sans-serif" font-size="13" fill="rgba(255,255,255,0.5)">AI-documentatie voor fysiotherapeuten</text>
+
+  <!-- Main headline -->
+  <text x="80" y="280" font-family="-apple-system,Arial,sans-serif" font-size="62" font-weight="900" fill="white">Stop met typen.</text>
+  <text x="80" y="360" font-family="-apple-system,Arial,sans-serif" font-size="62" font-weight="900" fill="white">Spreek in.</text>
+  
+  <!-- Gradient headline -->
+  <text x="80" y="440" font-family="-apple-system,Arial,sans-serif" font-size="62" font-weight="900" fill="url(#accent)">Dossier klaar.</text>
+  
+  <!-- Sub -->
+  <text x="80" y="510" font-family="-apple-system,Arial,sans-serif" font-size="22" fill="rgba(255,255,255,0.6)">SOEP-rapportage in 15 seconden · Intramed &amp; Fysiomanager · AVG-proof</text>
+
+  <!-- Right side badge -->
+  <rect x="860" y="240" width="260" height="140" rx="20" fill="rgba(0,201,181,0.12)" stroke="rgba(0,201,181,0.3)" stroke-width="1.5"/>
+  <text x="990" y="295" font-family="-apple-system,Arial,sans-serif" font-size="48" font-weight="900" text-anchor="middle" fill="#00C9B5">15s</text>
+  <text x="990" y="325" font-family="-apple-system,Arial,sans-serif" font-size="14" text-anchor="middle" fill="rgba(255,255,255,0.5)">per document</text>
+  <text x="990" y="350" font-family="-apple-system,Arial,sans-serif" font-size="14" text-anchor="middle" fill="rgba(255,255,255,0.5)">30 dagen gratis</text>
+
+  <!-- Bottom bar -->
+  <rect x="0" y="610" width="1200" height="4" fill="url(#accent)" opacity="0.6"/>
+</svg>

@@ -102,7 +102,8 @@
     .rec-timer.active { display: block; }
 
     .transcript-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
-    .transcript-box { background: var(--bg); border-radius: var(--radius-sm); padding: 16px; min-height: 120px; max-height: 240px; overflow-y: auto; font-size: 15px; line-height: 1.7; color: var(--text); border: 1.5px solid var(--border); transition: border-color 0.3s; }
+    .transcript-box { background: var(--bg); border-radius: var(--radius-sm); padding: 16px; min-height: 120px; max-height: 240px; overflow-y: auto; font-size: 15px; line-height: 1.7; color: var(--text); border: 1.5px solid var(--border); transition: border-color 0.3s; outline: none; }
+    .transcript-box[contenteditable="true"]:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,201,181,0.1); }
     .transcript-box.active { border-color: var(--red); }
     .transcript-placeholder { color: var(--text-light); font-style: italic; }
     .transcript-interim { color: var(--text-muted); }
@@ -246,11 +247,11 @@
     .patient-msg-sub { font-size: 12px; color: var(--text-muted); }
     .patient-msg-badge { background: rgba(0,201,181,0.15); color: var(--primary); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 100px; border: 1px solid rgba(0,201,181,0.3); white-space: nowrap; }
     .patient-msg-channels { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
-    .patient-ch { padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); color: var(--text-muted); transition: all 0.18s; user-select: none; }
+    .patient-ch { padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); color: var(--text-muted); transition: all 0.18s; user-select: none; background: transparent; font-family: inherit; outline: none; }
     .patient-ch:hover { border-color: var(--primary); color: var(--primary); }
     .patient-ch.active { background: rgba(0,201,181,0.12); border-color: rgba(0,201,181,0.4); color: var(--primary); }
-    .patient-msg-text { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: inherit; font-size: 13px; line-height: 1.7; padding: 14px 16px; resize: vertical; min-height: 180px; outline: none; transition: border-color 0.2s; }
-    .patient-msg-text:focus { border-color: rgba(0,201,181,0.4); }
+    .patient-msg-text { width: 100%; background: #0d1117; border: 1.5px solid rgba(0,201,181,0.2); border-radius: var(--radius-sm); color: #e8f5f3; font-family: inherit; font-size: 14px; line-height: 1.75; padding: 14px 16px; resize: vertical; min-height: 180px; outline: none; transition: border-color 0.2s; }
+    .patient-msg-text:focus { border-color: rgba(0,201,181,0.5); }
     .patient-msg-actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
     .btn-copy-patient { flex: 1; background: var(--primary); color: #090912; font-size: 14px; font-weight: 700; padding: 12px 20px; border-radius: 100px; border: none; cursor: pointer; transition: all 0.2s; font-family: inherit; }
     .btn-copy-patient:hover { background: #00e5cf; transform: translateY(-1px); }
@@ -272,6 +273,16 @@
     /* ACTIEPUNTEN */
     .actie-block { background: rgba(0,201,181,0.06); border: 1.5px solid rgba(0,201,181,0.2); border-radius: 16px; padding: 18px 20px; display: none; margin-bottom: 14px; }
     .actie-block.visible { display: block; }
+
+    /* VERGEET NIET */
+    .vergeet-niet-block { background: #fffbeb; border-left: 3px solid #f59e0b; border-radius: 6px; padding: 12px 16px; margin-top: 16px; display: none; }
+    .vergeet-niet-block.visible { display: block; }
+    .vergeet-niet-title { font-size: 12px; font-weight: 700; color: #f59e0b; margin-bottom: 10px; }
+    .vergeet-niet-list { display: flex; flex-direction: column; gap: 8px; }
+    .vergeet-niet-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #92400e; line-height: 1.4; }
+    .vergeet-niet-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: #f59e0b; flex-shrink: 0; cursor: pointer; }
+    .vergeet-niet-item label { cursor: pointer; }
+    .vergeet-niet-item input:checked + label { text-decoration: line-through; opacity: 0.6; }
     .actie-title { font-size: 13px; font-weight: 700; color: #00C9B5; margin-bottom: 12px; }
     .actie-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
     .actie-item:last-child { border-bottom: none; }
@@ -445,7 +456,7 @@
       <span class="processing-text">Audio verwerken — tekst verschijnt zo...</span>
     </div>
     <div class="transcript-label" id="transcript-label">Transcriptie:</div>
-    <div class="transcript-box" id="transcript-box">
+    <div class="transcript-box" id="transcript-box" contenteditable="false" spellcheck="true" oninput="onTranscriptEdit()">
       <span class="transcript-placeholder" id="transcript-placeholder">Druk op de microfoon, spreek in en druk op stop. Je tekst verschijnt daarna hier.</span>
     </div>
     <div class="mic-notice" id="mic-notice">⚠️ Microfoon niet beschikbaar. Gebruik het tekstveld hieronder om je memo in te typen.</div>
@@ -529,6 +540,12 @@
       <button class="btn-new" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="padding:14px 16px;" title="Naar boven">↑</button>
     </div>
 
+    <!-- VERGEET NIET SECTIE -->
+    <div class="vergeet-niet-block" id="vergeet-niet">
+      <div class="vergeet-niet-title">📋 Vergeet niet</div>
+      <div class="vergeet-niet-list" id="vergeet-niet-list"></div>
+    </div>
+
     <!-- PATIËNTBERICHT SECTIE -->
     <div class="step-badge" id="step-badge-4" style="display:none; margin-bottom: 14px;"><span class="step-num">4</span> Stuur patiëntbericht</div>
     <div class="patient-msg-block" id="patient-msg-block" style="display:none">
@@ -540,9 +557,9 @@
         <div class="patient-msg-badge" id="patient-msg-badge">✓ Gegenereerd</div>
       </div>
       <div class="patient-msg-channels">
-        <span class="patient-ch active" id="ch-whatsapp" onclick="switchChannel('whatsapp')">💬 WhatsApp</span>
-        <span class="patient-ch" id="ch-email" onclick="switchChannel('email')">📧 E-mail</span>
-        <span class="patient-ch" id="ch-sms" onclick="switchChannel('sms')">📱 SMS</span>
+        <button class="patient-ch active" id="ch-whatsapp" onclick="switchChannel('whatsapp')" type="button">💬 WhatsApp</button>
+        <button class="patient-ch" id="ch-email" onclick="switchChannel('email')" type="button">📧 E-mail</button>
+        <button class="patient-ch" id="ch-sms" onclick="switchChannel('sms')" type="button">📱 SMS</button>
       </div>
       <textarea class="patient-msg-text" id="patient-msg-text" rows="10" spellcheck="true"></textarea>
       <div class="patient-msg-actions">
@@ -1188,8 +1205,8 @@ const SpeechEngine = (function() {
             document.getElementById('fallback-section').style.display = 'block';
           }
           document.getElementById('processing-indicator').classList.remove('visible');
-          document.getElementById('status-text').textContent = finalTranscript ? '✓ Tekst klaar om te genereren' : 'Klaar om op te nemen';
-          document.getElementById('record-hint').textContent = finalTranscript ? 'Controleer de tekst hieronder en klik op Genereer' : 'Druk op de microfoon en vertel wat er besproken of gedaan is';
+          document.getElementById('status-text').textContent = finalTranscript ? '✓ Tekst klaar — je kunt de tekst nog aanpassen' : 'Klaar om op te nemen';
+          document.getElementById('record-hint').textContent = finalTranscript ? 'Tekst aanpassen? Klik er gewoon in. Daarna op Genereer.' : 'Druk op de microfoon en vertel wat er besproken of gedaan is';
           renderTranscript();
           updateGenerateButton();
           if (finalTranscript.trim()) document.getElementById('btn-clear').style.display = 'inline-flex';
@@ -1337,6 +1354,9 @@ function toggleRecording() {
 function startRecording() {
   finalTranscript = '';
   interimTranscript = '';
+  // Disable editing during recording
+  const box = document.getElementById('transcript-box');
+  if (box) box.contentEditable = 'false';
   renderTranscript();
   document.getElementById('btn-clear').style.display = 'none';
   document.getElementById('btn-generate').disabled = true;
@@ -1375,7 +1395,7 @@ function setRecordingUI(active) {
     document.getElementById('voice-section').classList.remove('recording-active');
     document.getElementById('transcript-label').textContent = 'Transcriptie:';
     statusText.textContent = finalTranscript.trim() ? 'Opname gestopt' : 'Klaar om op te nemen';
-    hint.textContent = finalTranscript.trim() ? 'Controleer de tekst en klik op Genereer' : 'Druk op de microfoon en vertel wat er besproken of gedaan is';
+    hint.textContent = finalTranscript.trim() ? 'Tekst aanpassen? Klik er gewoon in. Daarna op Genereer.' : 'Druk op de microfoon en vertel wat er besproken of gedaan is';
     tbox.classList.remove('active');
   }
 }
@@ -1383,6 +1403,7 @@ function setRecordingUI(active) {
 function renderTranscript() {
   const box = document.getElementById('transcript-box');
   if (!finalTranscript && !interimTranscript) {
+    box.contentEditable = 'false';
     box.innerHTML = '<span class="transcript-placeholder">Je gesproken tekst verschijnt hier terwijl je praat...</span>';
     return;
   }
@@ -1390,6 +1411,18 @@ function renderTranscript() {
   if (finalTranscript) html += `<span>${escapeHtml(finalTranscript)}</span>`;
   if (interimTranscript) html += `<span class="transcript-interim"> ${escapeHtml(interimTranscript)}</span>`;
   box.innerHTML = html;
+  // Enable editing once there's real content and no live interim transcript
+  if (finalTranscript && !isRecording) {
+    box.contentEditable = 'true';
+  }
+}
+
+// Called when user manually edits the transcript box
+function onTranscriptEdit() {
+  const box = document.getElementById('transcript-box');
+  // Update finalTranscript from edited content (strip HTML)
+  finalTranscript = box.innerText || box.textContent || '';
+  updateGenerateButton();
 }
 
 function escapeHtml(str) {
@@ -1421,9 +1454,15 @@ function updateGenerateButton() {
 }
 
 function getMemoText() {
-  const current = speechAPIAvailable
-    ? finalTranscript.trim()
-    : document.getElementById('fallback-input').value.trim();
+  let current;
+  if (speechAPIAvailable) {
+    // Use the live transcript box text (user may have edited it)
+    const box = document.getElementById('transcript-box');
+    const boxText = box && box.contentEditable === 'true' ? (box.innerText || box.textContent || '').trim() : '';
+    current = boxText || finalTranscript.trim();
+  } else {
+    current = document.getElementById('fallback-input').value.trim();
+  }
 
   // Combineer opgeslagen memo's met huidige invoer
   const all = [...memoStack, current].filter(m => m.length > 0);
@@ -1602,6 +1641,7 @@ async function generateDocument() {
   document.getElementById('btn-generate').disabled = false;
   renderGemist();
   renderActiepunten();
+  renderVergeetNiet();
   const genSec = ((Date.now() - genStartTime) / 1000).toFixed(1);
   document.getElementById('output-badge').textContent = `✓ Gegenereerd · ${genSec}s`;
   document.getElementById('output-container').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1631,6 +1671,43 @@ let patientMessages = { whatsapp: '', email: '', sms: '' };
 let currentChannel = 'whatsapp';
 let lastMemoUsed = '';
 
+function parsePatientBerichtSections(text, memo) {
+  // Splits de API output op WHATSAPP: / EMAIL: / SMS: header-regels
+  // Werkt ongeacht of er ## voor staat of niet
+  const lines = text.split('\n');
+  const sections = { whatsapp: [], email: [], sms: [] };
+  let current = null;
+
+  for (const line of lines) {
+    const normalized = line.replace(/^#+\s*/, '').trim().toUpperCase();
+    if (normalized.startsWith('WHATSAPP')) { current = 'whatsapp'; continue; }
+    if (normalized.startsWith('EMAIL') || normalized.startsWith('E-MAIL')) { current = 'email'; continue; }
+    if (normalized.startsWith('SMS')) { current = 'sms'; continue; }
+    if (current) sections[current].push(line);
+  }
+
+  const wa = sections.whatsapp.join('\n').trim();
+  const em = sections.email.join('\n').trim();
+  const sm = sections.sms.join('\n').trim();
+
+  // Als minstens 2 secties gevuld zijn, gebruik gesplitste output
+  const filled = [wa, em, sm].filter(s => s.length > 10).length;
+  if (filled >= 2) {
+    return {
+      whatsapp: wa || buildFallbackPatientMsg('whatsapp', memo),
+      email: em || buildFallbackPatientMsg('email', memo),
+      sms: sm || buildFallbackPatientMsg('sms', memo)
+    };
+  }
+
+  // Fallback: één bericht voor alle tabs
+  return {
+    whatsapp: text.trim(),
+    email: text.trim(),
+    sms: text.trim()
+  };
+}
+
 async function generatePatientMessage(memoInput) {
   const memo = memoInput || savedMemo || lastMemoUsed || getMemoText();
   if (!memo || memo.length < 5) return;
@@ -1642,9 +1719,16 @@ async function generatePatientMessage(memoInput) {
   const badge = document.getElementById('patient-msg-badge');
 
   block.style.display = 'block';
-  textarea.value = '⏳ Patiëntbericht wordt gegenereerd...';
-  textarea.style.opacity = '0.5';
-  badge.textContent = '⏳ Bezig...';
+  badge.textContent = '⏳ AI versie laden...';
+
+  // Zorg dat fallback altijd zichtbaar is vóór API call
+  if (!patientMessages.whatsapp) {
+    patientMessages.whatsapp = buildFallbackPatientMsg('whatsapp', memo);
+    patientMessages.email = buildFallbackPatientMsg('email', memo);
+    patientMessages.sms = buildFallbackPatientMsg('sms', memo);
+  }
+  textarea.value = patientMessages[currentChannel] || patientMessages.whatsapp;
+  textarea.style.opacity = '1';
 
   try {
     const res = await fetch('/api/chat', {
@@ -1657,28 +1741,21 @@ async function generatePatientMessage(memoInput) {
     const rawText = result.output || result.result || '';
 
     if (res.ok && rawText) {
-      // Parse plain text response met WHATSAPP:/EMAIL:/SMS: labels
-      const wa = rawText.match(/(?:##\s*)?WHATSAPP:\s*([\s\S]*?)(?=(?:##\s*)?EMAIL:|(?:##\s*)?SMS:|$)/i)?.[1]?.trim();
-      const em = rawText.match(/(?:##\s*)?EMAIL:\s*([\s\S]*?)(?=(?:##\s*)?WHATSAPP:|(?:##\s*)?SMS:|$)/i)?.[1]?.trim();
-      const sm = rawText.match(/(?:##\s*)?SMS:\s*([\s\S]*?)(?=(?:##\s*)?WHATSAPP:|(?:##\s*)?EMAIL:|$)/i)?.[1]?.trim();
-      patientMessages.whatsapp = wa || rawText;
-      patientMessages.email = em || buildFallbackPatientMsg('email', memo);
-      patientMessages.sms = sm || buildFallbackPatientMsg('sms', memo);
-    } else {
-      throw new Error(result.error || 'Leeg resultaat');
+      const parsed = parsePatientBerichtSections(rawText, memo);
+      // Alleen overschrijven als er echte inhoud is
+      if (parsed.whatsapp && parsed.whatsapp.length > 10) {
+        patientMessages.whatsapp = parsed.whatsapp;
+        patientMessages.email = parsed.email;
+        patientMessages.sms = parsed.sms;
+      }
     }
-
   } catch(e) {
-    console.warn('Patiëntbericht API fout, gebruik fallback:', e.message);
-    patientMessages.whatsapp = buildFallbackPatientMsg('whatsapp', memo);
-    patientMessages.email = buildFallbackPatientMsg('email', memo);
-    patientMessages.sms = buildFallbackPatientMsg('sms', memo);
+    console.warn('Patiëntbericht API fout, fallback blijft staan:', e.message);
   }
 
+  // Update textarea met beste beschikbare versie
+  textarea.value = patientMessages[currentChannel] || patientMessages.whatsapp || buildFallbackPatientMsg(currentChannel, memo);
   textarea.style.opacity = '1';
-  // Zorg dat textarea ALTIJD gevuld is — nooit leeg, nooit "bezig..."
-  const finalMsg = patientMessages[currentChannel] || buildFallbackPatientMsg(currentChannel, memo);
-  textarea.value = finalMsg || buildFallbackPatientMsg(currentChannel, 'behandeling');
   badge.textContent = '✓ Klaar om te versturen';
 }
 
@@ -1702,11 +1779,19 @@ function buildFallbackPatientMsg(channel, memo) {
 function switchChannel(channel) {
   currentChannel = channel;
   ['whatsapp','email','sms'].forEach(c => {
-    document.getElementById('ch-' + c)?.classList.remove('active');
+    const el = document.getElementById('ch-' + c);
+    if (el) el.classList.remove('active');
   });
-  document.getElementById('ch-' + channel)?.classList.add('active');
+  const activeEl = document.getElementById('ch-' + channel);
+  if (activeEl) activeEl.classList.add('active');
   const textarea = document.getElementById('patient-msg-text');
-  if (textarea) textarea.value = patientMessages[channel] || '';
+  if (!textarea) return;
+  const msg = patientMessages[channel];
+  if (msg && msg.length > 0) {
+    textarea.value = msg;
+  } else {
+    textarea.value = '⏳ Bericht wordt gegenereerd...';
+  }
 }
 
 async function regenPatientMsg() {
@@ -1953,6 +2038,56 @@ function renderOutput(tpl) {
   });
 }
 
+// ===== VERGEET NIET =====
+function renderVergeetNiet() {
+  const block = document.getElementById('vergeet-niet');
+  const list = document.getElementById('vergeet-niet-list');
+  if (!block || !list) return;
+
+  const templateMap = {
+    intake: [
+      '✓ Informed consent besproken?',
+      '✓ ICD-10 code vermeld?',
+      '✓ Verwijzer vermeld?'
+    ],
+    soep: [
+      '✓ Thuisoefeningen meegegeven?',
+      '✓ Volgende afspraak gepland?',
+      '✓ Rode vlaggen gecontroleerd?'
+    ],
+    behandelplan: [
+      '✓ Thuisoefeningen meegegeven?',
+      '✓ Volgende afspraak gepland?',
+      '✓ Rode vlaggen gecontroleerd?'
+    ],
+    afsluiting: [
+      '✓ Terugkoppeling verwijzer verstuurd?',
+      '✓ Ontslagadvies aan patiënt gegeven?'
+    ],
+    administratie: [
+      '✓ AGB-code vermeld?',
+      '✓ Urgentie aangegeven?',
+      '✓ Kopie naar dossier?'
+    ],
+    evaluatie: [
+      '✓ Doelen geëvalueerd?',
+      '✓ Behandelplan bijgesteld?',
+      '✓ Patiënt geïnformeerd?'
+    ]
+  };
+
+  const items = templateMap[currentTemplate] || ['✓ Documentatie compleet?', '✓ Ondertekend?'];
+
+  list.innerHTML = items.map((item, i) => `
+    <div class="vergeet-niet-item">
+      <input type="checkbox" id="vn-${i}" />
+      <label for="vn-${i}">${item}</label>
+    </div>
+  `).join('');
+
+  block.classList.add('visible');
+}
+
 // ===== MOGELIJK GEMIST =====
 function renderGemist() {
   const checklist = CHECKLISTS[currentTemplate] || [];
@@ -2140,6 +2275,10 @@ function resetToStart() {
   // Sluit modal
   const modal = document.getElementById('modal-overlay');
   if (modal) modal.classList.remove('visible');
+
+  // Reset vergeet niet
+  const vnBlock = document.getElementById('vergeet-niet');
+  if (vnBlock) vnBlock.classList.remove('visible');
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }

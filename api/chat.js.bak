@@ -1,0 +1,215 @@
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const { memo, template, templateName, mode } = req.body;
+
+  if (!memo || !template) {
+    return res.status(400).json({ error: 'Missing memo or template' });
+  }
+
+  const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+  if (!ANTHROPIC_API_KEY) {
+    return res.status(500).json({ error: 'API key not configured' });
+  }
+
+  // Verwijsbrief mode
+  if (mode === 'verwijsbrief') {
+    const date = new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' });
+    const verwijsBriefPrompt = `Je bent een AI-assistent voor fysiotherapeuten in Nederland.
+Schrijf een professionele verwijsbrief naar een huisarts of specialist op basis van de behandelmemo.
+
+Schrijf de brief in het Nederlands, professioneel en volledig.
+Gebruik de volgende structuur:
+1. Aanhef: "Geachte collega,"
+2. Introductie van de patiënt en aanleiding
+3. Samenvatting klacht en bevindingen
+4. Reden voor verwijzing
+5. Professionele afsluiting
+
+Gebruik placeholders voor ontbrekende info: [naam patiënt], [naam fysiotherapeut], [praktijknaam], [AGB-code].
+
+Antwoord ALTIJD als geldig JSON: { "brief": "volledige brieftext" }
+Geen markdown, geen extra tekst buiten het JSON.`;
+
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 1200,
+          system: verwijsBriefPrompt,
+          messages: [{ role: 'user', content: `Schrijf een verwijsbrief op basis van deze behandelmemo:\n\n${memo}\n\nDatum: ${date}\n\nAntwoord als JSON: { "brief": "..." }` }],
+        }),
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        return res.status(502).json({ error: 'AI service unavailable', detail: errText });
+      }
+      const data = await response.json();
+      const text = data.content?.[0]?.text || '{}';
+      let parsed;
+      try { parsed = JSON.parse(text); }
+      catch { const m = text.match(/\{[\s\S]*\}/); parsed = m ? JSON.parse(m[0]) : { brief: text }; }
+      return res.status(200).json({ output: parsed });
+    } catch (error) {
+      return res.status(500).json({ error: 'Verwijsbrief generatie mislukt', detail: error.message });
+    }
+  }
+
+  // Patiëntbericht mode — aparte prompt
+  if (mode === 'patient_message') {
+    const patientSystemPrompt = `Je bent een AI-assistent voor fysiotherapeuten in Nederland.
+Je taak: genereer drie versies van een patiëntbericht na een fysiotherapiebehandeling, op basis van de gesproken behandelmemo.
+
+De berichten zijn VOOR DE PATIËNT — gebruik eenvoudige, warme, toegankelijke taal. Geen medisch jargon.
+Schrijf in de tweede persoon (u/jij, kies consistent).
+
+Inhoud per bericht (haal dit uit de memo):
+- Oefeningen: welke, hoe vaak, hoe lang
+- Adviezen: wat wel/niet doen
+- Volgende afspraak (indien vermeld)
+- Contactinfo (gebruik placeholder: [naam praktijk] / [telefoonnummer])
+- Warme afsluiting
+
+Antwoord ALTIJD als geldig JSON met exact drie velden: whatsapp, email, sms.
+Geen markdown buiten de JSON. Geen extra tekst.
+
+WhatsApp-stijl: informeel, emoji's, korte zinnen, vetgedrukt met *tekst*
+E-mail stijl: formeler, volledige zinnen, onderwerp-regel bovenaan als "Onderwerp: ..."
+SMS stijl: zeer kort, max 3-4 zinnen, geen emoji's`;
+
+    const patientUserPrompt = `Genereer drie patiëntberichten op basis van deze behandelmemo:
+
+MEMO:
+${memo}
+
+Geef je antwoord als JSON:
+{
+  "whatsapp": "...",
+  "email": "...",
+  "sms": "..."
+}`;
+
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 1500,
+          system: patientSystemPrompt,
+          messages: [{ role: 'user', content: patientUserPrompt }],
+        }),
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        console.error('Anthropic patient msg error:', errText);
+        return res.status(502).json({ error: 'AI service unavailable', detail: errText });
+      }
+      const data = await response.json();
+      const text = data.content?.[0]?.text || '{}';
+      let parsed;
+      try { parsed = JSON.parse(text); }
+      catch { const m = text.match(/\{[\s\S]*\}/); parsed = m ? JSON.parse(m[0]) : {}; }
+      return res.status(200).json({ output: parsed });
+    } catch (error) {
+      console.error('Patient message handler error:', error);
+      return res.status(500).json({ error: 'Patiëntbericht generatie mislukt', detail: error.message });
+    }
+  }
+
+  const systemPrompt = `Je bent een gespecialiseerde AI-assistent voor fysiotherapeuten in Nederland.
+Je taak: zet een gesproken memo van een fysiotherapeut om naar een gestructureerd ${templateName}-rapport.
+
+DOMEINKENNIS — gebruik deze begrippen correct:
+- Bewegingsonderzoek: ROM (range of motion), goniometrie, eindgevoel, hypomobiliteit, hypermobiliteit
+- Pijnmeting: NRS (Numeric Rating Scale, 0-10), VAS, pijnprovocatietests
+- Anatomie: rotatorcuff, glenohumerogewricht, scapula, lumbosacraal, patellofemorale gewricht, meniscus, ACL/PCL/MCL/LCL, tendo Achillis, fascia plantaris, nervus ischiadicus, plexus brachialis
+- Diagnoses: impingementsyndroom, frozen shoulder, epicondylitis lateralis/medialis (tenniselleboog/golferselleboog), hernia nuclei pulposi (HNP), lumbago, ischialgie, patellofemoraal pijnsyndroom, tibialis posterior tendinopathie, hallux valgus
+- ICD-10 codes: M54.5 (lage rugpijn), M75.1 (rotatorcuffsyndroom), M77.1 (laterale epicondylitis), M22.2 (patellofemoraal), M79.3 (panniculitis)
+- Behandelmethoden: manuele therapie, dry needling, TENS, ultrageluid, oefentherapie, McKenzie, Mulligan, Maitland, eccentrisch trainen, proprioceptietraining
+- Uitkomstmaten: DASH, PSFS, NDI, ÖGVS, SF-36, Oswestry, KOOS, HOOS
+- Richtlijnen: KNGF-richtlijnen, evidence-based fysiotherapie
+- Zorgcontext: EPD, zorgverzekeraar, AGB-code, DBC, NZa-prestatiecode, verwijsbrief huisarts
+
+TRANSCRIPTIECORRECTIE — de input is spraak-naar-tekst en kan fouten bevatten:
+- Corrigeer fonetisch gespelde medische termen (bv. "rotater cuff" → "rotatorcuff", "NRS ses" → "NRS 6/10", "patella femuraal" → "patellofemoraal")
+- Interpreteer getallen correct (bv. "zes op tien" → "NRS 6/10", "negentig graden" → "90°")
+- Herstel afgebroken zinnen of onduidelijke spraakfragmenten op basis van context
+
+Antwoord ALTIJD in het Nederlands.
+Antwoord ALTIJD als een geldig JSON-object met exact de gevraagde velden.
+Geen markdown, geen extra tekst buiten het JSON-object.`;
+
+  const userPrompt = `Zet deze gesproken memo om naar een ${templateName}-rapport:
+
+MEMO (spraak-naar-tekst, kan fouten bevatten):
+${memo}
+
+Geef je antwoord als JSON met deze velden:
+${JSON.stringify(template, null, 2)}
+
+Vulregels:
+- Vul elk veld volledig in met alle relevante info uit de memo
+- Corrigeer fonetische fouten naar correcte medische terminologie
+- Gebruik ALLEEN plain text — geen markdown asterisken, geen ##, geen bullets met -
+- Structureer met regels als: "Pijnintensiteit: NRS 6/10" of "ROM knieflexie: 105°"
+- Als info ontbreekt: schrijf "[Niet vermeld in memo]"
+- Wees professioneel en volledig — liever te uitgebreid dan te kort
+- Gebruik NRS voor pijnscores (formaat: NRS X/10)
+- Schrijf in derde persoon (de patiënt, hij/zij)
+- Gebruik officiële fysiotherapie-afkortingen: ROM, NRS, SOEP, ICD-10, SMART, KNGF`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 2000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }],
+      }),
+    });
+
+    if (!response.ok) {
+      const err = await response.text();
+      console.error('Anthropic API error:', err);
+      return res.status(502).json({ error: 'AI service unavailable' });
+    }
+
+    const data = await response.json();
+    const text = data.content?.[0]?.text || '{}';
+
+    let parsed;
+    try {
+      parsed = JSON.parse(text);
+    } catch {
+      // Try to extract JSON from the response
+      const match = text.match(/\{[\s\S]*\}/);
+      parsed = match ? JSON.parse(match[0]) : {};
+    }
+
+    return res.status(200).json({ output: parsed });
+  } catch (error) {
+    console.error('Handler error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}

@@ -6,8 +6,8 @@ type VercelResponse = {
 };
 
 // ─── Model config ────────────────────────────────────────────────────────────
-const PRIMARY_MODEL = 'claude-haiku-4-5-20251001';
-const FALLBACK_MODEL = 'claude-sonnet-4-6-20250514';
+const PRIMARY_MODEL = 'claude-sonnet-4-5';
+const FALLBACK_MODEL = 'claude-haiku-4-5-20251001';
 
 // ─── Document types ──────────────────────────────────────────────────────────
 type DocumentType =
@@ -22,7 +22,7 @@ type DocumentType =
 // Max tokens per type — smaller docs = faster & cheaper
 const MAX_TOKENS: Record<DocumentType, number> = {
   soep: 400,
-  patientbericht: 150,
+  patientbericht: 600,
   verwijsbrief: 500,
   behandelplan: 500,
   tussenevaluatie: 400,
@@ -61,6 +61,29 @@ Vulregels:
 - Als info ontbreekt: schrijf "[Niet vermeld in memo]"
 - Gebruik NRS voor pijnscores (formaat: NRS X/10)
 - Schrijf in derde persoon (de patiënt, hij/zij)`;
+  }
+
+  // Patientbericht: genereer 3 varianten met VASTE headers (exact deze tekst, geen variaties)
+  if (type === 'patientbericht') {
+    return `Genereer drie patiëntberichten op basis van de behandelmemo hieronder.
+
+Gebruik EXACT deze drie headers op een eigen regel, precies zo gespeld:
+WHATSAPP:
+EMAIL:
+SMS:
+
+Formaat:
+WHATSAPP:
+[informeel bericht, emoji's toegestaan, max 5 zinnen, eindigt met één concrete vervolgstap]
+
+EMAIL:
+[formeel bericht, begin met "Onderwerp: ...", volledige zinnen, max 5 zinnen]
+
+SMS:
+[zeer kort, max 3 zinnen, geen emoji's, geen opmaak]
+
+BEHANDELMEMO:
+${memo}`;
   }
 
   // Single-type prompt — ask for plain text with the correct ## header

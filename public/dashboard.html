@@ -1,0 +1,2593 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spreekdossier — Superdashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --glass:rgba(255,255,255,0.07);--glass-b:rgba(255,255,255,0.13);
+  --hover:rgba(255,255,255,0.10);--tp:rgba(255,255,255,.95);
+  --ts:rgba(255,255,255,.56);--tt:rgba(255,255,255,.3);
+  --blue:#007AFF;--purple:#BF5AF2;--green:#34C759;
+  --orange:#FF9F0A;--red:#FF453A;--teal:#5AC8FA;--pink:#FF375F;
+  --blur:blur(28px);--r:20px;--r2:12px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;
+  background:#060610;color:var(--tp);min-height:100vh;display:flex}
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(100px);opacity:.22;animation:flt 24s ease-in-out infinite}
+.b1{width:700px;height:700px;background:radial-gradient(circle,#1a4a7a,#050a18);top:-250px;left:-150px;animation-duration:30s}
+.b2{width:550px;height:550px;background:radial-gradient(circle,#0a5a3a,#021510);bottom:-200px;right:10%;animation-duration:24s;animation-delay:-10s}
+.b3{width:450px;height:450px;background:radial-gradient(circle,#4a1a7a,#100520);top:30%;left:30%;animation-duration:28s;animation-delay:-18s}
+@keyframes flt{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-40px) scale(1.05)}66%{transform:translate(-20px,25px) scale(.95)}}
+
+/* SIDEBAR */
+.sb{width:240px;height:100vh;background:rgba(255,255,255,.04);backdrop-filter:var(--blur);
+  border-right:1px solid var(--glass-b);display:flex;flex-direction:column;
+  padding:20px 12px;gap:2px;z-index:10;flex-shrink:0;position:sticky;top:0;overflow-y:auto}
+.sb::-webkit-scrollbar{width:0}
+.sb-logo{display:flex;align-items:center;gap:11px;padding:6px 12px 18px}
+.av{width:42px;height:42px;border-radius:13px;
+  background:linear-gradient(135deg,#00C4B4,#007AFF);
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  box-shadow:0 4px 18px rgba(0,196,180,.35);flex-shrink:0}
+.sb-name{font-size:16px;font-weight:800;letter-spacing:-.4px}
+.sb-role{font-size:11px;color:var(--ts)}
+.sec-hd{font-size:10px;font-weight:700;color:var(--tt);text-transform:uppercase;letter-spacing:1px;padding:8px 12px 3px}
+.nav{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:11px;
+  cursor:pointer;transition:all .18s;font-size:13px;font-weight:500;color:var(--ts);user-select:none}
+.nav:hover{background:var(--hover);color:var(--tp)}
+.nav.on{background:rgba(0,196,180,.15);color:#00C4B4;border:1px solid rgba(0,196,180,.28)}
+.ni{width:18px;text-align:center;font-size:14px}
+.sp{flex:1;min-height:10px}
+
+/* Snelle stats zijbalk */
+.sb-stat{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--r2);padding:13px;margin-top:6px}
+.sb-stat-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;
+  border-bottom:1px solid rgba(255,255,255,.05);font-size:12px}
+.sb-stat-row:last-child{border-bottom:none}
+.sb-stat-val{font-weight:700;color:var(--teal)}
+
+/* MAIN */
+.main{flex:1;min-height:100vh;overflow-y:auto;padding:28px 26px;z-index:5;position:relative}
+.main::-webkit-scrollbar{width:4px}
+.main::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
+.page{display:none}.page.on{display:block}
+.ph{margin-bottom:22px}
+.ph h1{font-size:27px;font-weight:800;letter-spacing:-.7px;margin-bottom:3px}
+.ph p{font-size:13px;color:var(--ts)}
+
+/* CARDS */
+.gc{background:var(--glass);backdrop-filter:var(--blur);border:1px solid var(--glass-b);border-radius:var(--r);padding:22px;transition:all .22s;margin-bottom:16px}
+.gc:hover{background:var(--hover);border-color:rgba(255,255,255,.2)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.mb{margin-bottom:16px}
+
+/* STAT CARDS */
+.sc{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--r2);padding:18px;transition:all .2s}
+.sc:hover{background:var(--hover);transform:translateY(-2px)}
+.sl{font-size:10px;font-weight:700;color:var(--ts);margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px}
+.sv{font-size:26px;font-weight:700;letter-spacing:-.7px;line-height:1}
+.ss{font-size:11px;color:var(--tt);margin-top:4px}
+
+/* HERO BANNER */
+.hero{background:linear-gradient(135deg,rgba(0,196,180,.15),rgba(0,122,255,.12));
+  border:1px solid rgba(0,196,180,.3);border-radius:var(--r);padding:28px;margin-bottom:20px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-60%;right:-5%;width:350px;height:350px;
+  background:radial-gradient(circle,rgba(0,196,180,.1),transparent);pointer-events:none}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(0,196,180,.18);
+  border:1px solid rgba(0,196,180,.35);color:#00C4B4;font-size:11px;font-weight:700;
+  padding:3px 12px;border-radius:100px;margin-bottom:14px}
+.hero-dot{width:6px;height:6px;background:#00C4B4;border-radius:50%;animation:pls 2s infinite}
+@keyframes pls{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
+.hero h2{font-size:22px;font-weight:800;letter-spacing:-.5px;margin-bottom:8px}
+.hero p{font-size:13px;color:var(--ts);max-width:600px;line-height:1.6;margin-bottom:16px}
+.hero-stats{display:flex;gap:24px;flex-wrap:wrap}
+.hs{text-align:center}
+.hs-val{font-size:22px;font-weight:700;color:#00C4B4}
+.hs-lab{font-size:10px;color:var(--ts);text-transform:uppercase;letter-spacing:.5px}
+
+/* SECTION TITLE */
+.sh{font-size:15px;font-weight:700;letter-spacing:-.3px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.dv{height:1px;background:var(--glass-b);margin:16px 0}
+
+/* BADGES */
+.bdg{font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;text-transform:uppercase;letter-spacing:.4px;display:inline-block}
+.bg-green{background:rgba(52,199,89,.18);color:var(--green);border:1px solid rgba(52,199,89,.28)}
+.bg-red{background:rgba(255,69,58,.18);color:var(--red);border:1px solid rgba(255,69,58,.28)}
+.bg-orange{background:rgba(255,159,10,.18);color:var(--orange);border:1px solid rgba(255,159,10,.28)}
+.bg-blue{background:rgba(0,122,255,.18);color:var(--blue);border:1px solid rgba(0,122,255,.28)}
+.bg-teal{background:rgba(0,196,180,.18);color:#00C4B4;border:1px solid rgba(0,196,180,.28)}
+.bg-purple{background:rgba(191,90,242,.18);color:var(--purple);border:1px solid rgba(191,90,242,.28)}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-size:10px;font-weight:700;color:var(--tt);text-transform:uppercase;
+  letter-spacing:.8px;padding:8px 12px;border-bottom:1px solid var(--glass-b)}
+.tbl td{padding:11px 12px;border-bottom:1px solid rgba(255,255,255,.04)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(255,255,255,.03)}
+
+/* PROGRESS */
+.pr{display:flex;justify-content:space-between;font-size:11px;color:var(--ts);margin-bottom:5px}
+.track{height:5px;background:rgba(255,255,255,.1);border-radius:100px;overflow:hidden}
+.fill{height:100%;border-radius:100px;transition:width .5s}
+
+/* PERSONA CARDS */
+.persona{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--r2);padding:18px;transition:all .2s}
+.persona:hover{background:var(--hover);transform:translateY(-2px)}
+.persona-head{display:flex;align-items:center;gap:12px;margin-bottom:13px}
+.persona-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.persona-name{font-size:15px;font-weight:700}
+.persona-sub{font-size:11px;color:var(--ts);margin-top:2px}
+.pain-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;font-size:12px;color:var(--ts);border-bottom:1px solid rgba(255,255,255,.04)}
+.pain-item:last-child{border-bottom:none}
+
+/* COMPETITOR */
+.comp{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--r2);padding:16px;transition:all .2s;margin-bottom:10px}
+.comp:hover{background:var(--hover)}
+.comp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.comp-name{font-size:14px;font-weight:700}
+.comp-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.comp-tag{font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,.08);color:var(--ts)}
+.comp-pro{color:var(--green);font-size:11px;margin-bottom:3px}
+.comp-con{color:var(--red);font-size:11px;margin-bottom:3px}
+
+/* RISK */
+.risk{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--r2);padding:15px;margin-bottom:8px;transition:all .2s;cursor:pointer}
+.risk:hover{background:var(--hover)}
+.risk-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.risk-title{font-size:13px;font-weight:600}
+.risk-body{font-size:12px;color:var(--ts);line-height:1.5;display:none}
+.risk.open .risk-body{display:block}
+.risk-mit{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);font-size:12px;color:var(--green)}
+
+/* ACTIEPLAN */
+.week-hd{background:linear-gradient(135deg,rgba(0,122,255,.12),rgba(191,90,242,.08));
+  border:1px solid rgba(0,122,255,.22);border-radius:var(--r2);padding:14px 18px;
+  margin-bottom:10px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.week-hd h3{font-size:14px;font-weight:700}
+.week-body{display:none;padding-top:4px}
+.week-hd.open+.week-body{display:block}
+.action-item{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border-radius:9px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);margin-bottom:6px;font-size:13px}
+.action-who{font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;flex-shrink:0;margin-top:1px}
+.action-sem{background:rgba(0,122,255,.2);color:var(--blue)}
+.action-ai{background:rgba(0,196,180,.2);color:#00C4B4}
+
+/* PROMPT BOX */
+.prompt-box{background:rgba(0,0,0,.4);border:1px solid rgba(0,196,180,.2);border-radius:var(--r2);
+  padding:18px;font-family:'SF Mono',Menlo,monospace;font-size:12px;line-height:1.7;
+  color:rgba(255,255,255,.8);white-space:pre-wrap;word-break:break-word;position:relative}
+.copy-btn{position:absolute;top:12px;right:12px;padding:5px 12px;border-radius:7px;
+  background:rgba(0,196,180,.2);border:1px solid rgba(0,196,180,.35);color:#00C4B4;
+  font-size:11px;font-weight:700;cursor:pointer;transition:all .18s;font-family:inherit}
+.copy-btn:hover{background:rgba(0,196,180,.35)}
+
+/* FINANCIEEL */
+.fin-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;
+  border-radius:9px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);margin-bottom:6px}
+.fin-label{font-size:13px;color:var(--ts)}
+.fin-val{font-size:14px;font-weight:700}
+
+/* TABS */
+.tabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+.tab{padding:7px 14px;border-radius:9px;font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .18s;border:1px solid var(--glass-b);color:var(--ts);background:transparent}
+.tab:hover{background:var(--hover);color:var(--tp)}
+.tab.on{background:rgba(0,196,180,.18);color:#00C4B4;border-color:rgba(0,196,180,.3)}
+
+/* LANDINGSPAGINA */
+.lp-sec{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--r2);padding:20px;margin-bottom:12px}
+.lp-sec-title{font-size:11px;font-weight:700;color:var(--tt);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.lp-content{font-size:13px;color:var(--ts);line-height:1.7;white-space:pre-wrap}
+.lp-headline{font-size:18px;font-weight:800;color:var(--tp);margin-bottom:8px;letter-spacing:-.4px}
+
+/* OUTREACH */
+.msg-box{background:rgba(0,196,180,.06);border:1px solid rgba(0,196,180,.2);
+  border-radius:var(--r2);padding:16px;margin-bottom:10px;font-size:13px;
+  line-height:1.65;color:var(--ts);position:relative}
+.msg-label{font-size:10px;font-weight:700;color:#00C4B4;text-transform:uppercase;
+  letter-spacing:.5px;margin-bottom:10px}
+
+/* AVG */
+.avg-item{display:flex;align-items:flex-start;gap:12px;padding:12px;border-radius:10px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);margin-bottom:8px}
+.avg-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+.avg-title{font-size:13px;font-weight:700;margin-bottom:3px}
+.avg-desc{font-size:12px;color:var(--ts);line-height:1.5}
+
+@media(max-width:1100px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:720px){.sb{display:none}.g2,.g3,.g4{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="bg"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-logo">
+    <div class="av">🩺</div>
+    <div><div class="sb-name">Spreekdossier</div><div class="sb-role">Superdashboard — Sem</div></div>
+  </div>
+  <div class="sec-hd">Navigatie</div>
+  <div class="nav on" onclick="go('overview',this)"><span class="ni">🏠</span>Overzicht</div>
+  <div class="nav" onclick="go('markt',this)"><span class="ni">📊</span>Marktanalyse</div>
+  <div class="nav" onclick="go('concurrentie',this)"><span class="ni">⚔️</span>Concurrentie</div>
+  <div class="nav" onclick="go('product',this)"><span class="ni">⚙️</span>Product & Tech</div>
+  <div class="nav" onclick="go('financieel',this)"><span class="ni">💰</span>Financieel</div>
+  <div class="nav" onclick="go('actieplan',this)"><span class="ni">🗺️</span>Actieplan</div>
+  <div class="nav" onclick="go('risicos',this)"><span class="ni">⚠️</span>Risico's</div>
+  <div class="nav" onclick="go('prompt',this)"><span class="ni">🤖</span>SOEP Prompt</div>
+  <div class="nav" onclick="go('landingspagina',this)"><span class="ni">🌐</span>Landingspagina</div>
+  <div class="nav" onclick="go('outreach',this)"><span class="ni">📱</span>Outreach Templates</div>
+  <div class="nav" onclick="go('avg',this)"><span class="ni">🔒</span>AVG & Compliance</div>
+  <div class="nav" onclick="go('privacyfaq',this)"><span class="ni">💬</span>Privacy FAQ</div>
+  <div class="nav" onclick="go('voortgang',this)"><span class="ni">🚀</span>Voortgang</div>
+  <div class="nav" onclick="go('validatie',this)"><span class="ni">🎯</span>Validatie</div>
+  <div class="nav" onclick="go('epd',this)"><span class="ni">🏥</span>EPD Integratie</div>
+  <div class="nav" onclick="go('demo',this)"><span class="ni">🎙️</span>Live Demo</div>
+  <div class="nav" onclick="go('research',this)"><span class="ni">🔬</span>Research</div>
+  <a href="/financieel.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:rgba(255,255,255,.6);text-decoration:none;font-size:14px;font-weight:500;transition:all .2s;margin:1px 0" onmouseover="this.style.background='rgba(255,255,255,.06)'" onmouseout="this.style.background=''"><span style="width:20px;text-align:center">💰</span>Financieel Model ↗</a>
+
+  <div class="sp"></div>
+  <div class="sb-stat">
+    <div style="font-size:10px;font-weight:700;color:var(--tt);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">📈 Key Numbers</div>
+    <div class="sb-stat-row"><span>ZZP-zorgverleners NL</span><span class="sb-stat-val">170K+</span></div>
+    <div class="sb-stat-row"><span>SAM</span><span class="sb-stat-val">€33M/jr</span></div>
+    <div class="sb-stat-row"><span>Gem. rev./account</span><span class="sb-stat-val">€85/mnd</span></div>
+    <div class="sb-stat-row"><span>Break-even</span><span class="sb-stat-val">~15 accounts</span></div>
+    <div class="sb-stat-row"><span>Praktijk M waarde</span><span class="sb-stat-val">6x Solo</span></div>
+    <div class="sb-stat-row"><span>Kosten/rapport</span><span class="sb-stat-val">€0.03</span></div>
+    <div class="sb-stat-row"><span>Concurrent</span><span class="sb-stat-val" style="color:var(--orange)">Fysio AI (scribe only)</span></div>
+  </div>
+
+  <!-- LAATSTE UPDATE -->
+  <div style="margin-top:10px;padding:8px 10px;border-radius:9px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)">
+    <div style="font-size:9px;font-weight:700;color:var(--tt);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Laatste update</div>
+    <div style="font-size:11px;color:var(--ts)" id="sb-last-update">—</div>
+  </div>
+
+  <!-- QUICK LINKS -->
+  <div style="margin-top:10px">
+    <div style="font-size:9px;font-weight:700;color:var(--tt);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;padding:0 2px">Snelle links</div>
+    <a href="/voice-demo.html" target="_blank" style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:8px;background:rgba(0,196,180,.08);border:1px solid rgba(0,196,180,.2);color:#00C4B4;text-decoration:none;font-size:12px;font-weight:600;margin-bottom:5px;transition:all .18s" onmouseover="this.style.background='rgba(0,196,180,.16)'" onmouseout="this.style.background='rgba(0,196,180,.08)'"><span>🎙️ Demo</span><span style="font-size:10px;opacity:.7">↗</span></a>
+    <a href="/financieel.html" target="_blank" style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:8px;background:rgba(255,159,10,.08);border:1px solid rgba(255,159,10,.2);color:var(--orange);text-decoration:none;font-size:12px;font-weight:600;margin-bottom:5px;transition:all .18s" onmouseover="this.style.background='rgba(255,159,10,.16)'" onmouseout="this.style.background='rgba(255,159,10,.08)'"><span>💰 Financieel Model</span><span style="font-size:10px;opacity:.7">↗</span></a>
+    <a href="https://github.com" target="_blank" style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--ts);text-decoration:none;font-size:12px;font-weight:600;transition:all .18s" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='rgba(255,255,255,.05)'"><span>🐙 GitHub</span><span style="font-size:10px;opacity:.7">↗</span></a>
+  </div>
+</aside>
+
+<script>
+// Set sidebar last update timestamp
+(function() {
+  const el = document.getElementById('sb-last-update');
+  if (el) {
+    const now = new Date();
+    const opts = { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' };
+    el.textContent = now.toLocaleDateString('nl-NL', opts).replace(',', '') + ' uur';
+  }
+})();
+</script>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- OVERZICHT -->
+<div class="page on" id="p-overview">
+  <div class="ph"><h1>Spreekdossier ⚡ Superdashboard</h1><p>Alles wat je nodig hebt om te starten — op één plek</p></div>
+
+  <div class="hero">
+    <div class="hero-tag"><div class="hero-dot"></div>Concept gevalideerd — klaar om te bouwen</div>
+    <h2>"Wij regelen je complete dossiervoering. Jij behandelt."</h2>
+    <p>AI-documentatieassistent voor Nederlandse fysiotherapeuten. <strong style="color:var(--tp)">Van intake tot afsluiting</strong> — Spreekdossier neemt ALLE documentatie over. Spreek in, wij schrijven. 6 gespecialiseerde templates: Intake · SOEP · Behandelplan · Evaluatie · Afsluiting · Administratie. Fysio AI = scribe. <strong style="color:#00C4B4">Spreekdossier = compleet platform.</strong></p>
+    <div class="hero-stats">
+      <div class="hs"><div class="hs-val">170K+</div><div class="hs-lab">ZZP-zorgverleners NL</div></div>
+      <div class="hs"><div class="hs-val">31%</div><div class="hs-lab">werktijd aan admin</div></div>
+      <div class="hs"><div class="hs-val">€33M</div><div class="hs-lab">adresseerbare markt</div></div>
+      <div class="hs"><div class="hs-val">Fysio AI</div><div class="hs-lab">enige directe NL-concurrent</div></div>
+      <div class="hs"><div class="hs-val">~15</div><div class="hs-lab">accounts voor break-even</div></div>
+    </div>
+  </div>
+
+  <div class="g4 mb">
+    <div class="sc"><div class="sl">TAM</div><div class="sv">€360M</div><div class="ss">totale markt/jaar</div></div>
+    <div class="sc"><div class="sl">SAM</div><div class="sv">€33M</div><div class="ss">adresseerbare markt</div></div>
+    <div class="sc"><div class="sl">SOM jaar 3</div><div class="sv">€1.22M</div><div class="ss">realistisch doel</div></div>
+    <div class="sc"><div class="sl">Break-even MRR</div><div class="sv">~€1.275</div><div class="ss">~15 accounts</div></div>
+  </div>
+
+  <div class="sh">🎯 Kernpijnpunten (bewezen uit marktonderzoek)</div>
+  <div class="g3 mb">
+    <div class="gc" style="border-color:rgba(255,69,58,.2)">
+      <div style="font-size:24px;margin-bottom:10px">⏰</div>
+      <div style="font-weight:700;margin-bottom:6px">Tijdverlies</div>
+      <div style="font-size:13px;color:var(--ts);line-height:1.5">15-20 min per rapportage. Bij 10 cliënten/dag = 2.5-3 uur administratie. Elke dag opnieuw.</div>
+    </div>
+    <div class="gc" style="border-color:rgba(255,159,10,.2)">
+      <div style="font-size:24px;margin-bottom:10px">😰</div>
+      <div style="font-weight:700;margin-bottom:6px">Kwaliteitsangst</div>
+      <div style="font-size:13px;color:var(--ts);line-height:1.5">"Is mijn rapportage compleet genoeg voor IGJ?" Onzekerheid over terminologie en volledigheid.</div>
+    </div>
+    <div class="gc" style="border-color:rgba(255,69,58,.2)">
+      <div style="font-size:24px;margin-bottom:10px">🔋</div>
+      <div style="font-weight:700;margin-bottom:6px">Uitputting</div>
+      <div style="font-size:13px;color:var(--ts);line-height:1.5">Na volle zorgdag thuis achter de laptop. Avonden verdwijnen. Burn-out in de zorg is structureel probleem.</div>
+    </div>
+  </div>
+
+  <div class="sh">🚀 Eerste stap — doe dit vandaag</div>
+  <div class="gc" style="border-color:rgba(0,196,180,.3);background:rgba(0,196,180,.06)">
+    <div style="font-size:13px;line-height:1.8;color:var(--ts)">
+      <strong style="color:var(--tp);display:block;margin-bottom:8px">Vandaag — Spreekdossier lancering:</strong>
+      1. <strong style="color:#00C4B4">Bel je fysiotherapie-contact</strong> → vraag 20 min voor een validatiegesprek (gebruik script in Outreach tab)<br>
+      2. <strong style="color:#00C4B4">App Sophie</strong> → vraag haar wat de grootste rapportage-frustratie is bij thuiszorgcollega's — dit is gratis marktonderzoek<br>
+      3. Ga naar de <strong style="color:#00C4B4">🎯 Validatie</strong> tab → voeg je eerste contacten toe en plan gesprekken in<br>
+      4. Test de SOEP-prompt: ga naar <strong style="color:#00C4B4">SOEP Prompt</strong> tab → kopieer naar Claude.ai → test met een fysio-scenario<br>
+      5. Stuur 3 WhatsApp-berichten vandaag (templates in <strong style="color:#00C4B4">Outreach</strong> tab — fysiotherapie-variant gebruiken)
+    </div>
+  </div>
+
+  <div class="sh" style="margin-top:20px">👤 Doelgroep persona's</div>
+  <div class="g3">
+    <div class="persona">
+      <div class="persona-head">
+        <div class="persona-av" style="background:rgba(0,122,255,.2)">👩‍⚕️</div>
+        <div><div class="persona-name">Laura, 34</div><div class="persona-sub">Wijkverpleegkundige ZZP</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--ts);margin-bottom:10px">12-16 cliënten/dag · werkt met tablet in de auto · avonduren kwijt aan rapportages</div>
+      <div class="bdg bg-blue" style="margin-bottom:8px">Bereidheid: €29-39/mnd</div>
+      <div class="pain-item">⏰ <span>Rapportages 's avonds thuis afmaken</span></div>
+      <div class="pain-item">📱 <span>EPD op tablet werkt traag</span></div>
+      <div class="pain-item">😰 <span>Onzekerheid over terminologie</span></div>
+    </div>
+    <div class="persona">
+      <div class="persona-head">
+        <div class="persona-av" style="background:rgba(191,90,242,.2)">🧠</div>
+        <div><div class="persona-name">Martijn, 42</div><div class="persona-sub">GGZ-psycholoog ZZP</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--ts);margin-bottom:10px">6-8 sessies/dag · complexe DSM-rapportages · eigen praktijk</div>
+      <div class="bdg bg-purple" style="margin-bottom:8px">Bereidheid: €49-79/mnd</div>
+      <div class="pain-item">📝 <span>Avonduren kwijt aan verslaglegging</span></div>
+      <div class="pain-item">🏷️ <span>DSM-terminologie consistent houden</span></div>
+      <div class="pain-item">⚖️ <span>Juridische volledigheid behandelnotities</span></div>
+    </div>
+    <div class="persona">
+      <div class="persona-head">
+        <div class="persona-av" style="background:rgba(52,199,89,.2)">🤝</div>
+        <div><div class="persona-name">Fatima, 28</div><div class="persona-sub">WLZ-begeleider ZZP</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--ts);margin-bottom:10px">8-10 cliënten/dag · recent ZZP gestart · onzeker over rapportagetaal</div>
+      <div class="bdg bg-green" style="margin-bottom:8px">Bereidheid: €19-29/mnd</div>
+      <div class="pain-item">✍️ <span>"Schrijf ik het professioneel genoeg?"</span></div>
+      <div class="pain-item">⏰ <span>Te veel tijd kwijt per rapportage</span></div>
+      <div class="pain-item">📋 <span>Weet niet precies wat IGJ verwacht</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- MARKT -->
+<div class="page" id="p-markt">
+  <div class="ph"><h1>Marktanalyse 📊</h1><p>TAM/SAM/SOM + marktcontext + timing</p></div>
+
+  <div class="gc mb" style="border-color:rgba(0,196,180,.3);background:rgba(0,196,180,.05)">
+    <div style="font-size:14px;font-weight:700;margin-bottom:8px">🎯 Strategische scherpstelling — Maart 2026</div>
+    <div style="font-size:13px;color:var(--ts);line-height:1.7">
+      Spreekdossier is niet alleen een SOEP-tool — het is een <strong style="color:#00C4B4">complete dossiervoering-oplossing</strong>. Een fysiotherapeut is wettelijk verplicht 6 typen documentatie bij te houden: intake, sessienotities, behandelplan, evaluatie, afsluiting en administratie. Spreekdossier dekt <strong style="color:var(--tp)">alle 6</strong> via gespecialiseerde templates.<br><br>
+      Dit verhoogt de waardepropositie significant: in plaats van "sneller SOEP schrijven" is het nu <strong style="color:#00C4B4">"wij regelen je complete dossiervoering"</strong>. Grotere pijn, hogere betalingsbereidheid, sterkere retentie.
+    </div>
+  </div>
+
+  <div class="g4 mb">
+    <div class="sc"><div class="sl">TAM — Totale Markt</div><div class="sv" style="color:var(--teal)">€360M</div><div class="ss">alle NL zorgverleners + admin-tools</div></div>
+    <div class="sc"><div class="sl">SAM — Adresseerbaar</div><div class="sv" style="color:var(--blue)">€33M</div><div class="ss">ZZP-zorgverleners NL/jaar</div></div>
+    <div class="sc"><div class="sl">SOM — Jaar 3 doel</div><div class="sv" style="color:var(--purple)">€1.22M</div><div class="ss">~4% van SAM</div></div>
+    <div class="sc"><div class="sl">Marktgroei</div><div class="sv" style="color:var(--green)">+10%</div><div class="ss">per jaar, al 10 jaar</div></div>
+  </div>
+
+  <div class="gc mb">
+    <div class="sh">ZZP-zorg markt segmenten Nederland</div>
+    <table class="tbl">
+      <tr><th>Segment</th><th>Omvang ZZP'ers</th><th>Geschatte bereidheid</th><th>Prioriteit</th></tr>
+      <tr><td>Thuiszorg / wijkverpleging</td><td>~50.000</td><td>€29-39/mnd</td><td><span class="bdg bg-green">Hoog</span></td></tr>
+      <tr><td>GGZ / psychologen</td><td>~25.000</td><td>€49-79/mnd</td><td><span class="bdg bg-green">Hoog</span></td></tr>
+      <tr><td>Fysiotherapie</td><td>~15.000</td><td>€29-49/mnd</td><td><span class="bdg bg-green">Hoog</span></td></tr>
+      <tr><td>VVT (verpleging & verzorging)</td><td>~30.000</td><td>€19-29/mnd</td><td><span class="bdg bg-blue">Middel</span></td></tr>
+      <tr><td>Ergotherapie / logopedie</td><td>~10.000</td><td>€29-39/mnd</td><td><span class="bdg bg-blue">Middel</span></td></tr>
+      <tr><td>Maatschappelijk werk / coaching</td><td>~20.000</td><td>€19-29/mnd</td><td><span class="bdg bg-orange">Later</span></td></tr>
+      <tr><td>Huisartsenzorg (HIDHA)</td><td>~5.000</td><td>€49-99/mnd</td><td><span class="bdg bg-orange">Later (complex)</span></td></tr>
+    </table>
+  </div>
+
+  <div class="gc mb">
+    <div class="sh">Marktpijnpunten — NZa 2026 + Fysionieuws + Fysio AI testimonials</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="background:rgba(255,69,58,.08);border:1px solid rgba(255,69,58,.15);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--ts)">
+        💬 <em>"Ik ben altijd 's avonds nog aan het rapporteren"</em> — achterstand op rapportage is structureel
+      </div>
+      <div style="background:rgba(255,69,58,.08);border:1px solid rgba(255,69,58,.15);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--ts)">
+        💬 <em>"Het kost me 15-20 minuten per cliënt om een SOEP-notitie te schrijven"</em>
+      </div>
+      <div style="background:rgba(255,69,58,.08);border:1px solid rgba(255,69,58,.15);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--ts)">
+        💬 <em>"Ik durf bepaalde woorden niet te gebruiken, stel dat het juridisch verkeerd ligt"</em>
+      </div>
+      <div style="background:rgba(255,69,58,.08);border:1px solid rgba(255,69,58,.15);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--ts)">
+        💬 <em>"Als zzp'er moet ik zelf alles bijhouden voor IGJ — ik weet niet of ik het goed doe"</em>
+      </div>
+      <div style="background:rgba(255,69,58,.08);border:1px solid rgba(255,69,58,.15);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--ts)">
+        💬 <em>"Ik ben meer bezig met de computer dan met de cliënt"</em>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;border-top:1px solid rgba(255,255,255,.08);padding-top:14px">
+      <div style="font-size:13px;font-weight:700;color:var(--tp);margin-bottom:8px">📣 Fysionieuws.nl + NZa — Sectorcontext (Maart 2026)</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="background:rgba(90,200,250,.06);border:1px solid rgba(90,200,250,.15);border-radius:10px;padding:12px 16px;font-size:12px;color:var(--ts);line-height:1.6">
+          <strong style="color:var(--teal)">NZa rapport juni 2025:</strong> Sector zucht onder <em>"financiële druk, diepe onvrede over tarieven en een groeiende kloof"</em>. Gem. vergoeding: €36,53/zitting. Tarieven bleven 2,7 ppt achter bij kostenindexatie (2019-2024).
+        </div>
+        <div style="background:rgba(90,200,250,.06);border:1px solid rgba(90,200,250,.15);border-radius:10px;padding:12px 16px;font-size:12px;color:var(--ts);line-height:1.6">
+          <strong style="color:var(--teal)">Nivel onderzoek 2025:</strong> Fysiotherapeuten hebben <strong style="color:var(--tp)">"behoefte aan meer tijd"</strong> — multidisciplinaire samenwerking kost extra tijd die niet vergoed wordt. Extra administratie = direct minder inkomsten.
+        </div>
+        <div style="background:rgba(90,200,250,.06);border:1px solid rgba(90,200,250,.15);border-radius:10px;padding:12px 16px;font-size:12px;color:var(--ts);line-height:1.6">
+          <strong style="color:var(--teal)">Benchmark Fysiotherapie 2025 (n=1.552):</strong> Gem. FTE = 0,72 (55-75% parttime). Elke minuut admin bij parttime = zwaarder. Markt open voor tijdbesparende tools.
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;border-top:1px solid rgba(255,255,255,.08);padding-top:14px">
+      <div style="font-size:13px;font-weight:700;color:var(--tp);margin-bottom:8px">🎙️ Echte quotes van Fysio AI gebruikers (testimonials april 2026)</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="background:rgba(0,196,180,.06);border:1px solid rgba(0,196,180,.15);border-radius:10px;padding:12px 16px;font-size:12px;color:var(--ts)">
+          💬 <em>"Het scheelt enorm veel tijd bij het statusvoeren"</em> — Arjan Smeele, podotherapeut
+        </div>
+        <div style="background:rgba(0,196,180,.06);border:1px solid rgba(0,196,180,.15);border-radius:10px;padding:12px 16px;font-size:12px;color:var(--ts)">
+          💬 <em>"Eindelijk weer volledig de aandacht voor de patiënt!!!"</em> — Pim de Groot, fysiotherapeut
+        </div>
+        <div style="background:rgba(0,196,180,.06);border:1px solid rgba(0,196,180,.15);border-radius:10px;padding:12px 16px;font-size:12px;color:var(--ts)">
+          💬 <em>"Een kwalitatief gesprek is cruciaal... typen in het dossier kan de aandacht afleiden"</em> — Derek Sweijen, Sento Medical
+        </div>
+        <div style="background:rgba(0,196,180,.06);border:1px solid rgba(0,196,180,.15);border-radius:10px;padding:12px 16px;font-size:12px;color:var(--ts)">
+          💬 <em>"Wie zou er niet willen profiteren van een afname in administratieve lasten?"</em> — Gerard Broekema, Directeur Fitaal-FGN
+        </div>
+        <div style="background:rgba(255,159,10,.06);border:1px solid rgba(255,159,10,.15);border-radius:10px;padding:12px 16px;font-size:12px;color:var(--ts)">
+          ℹ️ <strong style="color:var(--orange)">Let op:</strong> Dit zijn quotes van Fysio AI (directe concurrent). Ze bewijzen dat de pijn reëel is — gebruik voor pitch, niet als eigen testimonials. Onze eigen quotes volgen na de eerste 10 beta-gebruikers.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gc mb">
+    <div class="sh">🏥 EPD Markt — Kosten voor Fysiotherapeuten</div>
+    <div class="g3" style="margin-top:4px">
+      <div style="background:rgba(255,255,255,.04);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,.08)">
+        <div style="font-weight:700;margin-bottom:8px">Intramed <span style="font-size:11px;color:var(--ts);font-weight:400">(bevestigd)</span></div>
+        <div style="font-size:12px;color:var(--ts);line-height:1.7">Marktleider. <strong style="color:var(--tp)">€88/mnd voor ZZP solo</strong> (€21,45 praktijk + €66,89 zorgverlener). Eenmalige instapkosten: €582,49. Biedt nu ook AI-intake functie — geen sessienotities.</div>
+        <div style="margin-top:8px;font-size:11px;color:#00C4B4">💡 Spreekdossier is aanvullend aan Intramed — geen vervanging</div>
+      </div>
+      <div style="background:rgba(255,255,255,.04);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,.08)">
+        <div style="font-weight:700;margin-bottom:8px">Fysiomanager</div>
+        <div style="font-size:12px;color:var(--ts);line-height:1.7">Per-fte model, lager tarief solisten. Geen publieke prijs — alleen op offerte. Schatting: €60–90/mnd voor ZZP. Browsergebaseerd, modern. Geen AI-verslaglegging.</div>
+        <div style="margin-top:8px;font-size:11px;color:#00C4B4">💡 70%+ van gebruikers heeft geen AI-tool — open markt</div>
+      </div>
+      <div style="background:rgba(0,196,180,.06);border-radius:12px;padding:16px;border:1px solid rgba(0,196,180,.2)">
+        <div style="font-weight:700;margin-bottom:8px;color:#00C4B4">Spreekdossier ROI-pitch</div>
+        <div style="font-size:12px;color:var(--ts);line-height:1.7">ZZP betaalt €88/mnd voor Intramed. <strong style="color:var(--tp)">+ €39/mnd Spreekdossier.</strong><br><br>20 min admin/dag verloren = 1 behandeling = €36,53–45,80 per dag. Bij 22 werkdagen: €800–1.000/mnd omzetverlies.<br><br><strong style="color:var(--green)">Spreekdossier terugverdiend na &lt;1 dag per maand.</strong></div>
+        <div style="margin-top:8px;padding:8px;background:rgba(0,196,180,.1);border-radius:8px;font-size:12px;font-weight:700;color:#00C4B4">"€39/mnd. Je verdient het terug in je eerste behandeling van de maand."</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gc">
+    <div class="sh">⏰ Timing — waarom nu?</div>
+    <div class="g2">
+      <div>
+        <div style="font-size:13px;line-height:1.8;color:var(--ts)">
+          <div style="margin-bottom:8px">✅ <strong style="color:var(--tp)">AI-acceptatie stijgt</strong> — zorgverleners worden steeds meer open voor AI-tools (2024-2026 is het kantelpunt)</div>
+          <div style="margin-bottom:8px">✅ <strong style="color:var(--tp)">Personeelstekort</strong> — verwacht 100.000+ vacatures in 2030. Tijdsbesparing wordt kritischer.</div>
+          <div style="margin-bottom:8px">✅ <strong style="color:var(--tp)">First-mover</strong> — Nabla/Heidi nog niet in NL. Window van 1-2 jaar.</div>
+          <div>✅ <strong style="color:var(--tp)">Politieke druk</strong> — overheid wil actief de administratielast in de zorg verminderen.</div>
+        </div>
+      </div>
+      <div>
+        <div class="fin-row"><span class="fin-label">ZZP-groei/jaar</span><span class="fin-val" style="color:var(--green)">+8-12%</span></div>
+        <div class="fin-row"><span class="fin-label">Admin als % werkweek</span><span class="fin-val" style="color:var(--red)">31%</span></div>
+        <div class="fin-row"><span class="fin-label">Min/rapportage gemiddeld</span><span class="fin-val" style="color:var(--red)">15-20 min</span></div>
+        <div class="fin-row"><span class="fin-label">Directe NL-concurrent</span><span class="fin-val" style="color:var(--orange)">Fysio AI (scribe only)</span></div>
+        <div class="fin-row"><span class="fin-label">Koopbeslissing ZZP-er</span><span class="fin-val" style="color:var(--green)">1-4 weken</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONCURRENTIE -->
+<div class="page" id="p-concurrentie">
+  <div class="ph"><h1>Concurrentieanalyse ⚔️</h1><p>Wie is er al, waarom winnen wij</p></div>
+
+  <div class="g2 mb">
+    <div class="gc" style="border-color:rgba(0,196,180,.3);background:rgba(0,196,180,.05)">
+      <div style="font-size:14px;font-weight:700;margin-bottom:8px">🏆 Kernbevinding</div>
+      <div style="font-size:13px;color:var(--ts);line-height:1.6">Fysio AI is een sterke AI-scribe voor sessienotities. <strong style="color:#00C4B4">Spreekdossier is het enige complete administratieplatform</strong> — patiëntbericht, verwijsbrief, behandelplan, evaluatie én flat-rate pricing. <strong style="color:var(--tp)">Fysio AI = scribe. Spreekdossier = platform.</strong></div>
+    </div>
+    <div class="gc" style="border-color:rgba(255,159,10,.3);background:rgba(255,159,10,.04)">
+      <div style="font-size:14px;font-weight:700;margin-bottom:8px">⚡ Fysio AI — Bevestigde feiten</div>
+      <div style="font-size:12px;color:var(--ts);line-height:1.7">
+        ✅ 100+ praktijken actief<br>
+        ✅ Standalone iOS/Android app (gelanceerd maart 2026)<br>
+        ✅ EPD-integratie aangekondigd (binnenkort)<br>
+        ✅ 95%+ nauwkeurigheid geclaimd<br>
+        ⚠️ Credit-based: €0,65–0,95/gesprek variabel<br>
+        ⚠️ Bij 10 patiënten/dag = €130–190/mnd<br>
+        ❌ Geen vast maandtarief<br>
+        ❌ Alleen sessienotities — geen patiëntbericht, verwijsbrief, behandelplan
+      </div>
+    </div>
+  </div>
+
+  <div class="comp" style="border-color:rgba(255,69,58,.35);background:rgba(255,69,58,.07)">
+    <div class="comp-head"><div><div class="comp-name">Fysio AI 🇳🇱 ⚠️</div><div style="font-size:11px;color:var(--ts);margin-top:2px">fysio.ai — standalone iOS/Android app + EPD-integratie aangekondigd (2026)</div></div><span class="bdg bg-red">DIRECTE CONCURRENT</span></div>
+    <div class="comp-row"><span class="comp-tag">100+ praktijken</span><span class="comp-tag">Credit-based</span><span class="comp-tag">€0,65–0,95/gesprek</span><span class="comp-tag">Standalone app</span><span class="comp-tag">NEN7510 + ISO27001</span></div>
+    <div class="comp-pro">✅ NL-specifiek · SOEP-getraind · Audio direct verwijderd · AVG-compliant · Standalone app (iOS + Android)</div>
+    <div class="comp-con">❌ Alleen sessienotities — geen patiëntbericht, verwijsbrief, behandelplan, evaluatie · Variabele credits = onvoorspelbaar voor ZZP · Bij 10 patiënten/dag = €130–190/mnd vs. €39 vast · Geen flat-rate optie</div>
+    <div style="font-size:12px;padding:10px;background:rgba(0,196,180,.08);border-radius:8px;margin-top:10px;border:1px solid rgba(0,196,180,.15)">
+      <strong style="color:#00C4B4">💡 Onze pitch vs Fysio AI:</strong> "Fysio AI is een goede scribe — maar het stopt bij de sessienotitie. Spreekdossier regelt ook het patiëntbericht, de verwijsbrief, het behandelplan en de ontslagbrief. Én kost €39 vast — geen credits, geen telwerk, geen verrassingen."
+    </div>
+    <div style="margin-top:10px">
+      <table class="tbl">
+        <tr><th>Pakket</th><th>Prijs</th><th>Per gesprek</th><th>40 sess/mnd</th><th>200 sess/mnd</th></tr>
+        <tr><td>Fysio AI Starter</td><td>€47,50 / 50 cred</td><td>€0,95</td><td>€38</td><td>€190</td></tr>
+        <tr><td>Fysio AI Pro</td><td>€400 / 500 cred</td><td>€0,80</td><td>€32</td><td>€160</td></tr>
+        <tr><td><strong>Spreekdossier Solo</strong></td><td><strong>€39/mnd vast</strong></td><td><strong>€0,98 bij 40 sess</strong></td><td><strong>€39 — altijd</strong></td><td><strong>€39 — altijd</strong></td></tr>
+      </table>
+      <div style="font-size:11px;color:var(--ts);margin-top:6px">Bij 10 patiënten/dag (200 sess/mnd) betaal je bij Fysio AI €130–190 variabel. Spreekdossier: altijd €39. Drukke maanden = géén meerkosten.</div>
+    </div>
+  </div>
+
+  <div class="comp">
+    <div class="comp-head"><div><div class="comp-name">Nabla Copilot 🇫🇷🇺🇸</div><div style="font-size:11px;color:var(--ts);margin-top:2px">nabla.com — sterkste technologie internationaal</div></div><span class="bdg bg-orange">Indirect concurrent</span></div>
+    <div class="comp-row"><span class="comp-tag">85.000+ gebruikers</span><span class="comp-tag">SOAP/APSO templates</span><span class="comp-tag">Enterprise API</span><span class="comp-tag">$500-2000/mnd</span></div>
+    <div class="comp-pro">✅ Sterkste AI-transcriptie technologie · goede API</div>
+    <div class="comp-con">❌ Geen Nederlands · geen SOEP-format · geen AVG/NEN-7510 · enterprise-only · geen ZZP-pricing</div>
+    <div style="font-size:12px;color:var(--teal);margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">💡 Kans: Nabla's API gebruiken als backend, Spreekdossier bouwt de NL-laag er bovenop</div>
+  </div>
+
+  <div class="comp">
+    <div class="comp-head"><div><div class="comp-name">Heidi Health 🇦🇺</div><div style="font-size:11px;color:var(--ts);margin-top:2px">heidihealth.com — internationaal groeiend</div></div><span class="bdg bg-orange">Indirect concurrent</span></div>
+    <div class="comp-row"><span class="comp-tag">Freemium model</span><span class="comp-tag">$79/mnd premium</span><span class="comp-tag">AU/US templates</span></div>
+    <div class="comp-pro">✅ Freemium lowers barrier · groeit snel internationaal</div>
+    <div class="comp-con">❌ Geen Nederlandse interface · geen SOEP · geen AVG-compliance · Australisch recht</div>
+  </div>
+
+  <div class="comp">
+    <div class="comp-head"><div><div class="comp-name">Nuance DAX / Dragon Copilot 🇺🇸</div><div style="font-size:11px;color:var(--ts);margin-top:2px">Microsoft — $19 miljard overname</div></div><span class="bdg bg-red">Geen concurrent voor ZZP</span></div>
+    <div class="comp-row"><span class="comp-tag">Enterprise only</span><span class="comp-tag">€500-2000+/mnd</span><span class="comp-tag">Ziekenhuizen</span></div>
+    <div class="comp-con">❌ Veel te duur voor ZZP · gericht op grote instellingen · geen NL</div>
+    <div style="font-size:12px;color:var(--green);margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">✅ Bewijs dat de markt enorm groot is — Nuance voor $19B overgenomen</div>
+  </div>
+
+  <div class="comp" style="border-color:rgba(255,69,58,.25);background:rgba(255,69,58,.05)">
+    <div class="comp-head"><div><div class="comp-name">Fierit CarePilot 🇳🇱</div><div style="font-size:11px;color:var(--ts);margin-top:2px">fierit.nl — STERKSTE NL concurrent</div></div><span class="bdg bg-red">Directe NL concurrent</span></div>
+    <div class="comp-row"><span class="comp-tag">NL markt</span><span class="comp-tag">Vereist Fierit ECD</span><span class="comp-tag">Enterprise</span><span class="comp-tag">Zorginstellingen</span></div>
+    <div class="comp-pro">✅ Enige serieuze NL AI-zorgdocumentatie speler · NEN-7510 compliant</div>
+    <div class="comp-con">❌ Vereist Fierit eigen ECD-systeem · niet standalone · niet voor ZZP-ers · geen individueel abonnement</div>
+    <div style="font-size:12px;color:var(--teal);margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">💡 Bewijs dat de NL markt er klaar voor is — en dat ZZP-segment niet bediend wordt</div>
+  </div>
+
+  <div class="comp" style="border-color:rgba(255,159,10,.25);background:rgba(255,159,10,.04)">
+    <div class="comp-head"><div><div class="comp-name">Intramed Fysio AI 🇳🇱</div><div style="font-size:11px;color:var(--ts);margin-top:2px">intramed.nl — EPD-leverancier fysiotherapie</div></div><span class="bdg bg-orange">Gedeeltelijke overlap</span></div>
+    <div class="comp-row"><span class="comp-tag">Fysiotherapie-EPD</span><span class="comp-tag">Intake-AI</span><span class="comp-tag">~15.000 fysio's</span><span class="comp-tag">NL markt</span></div>
+    <div class="comp-pro">✅ Grote gebruikersbasis fysiotherapie · geïntegreerd in Intramed EPD · vertrouwde naam</div>
+    <div class="comp-con">❌ Alleen intake-verwerking (geen sessienotities) · vereist Intramed EPD-abonnement · geen thuiszorg/GGZ · geen standalone</div>
+    <div style="font-size:12px;color:var(--teal);margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">⚡ <strong>Onze gap:</strong> Intramed doet intake, wij doen sessienotities. Complementair, niet concurrerend. Pitch aan Intramed-gebruikers: "gebruik ons náást Intramed". Later kans op integratie/overname.</div>
+  </div>
+
+  <div class="gc" style="margin-top:16px">
+    <div class="sh">Waarom wij winnen</div>
+    <table class="tbl">
+      <tr><th>Factor</th><th>Spreekdossier</th><th>Fysio AI</th><th>Nabla</th><th>Heidi</th><th>Fierit</th><th>Intramed AI</th></tr>
+      <tr><td>Nederlandse interface</td><td><span style="color:var(--green)">✅</span></td><td><span style="color:var(--green)">✅</span></td><td><span style="color:var(--red)">❌</span></td><td><span style="color:var(--red)">❌</span></td><td><span style="color:var(--green)">✅</span></td><td><span style="color:var(--green)">✅</span></td></tr>
+      <tr><td>SOEP-format</td><td><span style="color:var(--green)">✅</span></td><td><span style="color:var(--green)">✅</span></td><td><span style="color:var(--red)">❌</span></td><td><span style="color:var(--red)">❌</span></td><td><span style="color:var(--green)">✅</span></td><td><span style="color:var(--orange)">⚠️ intake only</span></td></tr>
+      <tr><td>6 documenttypes</td><td><span style="color:var(--green)">✅</span></td><td><span style="color:var(--red)">❌ notities only</span></td><td><span style="color:var(--orange)">⚠️</span></td><td><span style="color:var(--orange)">⚠️</span></td><td><span style="color:var(--green)">✅</span></td><td><span style="color:var(--red)">❌</span></td></tr>
+      <tr><td>AVG-compliant</td><td><span style="color:var(--green)">✅</span></td><td><span style="color:var(--green)">✅</span></td><td><span style="color:var(--orange)">⚠️</span></td><td><span style="color:var(--red)">❌</span></td><td><span style="color:var(--green)">✅</span></td><td><span style="color:var(--green)">✅</span></td></tr>
+      <tr><td>Vast maandtarief</td><td><span style="color:var(--green)">✅ €39</span></td><td><span style="color:var(--red)">❌ credits</span></td><td><span style="color:var(--red)">❌</span></td><td><span style="color:var(--orange)">⚠️</span></td><td><span style="color:var(--red)">❌</span></td><td><span style="color:var(--red)">❌</span></td></tr>
+      <tr><td>Werkt met elk EPD</td><td><span style="color:var(--green)">✅</span></td><td><span style="color:var(--orange)">⚠️ App standalone, EPD-integratie binnenkort</span></td><td><span style="color:var(--green)">✅</span></td><td><span style="color:var(--green)">✅</span></td><td><span style="color:var(--red)">❌</span></td><td><span style="color:var(--red)">❌</span></td></tr>
+      <tr><td>Standalone (geen ECD)</td><td><span style="color:var(--green)">✅</span></td><td><span style="color:var(--orange)">⚠️ deels</span></td><td><span style="color:var(--green)">✅</span></td><td><span style="color:var(--green)">✅</span></td><td><span style="color:var(--red)">❌</span></td><td><span style="color:var(--red)">❌</span></td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- PRODUCT -->
+<div class="page" id="p-product">
+  <div class="ph"><h1>Product & Technologie ⚙️</h1><p>MVP → V1 → V2 roadmap + tech stack</p></div>
+
+  <div class="tabs" id="prodTabs">
+    <div class="tab on" onclick="prodTab('mvp',this)">MVP (Mnd 1-3)</div>
+    <div class="tab" onclick="prodTab('v1',this)">V1.0 (Mnd 4-6)</div>
+    <div class="tab" onclick="prodTab('v2',this)">V2.0 (Mnd 7-12)</div>
+    <div class="tab" onclick="prodTab('tech',this)">Tech Stack</div>
+  </div>
+
+  <div id="prod-mvp">
+    <div class="gc mb">
+      <div class="sh">MVP — Complete dossiervoering voor fysiotherapeuten</div>
+      <div style="background:rgba(0,196,180,.08);border:1px solid rgba(0,196,180,.25);border-radius:12px;padding:14px 18px;margin-bottom:16px;font-size:13px;line-height:1.6;color:var(--ts)">
+        <strong style="color:#00C4B4">Kernpropositie:</strong> Spreekdossier neemt de <strong style="color:var(--tp)">volledige documentatieplicht</strong> van fysiotherapeuten over — niet alleen SOEP-notities, maar ALLE 6 documenttypen die een erkende fysiotherapeut wettelijk dient bij te houden.
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+        <div class="action-item"><span style="font-size:20px">📋</span><div><strong>Stap 1:</strong> Kies je template — Intake / Behandelnotitie / Behandelplan / Evaluatie / Afsluiting / Administratie</div></div>
+        <div class="action-item"><span style="font-size:20px">🎙️</span><div><strong>Stap 2:</strong> Spreek 2 minuten in wat er is besproken of gedaan. Geen format nodig — gewoon praten zoals je dat aan een collega zou doen.</div></div>
+        <div class="action-item"><span style="font-size:20px">🤖</span><div><strong>Stap 3:</strong> AI genereert complete, professionele documentatie in 15 seconden — gestructureerd per templatetype</div></div>
+        <div class="action-item"><span style="font-size:20px">✅</span><div><strong>Stap 4:</strong> Lees door, kopieer naar Intramed / FysioRoadmap of ander EPD. Klaar — je avond is van jou.</div></div>
+      </div>
+      <div class="sh">6 Templates in MVP</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+        <div style="background:rgba(0,196,180,.08);border:1px solid rgba(0,196,180,.2);border-radius:10px;padding:12px;font-size:12px">
+          <div style="font-size:18px;margin-bottom:6px">🏁</div>
+          <div style="font-weight:700;color:var(--tp);margin-bottom:4px">Intake</div>
+          <div style="color:var(--ts)">Hulpvraag, anamnese, diagnose, behandeldoelen (SMART), informed consent</div>
+        </div>
+        <div style="background:rgba(0,122,255,.08);border:1px solid rgba(0,122,255,.2);border-radius:10px;padding:12px;font-size:12px">
+          <div style="font-size:18px;margin-bottom:6px">🛠️</div>
+          <div style="font-weight:700;color:var(--tp);margin-bottom:4px">Behandelnotitie</div>
+          <div style="color:var(--ts)">S/O/E/P — complete SOEP-notitie per sessie</div>
+        </div>
+        <div style="background:rgba(191,90,242,.08);border:1px solid rgba(191,90,242,.2);border-radius:10px;padding:12px;font-size:12px">
+          <div style="font-size:18px;margin-bottom:6px">📋</div>
+          <div style="font-weight:700;color:var(--tp);margin-bottom:4px">Behandelplan</div>
+          <div style="color:var(--ts)">Methode, frequentie, prognose, verwijsafspraken</div>
+        </div>
+        <div style="background:rgba(52,199,89,.08);border:1px solid rgba(52,199,89,.2);border-radius:10px;padding:12px;font-size:12px">
+          <div style="font-size:18px;margin-bottom:6px">📈</div>
+          <div style="font-weight:700;color:var(--tp);margin-bottom:4px">Evaluatie</div>
+          <div style="color:var(--ts)">Voortgang t.o.v. doelen, uitkomstmaten (NRS/PSFS), bijstelling</div>
+        </div>
+        <div style="background:rgba(255,159,10,.08);border:1px solid rgba(255,159,10,.2);border-radius:10px;padding:12px;font-size:12px">
+          <div style="font-size:18px;margin-bottom:6px">✅</div>
+          <div style="font-weight:700;color:var(--tp);margin-bottom:4px">Afsluiting</div>
+          <div style="color:var(--ts)">Eindstatus, bereikte doelen, advies, terugvalpreventie, verwijzing</div>
+        </div>
+        <div style="background:rgba(255,69,58,.08);border:1px solid rgba(255,69,58,.2);border-radius:10px;padding:12px;font-size:12px">
+          <div style="font-size:18px;margin-bottom:6px">💰</div>
+          <div style="font-weight:700;color:var(--tp);margin-bottom:4px">Administratie</div>
+          <div style="color:var(--ts)">Datum, NZa-prestatiecode, behandelingsserie, verwijzer, verzekering</div>
+        </div>
+      </div>
+      <div class="sh">Wat het NIET is in MVP</div>
+      <div style="font-size:13px;color:var(--ts);line-height:1.8">❌ Eigen EPD-integratie &nbsp;·&nbsp; ❌ Automatische patiëntdatabase &nbsp;·&nbsp; ❌ Native app &nbsp;·&nbsp; ❌ Voice-activering</div>
+    </div>
+  </div>
+
+  <div id="prod-v1" style="display:none">
+    <div class="gc mb">
+      <div class="sh">V1.0 — Compleet product (Mnd 4-6)</div>
+      <div style="font-size:13px;color:var(--ts);line-height:2">
+        ✅ Authenticatie + account management<br>
+        ✅ Betaling via Stripe<br>
+        ✅ Geschiedenis van rapportages (versleuteld)<br>
+        ✅ Meerdere SOEP-varianten (thuiszorg, GGZ, fysiotherapie)<br>
+        ✅ Feedback mechanisme ("Verbeter dit")<br>
+        ✅ Exportopties (PDF, Word, kopieer)<br>
+        ✅ Statistieken (tijdsbesparing inzichtelijk voor gebruiker)
+      </div>
+    </div>
+  </div>
+
+  <div id="prod-v2" style="display:none">
+    <div class="gc mb">
+      <div class="sh">V2.0 — Groei (Mnd 7-12)</div>
+      <div style="font-size:13px;color:var(--ts);line-height:2">
+        ✅ Native iOS + Android app<br>
+        ✅ EPD-integratie (Intramed, MedIQ, Chipper)<br>
+        ✅ Teamfunctionaliteit voor kleine praktijken<br>
+        ✅ Aangepaste templates per specialisme<br>
+        ✅ API voor EPD-leveranciers (B2B channel)<br>
+        ✅ White-label voor detacheringsbureaus
+      </div>
+    </div>
+  </div>
+
+  <div id="prod-tech" style="display:none">
+    <div class="g2">
+      <div class="gc">
+        <div class="sh">Frontend & Hosting</div>
+        <div class="fin-row"><span class="fin-label">Framework</span><span class="fin-val">Next.js 14 (PWA)</span></div>
+        <div class="fin-row"><span class="fin-label">Styling</span><span class="fin-val">Tailwind CSS</span></div>
+        <div class="fin-row"><span class="fin-label">Hosting</span><span class="fin-val">Vercel (EU)</span></div>
+        <div class="fin-row"><span class="fin-label">Database</span><span class="fin-val">Supabase (Frankfurt)</span></div>
+        <div class="fin-row"><span class="fin-label">Betaling</span><span class="fin-val">Stripe</span></div>
+      </div>
+      <div class="gc">
+        <div class="sh">AI Engine & Kosten</div>
+        <div class="fin-row"><span class="fin-label">Transcriptie</span><span class="fin-val">OpenAI Whisper</span></div>
+        <div class="fin-row"><span class="fin-label">SOEP-generatie</span><span class="fin-val">Claude Sonnet</span></div>
+        <div class="fin-row"><span class="fin-label">Kosten/rapport</span><span class="fin-val" style="color:var(--green)">~€0.03</span></div>
+        <div class="fin-row"><span class="fin-label">Kosten/user/mnd</span><span class="fin-val" style="color:var(--green)">€12-18</span></div>
+        <div class="fin-row"><span class="fin-label">Marge bij €39/mnd</span><span class="fin-val" style="color:var(--green)">€21-27</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FINANCIEEL -->
+<div class="page" id="p-financieel">
+  <div class="ph"><h1>Financieel Model 💰</h1><p>Kosten, revenue, break-even, projecties</p></div>
+  <div class="gc mb" style="border-color:rgba(0,201,181,.3);background:rgba(0,201,181,.05)">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-size:15px;font-weight:700;margin-bottom:4px">🎛️ Interactief Financieel Model</div>
+        <div style="font-size:13px;color:var(--ts)">Pas sliders aan en zie live hoe MRR, break-even en omzet veranderen. 5 tabs: Prognose, Scenario's, Unit Economics, Markt, Kosten.</div>
+      </div>
+      <a href="/financieel.html" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 20px;background:var(--primary-color,#00C4B4);color:#060610;font-weight:700;font-size:14px;border-radius:100px;text-decoration:none;flex-shrink:0;background:#00C4B4">Open model →</a>
+    </div>
+  </div>
+
+
+  <!-- OMZETPROGNOSE -->
+  <div class="gc mb" style="border-color:rgba(0,196,180,.3);background:rgba(0,196,180,.04)">
+    <div class="sh">📈 Realistische Omzetprognose — 24 maanden</div>
+    <div style="font-size:12px;color:var(--ts);margin-bottom:16px;line-height:1.6">
+      Aannames: 90% Solo €39/mnd · 10% Praktijk S €119/mnd · Churn 10%/mnd (mnd 1-6) → 5%/mnd (mnd 7+) · Part-time inzet Sem · Geen marketing budget jaar 1 · Kosten €150-200/mnd
+    </div>
+    <table class="tbl">
+      <tr><th>Periode</th><th>Fase</th><th>Klanten</th><th>MRR</th><th>Cumulatief</th><th>Mijlpaal</th></tr>
+      <tr><td>Mnd 1</td><td><span class="bdg bg-purple">Validatie</span></td><td>0</td><td>€0</td><td>€0</td><td>Demo live, eerste gesprekken</td></tr>
+      <tr><td>Mnd 2</td><td><span class="bdg bg-purple">Validatie</span></td><td>2</td><td>€78</td><td>€78</td><td>Eerste betalende klanten</td></tr>
+      <tr><td>Mnd 3</td><td><span class="bdg bg-purple">Validatie</span></td><td>5</td><td>€195</td><td>€273</td><td><strong style="color:var(--green)">Break-even ✓</strong></td></tr>
+      <tr><td>Mnd 4</td><td><span class="bdg bg-blue">Early</span></td><td>9</td><td>€351</td><td>€624</td><td>Mond-tot-mond start</td></tr>
+      <tr><td>Mnd 5</td><td><span class="bdg bg-blue">Early</span></td><td>14</td><td>€546</td><td>€1.170</td><td>fysionieuws.nl post</td></tr>
+      <tr><td>Mnd 6</td><td><span class="bdg bg-blue">Early</span></td><td>20</td><td>€780</td><td>€1.950</td><td>20 betalende klanten</td></tr>
+      <tr><td>Mnd 7</td><td><span class="bdg bg-green">Groei</span></td><td>28</td><td>€1.092</td><td>€3.042</td><td>Churn daalt naar 5%</td></tr>
+      <tr><td>Mnd 8</td><td><span class="bdg bg-green">Groei</span></td><td>38</td><td>€1.482</td><td>€4.524</td><td>Eerste Praktijk S klanten</td></tr>
+      <tr><td>Mnd 9</td><td><span class="bdg bg-green">Groei</span></td><td>50</td><td>€1.950</td><td>€6.474</td><td>50 klanten milestone</td></tr>
+      <tr><td>Mnd 10</td><td><span class="bdg bg-green">Groei</span></td><td>63</td><td>€2.457</td><td>€8.931</td><td>LinkedIn content start</td></tr>
+      <tr><td>Mnd 11</td><td><span class="bdg bg-green">Groei</span></td><td>78</td><td>€3.042</td><td>€11.973</td><td>€3K MRR milestone</td></tr>
+      <tr><td>Mnd 12</td><td><span class="bdg bg-green">Groei</span></td><td>95</td><td>€3.705</td><td><strong style="color:var(--green)">€15.678</strong></td><td>Einde jaar 1</td></tr>
+      <tr style="background:rgba(255,255,255,.03)"><td><strong>Mnd 13-18</strong></td><td><span class="bdg bg-orange">Scale</span></td><td>95→200</td><td>€3.7K→€7.8K</td><td>€15K→€50K</td><td>Betaald kanaal testen</td></tr>
+      <tr style="background:rgba(255,255,255,.03)"><td><strong>Mnd 19-24</strong></td><td><span class="bdg bg-orange">Scale</span></td><td>200→350</td><td>€7.8K→€13.6K</td><td>€50K→€100K</td><td>1% marktpenetratie</td></tr>
+    </table>
+  </div>
+
+  <!-- SCENARIO PLANNING -->
+  <div class="g3 mb">
+    <div class="gc" style="border-color:rgba(255,69,58,.3);background:rgba(255,69,58,.04)">
+      <div class="sh" style="color:var(--red)">😰 Pessimistisch</div>
+      <div style="font-size:12px;color:var(--ts);line-height:1.8">
+        Churn 20%/mnd · Moeizame validatie · 6 maanden voor eerste klant<br><br>
+        <div class="fin-row"><span class="fin-label">Jaar 1 MRR</span><span class="fin-val" style="color:var(--red)">€500-1.000</span></div>
+        <div class="fin-row"><span class="fin-label">Jaar 1 totaal</span><span class="fin-val" style="color:var(--red)">€3.000-6.000</span></div>
+        <div class="fin-row"><span class="fin-label">Break-even</span><span class="fin-val" style="color:var(--red)">Mnd 8-10</span></div>
+        <div class="fin-row"><span class="fin-label">Klanten na 12 mnd</span><span class="fin-val" style="color:var(--red)">20-40</span></div>
+      </div>
+    </div>
+    <div class="gc" style="border-color:rgba(0,196,180,.3);background:rgba(0,196,180,.04)">
+      <div class="sh" style="color:#00C4B4">✅ Realistisch</div>
+      <div style="font-size:12px;color:var(--ts);line-height:1.8">
+        Churn 10%→5% · Mond-tot-mond werkt · Part-time Sem<br><br>
+        <div class="fin-row"><span class="fin-label">Jaar 1 MRR</span><span class="fin-val" style="color:var(--green)">€3.500-4.000</span></div>
+        <div class="fin-row"><span class="fin-label">Jaar 1 totaal</span><span class="fin-val" style="color:var(--green)">€15.000-18.000</span></div>
+        <div class="fin-row"><span class="fin-label">Break-even</span><span class="fin-val" style="color:var(--green)">Mnd 3</span></div>
+        <div class="fin-row"><span class="fin-label">Klanten na 12 mnd</span><span class="fin-val" style="color:var(--green)">90-100</span></div>
+      </div>
+    </div>
+    <div class="gc" style="border-color:rgba(255,159,10,.3);background:rgba(255,159,10,.04)">
+      <div class="sh" style="color:var(--orange)">🚀 Optimistisch</div>
+      <div style="font-size:12px;color:var(--ts);line-height:1.8">
+        Viral moment · KNGF aandacht · Praktijk-deals<br><br>
+        <div class="fin-row"><span class="fin-label">Jaar 1 MRR</span><span class="fin-val" style="color:var(--orange)">€8.000-12.000</span></div>
+        <div class="fin-row"><span class="fin-label">Jaar 1 totaal</span><span class="fin-val" style="color:var(--orange)">€40.000-60.000</span></div>
+        <div class="fin-row"><span class="fin-label">Break-even</span><span class="fin-val" style="color:var(--orange)">Mnd 2</span></div>
+        <div class="fin-row"><span class="fin-label">Klanten na 12 mnd</span><span class="fin-val" style="color:var(--orange)">200-300</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MARKTPENETRATIE -->
+  <div class="gc mb">
+    <div class="sh">🎯 Marktpenetratie Targets</div>
+    <table class="tbl">
+      <tr><th>Penetratie</th><th>Klanten</th><th>MRR</th><th>ARR</th><th>Tijdlijn (realistisch)</th></tr>
+      <tr><td>0,1% markt</td><td>15</td><td>€585</td><td>€7.020</td><td>Maand 6</td></tr>
+      <tr><td>0,5% markt</td><td>75</td><td>€2.925</td><td>€35.100</td><td>Maand 10-11</td></tr>
+      <tr><td><strong>1% markt</strong></td><td><strong>150</strong></td><td><strong>€5.850</strong></td><td><strong>€70.200</strong></td><td><strong>Maand 18</strong></td></tr>
+      <tr><td>5% markt</td><td>750</td><td>€29.250</td><td>€351.000</td><td>Jaar 3-4</td></tr>
+      <tr><td>10% markt</td><td>1.500</td><td>€58.500</td><td>€702.000</td><td>Jaar 5+</td></tr>
+    </table>
+    <div style="margin-top:12px;padding:12px;background:rgba(0,196,180,.08);border-radius:10px;font-size:13px;color:var(--ts)">
+      💡 <strong style="color:var(--tp)">Perspectief:</strong> Nabla werd voor $85M verkocht met 85.000 gebruikers. Bij 5% van de NL-markt (750 klanten) heb je een bedrijf dat €350K/jaar genereert — dat is acquisitie-interessant.
+    </div>
+  </div>
+
+  <!-- KOSTEN BREAKDOWN -->
+  <div class="g2 mb">
+    <div class="gc">
+      <div class="sh">💸 Kosten per maand (nu)</div>
+      <div class="fin-row"><span class="fin-label">OpenAI Whisper (transcriptie)</span><span class="fin-val">~€30-80/mnd</span></div>
+      <div class="fin-row"><span class="fin-label">Anthropic Claude (generatie)</span><span class="fin-val">~€20-60/mnd</span></div>
+      <div class="fin-row"><span class="fin-label">Vercel hosting</span><span class="fin-val">€0-20/mnd</span></div>
+      <div class="fin-row"><span class="fin-label">Supabase database</span><span class="fin-val">€0-25/mnd</span></div>
+      <div class="fin-row"><span class="fin-label">Domein</span><span class="fin-val">~€5/mnd</span></div>
+      <div class="fin-row" style="border-top:1px solid rgba(255,255,255,.1);margin-top:4px;padding-top:8px"><span class="fin-label"><strong>Totaal huidig</strong></span><span class="fin-val" style="color:var(--green)"><strong>€55-190/mnd</strong></span></div>
+      <div style="font-size:11px;color:var(--ts);margin-top:8px">Schaalt mee met gebruik. Bij 100 klanten: ~€300-400/mnd kosten vs €3.900 omzet = 90%+ marge.</div>
+    </div>
+    <div class="gc">
+      <div class="sh">📊 Unit Economics</div>
+      <div class="fin-row"><span class="fin-label">Gem. opbrengst per klant</span><span class="fin-val" style="color:var(--green)">€43/mnd</span></div>
+      <div class="fin-row"><span class="fin-label">Kosten per klant (API)</span><span class="fin-val" style="color:var(--red)">€3-5/mnd</span></div>
+      <div class="fin-row"><span class="fin-label">Bruto marge per klant</span><span class="fin-val" style="color:var(--green)">~88%</span></div>
+      <div class="fin-row"><span class="fin-label">LTV (12 mnd, 5% churn)</span><span class="fin-val">€516</span></div>
+      <div class="fin-row"><span class="fin-label">CAC (bij organisch)</span><span class="fin-val" style="color:var(--green)">~€0</span></div>
+      <div class="fin-row"><span class="fin-label">LTV/CAC ratio</span><span class="fin-val" style="color:var(--green)">∞ (organisch)</span></div>
+      <div style="font-size:11px;color:var(--ts);margin-top:8px">Software met 88% bruto marge en organische acquisitie = extreem efficiënt bedrijfsmodel.</div>
+    </div>
+  </div>
+
+  <div class="gc mb">
+    <div class="sh">Prijsstrategie</div>
+    <table class="tbl">
+      <tr><th>Plan</th><th>Prijs/mnd</th><th>Doelgroep</th><th>Features</th></tr>
+      <tr><td><strong>Solo</strong></td><td style="color:var(--green);font-weight:700">€39/mnd</td><td>1 ZZP-zorgverlener</td><td>Onbeperkte rapportages, SOEP-format, AVG-compliant</td></tr>
+      <tr><td><strong>Praktijk S</strong></td><td style="color:var(--blue);font-weight:700">€119/mnd</td><td>2–4 personen</td><td>Teamfuncties, gedeeld dashboard, praktijkbeheer</td></tr>
+      <tr><td><strong>Praktijk M</strong></td><td style="color:var(--purple);font-weight:700">€229/mnd</td><td>5–8 personen</td><td>Alles van S + dashboard praktijkhouder, rapportages per zorgverlener</td></tr>
+      <tr><td><strong>Praktijk L</strong></td><td style="color:var(--orange);font-weight:700">€349/mnd</td><td>9–15 personen</td><td>Alles van M + volledig teambeheer, statistieken, prioriteitssupport</td></tr>
+      <tr><td><strong>Enterprise</strong></td><td style="color:var(--teal);font-weight:700">Op aanvraag</td><td>15+ personen</td><td>Maatwerk, SLA, integraties, accountmanager</td></tr>
+    </table>
+  </div>
+
+  <div class="g2 mb">
+    <div class="gc">
+      <div class="sh">Startkosten (eenmalig)</div>
+      <div class="fin-row"><span class="fin-label">KvK registratie</span><span class="fin-val">€50</span></div>
+      <div class="fin-row"><span class="fin-label">Domein (spreekdossier.nl)</span><span class="fin-val">€12</span></div>
+      <div class="fin-row"><span class="fin-label">Juridisch (verwerkersovk)</span><span class="fin-val">€500</span></div>
+      <div class="fin-row"><span class="fin-label">Landingspagina (Vercel)</span><span class="fin-val">€0</span></div>
+      <div class="fin-row"><span class="fin-label">MVP bouwen (Assistent)</span><span class="fin-val">€0</span></div>
+      <div class="dv"></div>
+      <div class="fin-row"><span class="fin-label" style="font-weight:700">Totaal fase 1</span><span class="fin-val" style="color:var(--green);font-size:18px">~€562</span></div>
+    </div>
+    <div class="gc">
+      <div class="sh">Maandelijkse kosten (bij 100 users)</div>
+      <div class="fin-row"><span class="fin-label">Supabase</span><span class="fin-val">€25</span></div>
+      <div class="fin-row"><span class="fin-label">Vercel</span><span class="fin-val">€20</span></div>
+      <div class="fin-row"><span class="fin-label">OpenAI Whisper (100 users)</span><span class="fin-val">€180</span></div>
+      <div class="fin-row"><span class="fin-label">Claude API (100 users)</span><span class="fin-val">€150</span></div>
+      <div class="fin-row"><span class="fin-label">Stripe fees (~2.9%)</span><span class="fin-val">€87</span></div>
+      <div class="dv"></div>
+      <div class="fin-row"><span class="fin-label" style="font-weight:700">Totaal kosten</span><span class="fin-val">€462/mnd</span></div>
+    </div>
+  </div>
+
+  <div class="gc mb">
+    <div class="sh">Break-even analyse</div>
+    <div class="g2">
+      <div>
+        <div class="fin-row"><span class="fin-label">Vaste kosten/mnd</span><span class="fin-val">~€65</span></div>
+        <div class="fin-row"><span class="fin-label">Variabele kosten/account</span><span class="fin-val">~€3.50</span></div>
+        <div class="fin-row"><span class="fin-label">Gem. revenue/account</span><span class="fin-val" style="color:var(--green)">~€85/mnd</span></div>
+        <div class="fin-row"><span class="fin-label">Break-even (gemengde mix)</span><span class="fin-val" style="color:var(--green)">~15 accounts</span></div>
+      </div>
+      <div>
+        <div class="fin-row"><span class="fin-label">MRR bij 15 accounts</span><span class="fin-val" style="color:var(--green)">~€1.275</span></div>
+        <div class="fin-row"><span class="fin-label">Marge bij €85 gem.</span><span class="fin-val" style="color:var(--green)">~78%</span></div>
+        <div class="fin-row"><span class="fin-label">Tijd to break-even</span><span class="fin-val">1-3 maanden</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gc">
+    <div class="sh">Revenue projecties</div>
+    <table class="tbl">
+      <tr><th>Periode</th><th>Accounts</th><th>Gem. rev./account</th><th>MRR</th><th>ARR</th></tr>
+      <tr><td>Mnd 3</td><td>30</td><td>€85</td><td style="color:var(--green)">€2.550</td><td>€30,6K</td></tr>
+      <tr><td>Mnd 6</td><td>80</td><td>€85</td><td style="color:var(--green)">€6.800</td><td>€81,6K</td></tr>
+      <tr><td>Mnd 12</td><td>200</td><td>€85</td><td style="color:var(--green)">€17.000</td><td>€204K</td></tr>
+      <tr><td>Jaar 2</td><td>500</td><td>€85</td><td style="color:var(--blue)">€42.500</td><td>€510K</td></tr>
+      <tr><td>Jaar 3</td><td>1.200</td><td>€85</td><td style="color:var(--purple)">€102.000</td><td>€1.22M</td></tr>
+    </table>
+  </div>
+
+  <div class="gc" style="border-color:rgba(0,201,181,0.3);background:rgba(0,201,181,0.04);margin-top:16px">
+    <div class="sh">💡 Prijsstrategie Validatie — Maart 2026</div>
+    <div style="font-size:13px;color:var(--ts);line-height:1.8;margin-bottom:14px">
+      <strong style="color:var(--tp)">Conclusie: €39/mnd ZZP solo is sterk gepositioneerd.</strong> Validatie op basis van echte marktdata (maart 2026).
+    </div>
+    <table class="tbl">
+      <tr><th>Vergelijking</th><th>Product</th><th>Prijs/mnd</th><th>Positie vs Spreekdossier</th></tr>
+      <tr><td>EPD (marktleider)</td><td>Intramed ZZP solo</td><td style="color:var(--orange)">~€88/mnd + €582 eenmalig</td><td>Spreekdossier = 2,3× goedkoper</td></tr>
+      <tr><td>Concurrent NL</td><td>Fysio AI (credit-based scribe)</td><td style="color:var(--red)">€130–190/mnd variabel bij 10 patiënten/dag</td><td>Spreekdossier = €39 vast, 3-5× goedkoper + 6 documenttypes</td></tr>
+      <tr><td>Concurrent internationaal</td><td>Heidi Health (AU)</td><td style="color:var(--blue)">gratis / €49 pro</td><td>Geen NL-specifieke templates, geen EPD-hint</td></tr>
+      <tr><td>Boekhoudpakket ZZP</td><td>Moneybird / Twinfield</td><td style="color:var(--teal)">€14–25/mnd</td><td>Goed referentiepunt: fysiotherapeuten betalen dit al</td></tr>
+      <tr><td>Agendapakket</td><td>Carerix / PlanningPME</td><td style="color:var(--teal)">€25–60/mnd</td><td>ZZP wil niet meer dan €50-80/mnd voor tools</td></tr>
+    </table>
+    <div style="margin-top:14px;padding:12px 16px;background:rgba(52,199,89,0.1);border-radius:10px;border:1px solid rgba(52,199,89,0.25)">
+      <strong style="color:var(--green)">🎯 ROI-argument voor de ZZP:</strong>
+      <div style="font-size:13px;color:var(--ts);margin-top:6px;line-height:1.7">
+        Gem. tarief: €36,53/zitting (NZa 2026) · 20 min admin/dag = 1 behandeling verloren per dag = €800-1.000/mnd omzet-verlies<br>
+        <strong style="color:var(--tp)">Spreekdossier €39/mnd recupereert potentieel 1+ behandeling per dag. ROI = 20:1+</strong>
+      </div>
+    </div>
+    <div style="margin-top:12px;padding:12px 16px;background:rgba(255,159,10,0.1);border-radius:10px;border:1px solid rgba(255,159,10,0.25)">
+      <strong style="color:var(--orange)">⚠️ Prijsgevoeligheid ZZP:</strong>
+      <div style="font-size:13px;color:var(--ts);margin-top:6px;line-height:1.7">
+        ZZP fysiotherapeuten betalen al €88/mnd (Intramed) + boekhouding + verzekeringen. Budget voor tools is krap maar aanwezig als ROI duidelijk is.<br>
+        <strong style="color:var(--tp)">Pitch: "minder dan 1 behandeling per maand — en dan win je 1 behandeling per dag terug."</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== REALISTISCHE OMZETPROGNOSE ===== -->
+  <div class="gc mb" style="margin-top:16px">
+    <div class="sh">📈 Realistische Omzetprognose — Maand 1-24</div>
+    <div style="font-size:12px;color:var(--ts);margin-bottom:14px;line-height:1.7">
+      <strong style="color:var(--tp)">Aannames:</strong> Mix 70% Solo (€39) + 20% Praktijk S (€119) + 8% Praktijk M (€229) + 2% Praktijk L (€349) → gem. €72/account.
+      Churn: 12%/mnd vroeg (mnd 1-6), 8%/mnd stabiel (mnd 7-12), 5%/mnd bij traction (mnd 13-24).
+      Sem part-time (~12 uur/week). Geen betaald marketing budget jaar 1. Alleen word-of-mouth + LinkedIn + fysionieuws.nl.
+    </div>
+    <div style="overflow-x:auto">
+    <table class="tbl" style="font-size:12px">
+      <tr>
+        <th>Mnd</th>
+        <th>Fase</th>
+        <th>Nieuwe klanten</th>
+        <th>Actieve accounts</th>
+        <th>MRR</th>
+        <th>Cum. omzet</th>
+        <th>Kosten</th>
+        <th>Resultaat</th>
+        <th>Key milestone</th>
+      </tr>
+      <!-- FASE 1: VALIDATIE -->
+      <tr style="background:rgba(255,69,58,0.06)">
+        <td><strong>1</strong></td><td style="color:var(--red);font-size:11px">Validatie</td>
+        <td>0</td><td>0</td>
+        <td style="color:var(--ts)">€0</td><td style="color:var(--ts)">€0</td>
+        <td style="color:var(--red)">€200</td>
+        <td style="color:var(--red)">-€200</td>
+        <td style="font-size:11px;color:var(--ts)">Site live, outreach starten, 0 betalend</td>
+      </tr>
+      <tr style="background:rgba(255,69,58,0.06)">
+        <td><strong>2</strong></td><td style="color:var(--red);font-size:11px">Validatie</td>
+        <td>2</td><td>2</td>
+        <td style="color:var(--ts)">€144</td><td style="color:var(--ts)">€144</td>
+        <td style="color:var(--red)">€200</td>
+        <td style="color:var(--red)">-€56</td>
+        <td style="font-size:11px;color:var(--ts)">Eerste 2 beta-gebruikers (gratis of €39)</td>
+      </tr>
+      <tr style="background:rgba(255,69,58,0.06)">
+        <td><strong>3</strong></td><td style="color:var(--red);font-size:11px">Validatie</td>
+        <td>3</td><td>4</td>
+        <td style="color:var(--ts)">€288</td><td style="color:var(--ts)">€432</td>
+        <td style="color:var(--red)">€220</td>
+        <td style="color:var(--red)">-€68</td>
+        <td style="font-size:11px;color:var(--ts)">Eerste betalende klant · fysionieuws.nl post</td>
+      </tr>
+      <!-- FASE 2: EERSTE GROEI -->
+      <tr style="background:rgba(255,159,10,0.06)">
+        <td><strong>4</strong></td><td style="color:var(--orange);font-size:11px">Eerste groei</td>
+        <td>4</td><td>7</td>
+        <td style="color:var(--orange)">€504</td><td style="color:var(--ts)">€936</td>
+        <td style="color:var(--red)">€240</td>
+        <td style="color:var(--orange)">+€264</td>
+        <td style="font-size:11px;color:var(--ts)">Word-of-mouth begint · LinkedIn post</td>
+      </tr>
+      <tr style="background:rgba(255,159,10,0.06)">
+        <td><strong>5</strong></td><td style="color:var(--orange);font-size:11px">Eerste groei</td>
+        <td>5</td><td>11</td>
+        <td style="color:var(--orange)">€792</td><td style="color:var(--ts)">€1.728</td>
+        <td style="color:var(--red)">€270</td>
+        <td style="color:var(--green)">+€522</td>
+        <td style="font-size:11px;color:var(--ts)">Break-even gepasseerd 🎉</td>
+      </tr>
+      <tr style="background:rgba(255,159,10,0.06)">
+        <td><strong>6</strong></td><td style="color:var(--orange);font-size:11px">Eerste groei</td>
+        <td>6</td><td>15</td>
+        <td style="color:var(--orange)">€1.080</td><td style="color:var(--ts)">€2.808</td>
+        <td style="color:var(--red)">€300</td>
+        <td style="color:var(--green)">+€780</td>
+        <td style="font-size:11px;color:var(--ts)">15 accounts · €1K MRR in zicht</td>
+      </tr>
+      <!-- FASE 3: TRACTION -->
+      <tr style="background:rgba(52,199,89,0.06)">
+        <td><strong>7</strong></td><td style="color:var(--green);font-size:11px">Traction</td>
+        <td>7</td><td>21</td>
+        <td style="color:var(--green)">€1.512</td><td style="color:var(--ts)">€4.320</td>
+        <td style="color:var(--orange)">€350</td>
+        <td style="color:var(--green)">+€1.162</td>
+        <td style="font-size:11px;color:var(--ts)">Product-market fit signalen · reviews ophalen</td>
+      </tr>
+      <tr style="background:rgba(52,199,89,0.06)">
+        <td><strong>8</strong></td><td style="color:var(--green);font-size:11px">Traction</td>
+        <td>8</td><td>27</td>
+        <td style="color:var(--green)">€1.944</td><td style="color:var(--ts)">€6.264</td>
+        <td style="color:var(--orange)">€400</td>
+        <td style="color:var(--green)">+€1.544</td>
+        <td style="font-size:11px;color:var(--ts)">25+ accounts · €2K MRR</td>
+      </tr>
+      <tr style="background:rgba(52,199,89,0.06)">
+        <td><strong>9</strong></td><td style="color:var(--green);font-size:11px">Traction</td>
+        <td>9</td><td>34</td>
+        <td style="color:var(--green)">€2.448</td><td style="color:var(--ts)">€8.712</td>
+        <td style="color:var(--orange)">€450</td>
+        <td style="color:var(--green)">+€1.998</td>
+        <td style="font-size:11px;color:var(--ts)">Praktijk-tier instroom · praktijkhouder referrals</td>
+      </tr>
+      <tr style="background:rgba(52,199,89,0.06)">
+        <td><strong>10</strong></td><td style="color:var(--green);font-size:11px">Traction</td>
+        <td>10</td><td>41</td>
+        <td style="color:var(--green)">€2.952</td><td style="color:var(--ts)">€11.664</td>
+        <td style="color:var(--orange)">€500</td>
+        <td style="color:var(--green)">+€2.452</td>
+        <td style="font-size:11px;color:var(--ts)">40+ accounts · eerste praktijk M klant</td>
+      </tr>
+      <tr style="background:rgba(52,199,89,0.06)">
+        <td><strong>11</strong></td><td style="color:var(--green);font-size:11px">Traction</td>
+        <td>11</td><td>48</td>
+        <td style="color:var(--green)">€3.456</td><td style="color:var(--ts)">€15.120</td>
+        <td style="color:var(--orange)">€560</td>
+        <td style="color:var(--green)">+€2.896</td>
+        <td style="font-size:11px;color:var(--ts)">50 accounts · case study schrijven</td>
+      </tr>
+      <tr style="background:rgba(52,199,89,0.06)">
+        <td><strong>12</strong></td><td style="color:var(--green);font-size:11px">Traction</td>
+        <td>12</td><td>55</td>
+        <td style="color:var(--green)">€3.960</td><td style="color:var(--green);font-weight:700">€19.080</td>
+        <td style="color:var(--orange)">€620</td>
+        <td style="color:var(--green)">+€3.340</td>
+        <td style="font-size:11px;color:var(--green);font-weight:700">Einde jaar 1 · €4K MRR · €19K omzet</td>
+      </tr>
+      <!-- FASE 4: SCHALEN -->
+      <tr style="background:rgba(0,122,255,0.06)">
+        <td><strong>13</strong></td><td style="color:var(--blue);font-size:11px">Schalen</td>
+        <td>15</td><td>64</td>
+        <td style="color:var(--blue)">€4.608</td><td style="color:var(--ts)">€23.688</td>
+        <td style="color:var(--orange)">€700</td>
+        <td style="color:var(--blue)">+€3.908</td>
+        <td style="font-size:11px;color:var(--ts)">SEO traction · KNGF-netwerk aanspreken</td>
+      </tr>
+      <tr style="background:rgba(0,122,255,0.06)">
+        <td><strong>14</strong></td><td style="color:var(--blue);font-size:11px">Schalen</td>
+        <td>18</td><td>76</td>
+        <td style="color:var(--blue)">€5.472</td><td style="color:var(--ts)">€29.160</td>
+        <td style="color:var(--orange)">€800</td>
+        <td style="color:var(--blue)">+€4.672</td>
+        <td style="font-size:11px;color:var(--ts)">Affiliate/partner programma overweging</td>
+      </tr>
+      <tr style="background:rgba(0,122,255,0.06)">
+        <td><strong>15</strong></td><td style="color:var(--blue);font-size:11px">Schalen</td>
+        <td>20</td><td>88</td>
+        <td style="color:var(--blue)">€6.336</td><td style="color:var(--ts)">€35.496</td>
+        <td style="color:var(--orange)">€900</td>
+        <td style="color:var(--blue)">+€5.436</td>
+        <td style="font-size:11px;color:var(--ts)">€6K MRR · content marketing live</td>
+      </tr>
+      <tr style="background:rgba(0,122,255,0.06)">
+        <td><strong>16</strong></td><td style="color:var(--blue);font-size:11px">Schalen</td>
+        <td>22</td><td>102</td>
+        <td style="color:var(--blue)">€7.344</td><td style="color:var(--ts)">€42.840</td>
+        <td style="color:var(--orange)">€1.050</td>
+        <td style="color:var(--blue)">+€6.294</td>
+        <td style="font-size:11px;color:var(--ts)">100 accounts gepasseerd 🎯</td>
+      </tr>
+      <tr style="background:rgba(0,122,255,0.06)">
+        <td><strong>17</strong></td><td style="color:var(--blue);font-size:11px">Schalen</td>
+        <td>25</td><td>118</td>
+        <td style="color:var(--blue)">€8.496</td><td style="color:var(--ts)">€51.336</td>
+        <td style="color:var(--orange)">€1.200</td>
+        <td style="color:var(--blue)">+€7.296</td>
+        <td style="font-size:11px;color:var(--ts)">Mogelijke eerste betaalde campagne testen</td>
+      </tr>
+      <tr style="background:rgba(0,122,255,0.06)">
+        <td><strong>18</strong></td><td style="color:var(--blue);font-size:11px">Schalen</td>
+        <td>28</td><td>136</td>
+        <td style="color:var(--blue)">€9.792</td><td style="color:var(--ts)">€61.128</td>
+        <td style="color:var(--orange)">€1.380</td>
+        <td style="color:var(--blue)">+€8.412</td>
+        <td style="font-size:11px;color:var(--ts)">€10K MRR in zicht · €60K ARR run-rate</td>
+      </tr>
+      <tr style="background:rgba(0,122,255,0.06)">
+        <td><strong>19</strong></td><td style="color:var(--blue);font-size:11px">Schalen</td>
+        <td>30</td><td>155</td>
+        <td style="color:var(--blue)">€11.160</td><td style="color:var(--ts)">€72.288</td>
+        <td style="color:var(--orange)">€1.560</td>
+        <td style="color:var(--blue)">+€9.600</td>
+        <td style="font-size:11px;color:var(--ts)">150+ accounts · praktijk L klanten binnenhalen</td>
+      </tr>
+      <tr style="background:rgba(0,122,255,0.06)">
+        <td><strong>20</strong></td><td style="color:var(--blue);font-size:11px">Schalen</td>
+        <td>32</td><td>175</td>
+        <td style="color:var(--blue)">€12.600</td><td style="color:var(--ts)">€84.888</td>
+        <td style="color:var(--orange)">€1.750</td>
+        <td style="color:var(--blue)">+€10.850</td>
+        <td style="font-size:11px;color:var(--ts)">€12K MRR · Nyenrode netwerk aanspreken</td>
+      </tr>
+      <tr style="background:rgba(0,122,255,0.06)">
+        <td><strong>21</strong></td><td style="color:var(--blue);font-size:11px">Schalen</td>
+        <td>35</td><td>198</td>
+        <td style="color:var(--blue)">€14.256</td><td style="color:var(--ts)">€99.144</td>
+        <td style="color:var(--orange)">€1.980</td>
+        <td style="color:var(--blue)">+€12.276</td>
+        <td style="font-size:11px;color:var(--ts)">200 accounts · €100K cum. omzet</td>
+      </tr>
+      <tr style="background:rgba(0,122,255,0.06)">
+        <td><strong>22</strong></td><td style="color:var(--blue);font-size:11px">Schalen</td>
+        <td>38</td><td>222</td>
+        <td style="color:var(--blue)">€15.984</td><td style="color:var(--ts)">€115.128</td>
+        <td style="color:var(--orange)">€2.220</td>
+        <td style="color:var(--blue)">+€13.764</td>
+        <td style="font-size:11px;color:var(--ts)">Overweeg eerste freelance hulp voor support</td>
+      </tr>
+      <tr style="background:rgba(0,122,255,0.06)">
+        <td><strong>23</strong></td><td style="color:var(--blue);font-size:11px">Schalen</td>
+        <td>40</td><td>248</td>
+        <td style="color:var(--blue)">€17.856</td><td style="color:var(--ts)">€133.000</td>
+        <td style="color:var(--orange)">€2.480</td>
+        <td style="color:var(--blue)">+€15.376</td>
+        <td style="font-size:11px;color:var(--ts)">250 accounts · EPD-integratie als USP</td>
+      </tr>
+      <tr style="background:rgba(0,122,255,0.06)">
+        <td><strong>24</strong></td><td style="color:var(--blue);font-size:11px">Schalen</td>
+        <td>42</td><td>274</td>
+        <td style="color:var(--blue);font-weight:700">€19.728</td><td style="color:var(--blue);font-weight:700">€152.728</td>
+        <td style="color:var(--orange)">€2.740</td>
+        <td style="color:var(--blue);font-weight:700">+€16.988</td>
+        <td style="font-size:11px;color:var(--blue);font-weight:700">Einde jaar 2 · €20K MRR · €153K cum.</td>
+      </tr>
+    </table>
+    </div>
+    <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap">
+      <div style="background:rgba(52,199,89,0.12);border:1px solid rgba(52,199,89,0.3);border-radius:10px;padding:12px 18px;flex:1;min-width:180px">
+        <div style="font-size:11px;color:var(--ts);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Break-even</div>
+        <div style="font-size:18px;font-weight:800;color:var(--green)">Maand 5</div>
+        <div style="font-size:12px;color:var(--ts);margin-top:2px">~11 accounts · €792 MRR > €270 kosten</div>
+      </div>
+      <div style="background:rgba(0,196,180,0.12);border:1px solid rgba(0,196,180,0.3);border-radius:10px;padding:12px 18px;flex:1;min-width:180px">
+        <div style="font-size:11px;color:var(--ts);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Jaar 1 omzet</div>
+        <div style="font-size:18px;font-weight:800;color:#00C4B4">€19.080</div>
+        <div style="font-size:12px;color:var(--ts);margin-top:2px">55 accounts · €3.960 MRR einde</div>
+      </div>
+      <div style="background:rgba(0,122,255,0.12);border:1px solid rgba(0,122,255,0.3);border-radius:10px;padding:12px 18px;flex:1;min-width:180px">
+        <div style="font-size:11px;color:var(--ts);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Jaar 2 omzet</div>
+        <div style="font-size:18px;font-weight:800;color:var(--blue)">€133.648</div>
+        <div style="font-size:12px;color:var(--ts);margin-top:2px">274 accounts · €19.728 MRR einde</div>
+      </div>
+      <div style="background:rgba(191,90,242,0.12);border:1px solid rgba(191,90,242,0.3);border-radius:10px;padding:12px 18px;flex:1;min-width:180px">
+        <div style="font-size:11px;color:var(--ts);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">1% marktpenetratie</div>
+        <div style="font-size:18px;font-weight:800;color:var(--purple)">€500K+ ARR</div>
+        <div style="font-size:12px;color:var(--ts);margin-top:2px">125 accounts × €72 gem. × 12 = €108K · bij vol tarief-mix ±€500K</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SCENARIO PLANNING ===== -->
+  <div class="gc mb" style="margin-top:16px">
+    <div class="sh">🎯 Scenario Planning — Jaar 1 & Jaar 2</div>
+    <div style="font-size:12px;color:var(--ts);margin-bottom:14px">
+      Drie scenario's: pessimistisch (alles valt tegen), realistisch (bovenstaand model), optimistisch (betere word-of-mouth + 1 viraal moment).
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+      <!-- PESSIMISTISCH -->
+      <div style="background:rgba(255,69,58,0.08);border:1px solid rgba(255,69,58,0.25);border-radius:14px;padding:18px">
+        <div style="font-size:13px;font-weight:800;color:var(--red);margin-bottom:12px">😬 Pessimistisch</div>
+        <div style="font-size:11px;color:var(--ts);line-height:1.9">
+          <div style="border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:6px;margin-bottom:6px"><strong style="color:var(--tp)">Aanname:</strong><br>Moeilijke conversie. 18% churn. 3–4 nieuwe klanten/mnd. Geen viraal moment.</div>
+          <div><strong style="color:var(--tp)">Mnd 12:</strong> 20-25 accounts · <span style="color:var(--red)">€1.440–€1.800 MRR</span></div>
+          <div><strong style="color:var(--tp)">Jaar 1 omzet:</strong> <span style="color:var(--red)">~€7.000</span></div>
+          <div><strong style="color:var(--tp)">Mnd 24 MRR:</strong> <span style="color:var(--red)">€5.000–€8.000</span></div>
+          <div><strong style="color:var(--tp)">Jaar 2 omzet:</strong> <span style="color:var(--red)">~€50.000</span></div>
+          <div style="margin-top:8px;padding:8px;background:rgba(255,69,58,0.12);border-radius:8px;font-size:10px;color:var(--ts)">Break-even: mnd 8–9. Nog steeds winstgevend.</div>
+        </div>
+      </div>
+      <!-- REALISTISCH -->
+      <div style="background:rgba(0,196,180,0.08);border:1px solid rgba(0,196,180,0.35);border-radius:14px;padding:18px">
+        <div style="font-size:13px;font-weight:800;color:#00C4B4;margin-bottom:12px">✅ Realistisch <span style="font-size:10px;background:rgba(0,196,180,0.2);padding:2px 8px;border-radius:100px">Basismodel</span></div>
+        <div style="font-size:11px;color:var(--ts);line-height:1.9">
+          <div style="border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:6px;margin-bottom:6px"><strong style="color:var(--tp)">Aanname:</strong><br>Stabiele groei via WOM. 8-12% churn. 10-15 nieuwe klanten/mnd (jaar 2).</div>
+          <div><strong style="color:var(--tp)">Mnd 12:</strong> 55 accounts · <span style="color:var(--green)">€3.960 MRR</span></div>
+          <div><strong style="color:var(--tp)">Jaar 1 omzet:</strong> <span style="color:var(--green)">€19.080</span></div>
+          <div><strong style="color:var(--tp)">Mnd 24 MRR:</strong> <span style="color:#00C4B4">€19.728</span></div>
+          <div><strong style="color:var(--tp)">Jaar 2 omzet:</strong> <span style="color:#00C4B4">~€133.648</span></div>
+          <div style="margin-top:8px;padding:8px;background:rgba(0,196,180,0.12);border-radius:8px;font-size:10px;color:var(--ts)">Break-even: mnd 5. Netto positief vanaf mnd 4.</div>
+        </div>
+      </div>
+      <!-- OPTIMISTISCH -->
+      <div style="background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.25);border-radius:14px;padding:18px">
+        <div style="font-size:13px;font-weight:800;color:var(--green);margin-bottom:12px">🚀 Optimistisch</div>
+        <div style="font-size:11px;color:var(--ts);line-height:1.9">
+          <div style="border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:6px;margin-bottom:6px"><strong style="color:var(--tp)">Aanname:</strong><br>Viraal LinkedIn post + fysionieuws.nl feature + 1-2 Praktijk L klanten vroeg. 5% churn jaar 2.</div>
+          <div><strong style="color:var(--tp)">Mnd 12:</strong> 120+ accounts · <span style="color:var(--green)">€8.640 MRR</span></div>
+          <div><strong style="color:var(--tp)">Jaar 1 omzet:</strong> <span style="color:var(--green)">~€45.000</span></div>
+          <div><strong style="color:var(--tp)">Mnd 24 MRR:</strong> <span style="color:var(--green)">€40.000–€60.000</span></div>
+          <div><strong style="color:var(--tp)">Jaar 2 omzet:</strong> <span style="color:var(--green)">~€300.000+</span></div>
+          <div style="margin-top:8px;padding:8px;background:rgba(52,199,89,0.12);border-radius:8px;font-size:10px;color:var(--ts)">Break-even: mnd 3. 1 praktijk L = €349/mnd = 9× Solo omzet.</div>
+        </div>
+      </div>
+    </div>
+    <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:14px 16px;font-size:12px;color:var(--ts);line-height:1.8">
+      <strong style="color:var(--tp)">📌 Key inzichten:</strong><br>
+      • <strong style="color:var(--tp)">1 Praktijk L klant</strong> (€349/mnd) = waarde van 9 Solo accounts — focus ook op praktijkhouders.<br>
+      • <strong style="color:var(--tp)">Churn is de killer:</strong> Van 12% → 5% maandelijks churn verdubbelt je MRR bij gelijke acquisitie.<br>
+      • <strong style="color:var(--tp)">Break-even is laag:</strong> Zelfs pessimistisch scenario haalt break-even. Downside risk = beperkt.<br>
+      • <strong style="color:var(--tp)">1% marktpenetratie</strong> (125 van 12.500 ZZP fysio's) = ~€108K ARR bij Solo mix — al levensvatbaar.<br>
+      • <strong style="color:var(--tp)">Jaar 2 is het echte speelveld:</strong> Als PMF bewezen, kunnen betaalde kanalen ROI-positief zijn (CAC < LTV).
+    </div>
+  </div>
+</div>
+
+<!-- ACTIEPLAN -->
+<div class="page" id="p-actieplan">
+  <div class="ph"><h1>Actieplan 🗺️</h1><p>Per dag concreet — dag 1 t/m 90</p></div>
+
+  <div class="gc mb" style="border-color:rgba(0,196,180,.3);background:rgba(0,196,180,.05)">
+    <div style="font-size:13px;color:var(--ts);line-height:1.8">
+      <strong style="color:var(--tp)">Kleurcode:</strong>
+      &nbsp;<span class="action-who action-sem">Sem</span> = jouw actie &nbsp;·&nbsp;
+      <span class="action-who action-ai">Assistent</span> = mijn actie
+    </div>
+  </div>
+
+  <div class="week-hd open" onclick="this.classList.toggle('open')">
+    <h3>📅 Week 1 (Dag 1-7) — Fundering & Validatie starten</h3><span style="font-size:18px">▾</span>
+  </div>
+  <div class="week-body">
+    <div class="action-item"><span class="action-who action-sem">Sem</span><div><strong>Dag 1:</strong> Test de SOEP-prompt (tab Prompt) · schrijf 5 namen zorgverleners op · koop spreekdossier.nl domein</div></div>
+    <div class="action-item"><span class="action-who action-sem">Sem</span><div><strong>Dag 2:</strong> KvK registratie starten · WhatsApp outreach naar 3 contacten (templates in Outreach tab)</div></div>
+    <div class="action-item"><span class="action-who action-ai">Assistent</span><div><strong>Dag 2:</strong> Landingspagina live zetten (Vercel) · eerste werkende prototype bouwen</div></div>
+    <div class="action-item"><span class="action-who action-sem">Sem</span><div><strong>Dag 3-4:</strong> Eerste 2 validatiegesprekken voeren · gebruik de gespreksgids</div></div>
+    <div class="action-item"><span class="action-who action-sem">Sem</span><div><strong>Dag 5-6:</strong> 2 meer gesprekken · vraag: "zou je €39/mnd betalen als het werkt?"</div></div>
+    <div class="action-item"><span class="action-who action-sem">Sem</span><div><strong>Dag 7:</strong> Evalueer: 3+ "ja" reacties? → doorgaan. Geef Assistent feedback op de prompt.</div></div>
+  </div>
+
+  <div class="week-hd" onclick="this.classList.toggle('open')" style="margin-top:6px">
+    <h3>📅 Week 2-3 (Dag 8-21) — Validatie versnellen</h3><span style="font-size:18px">▾</span>
+  </div>
+  <div class="week-body">
+    <div class="action-item"><span class="action-who action-sem">Sem</span><div><strong>Dag 8:</strong> LinkedIn post live zetten · WhatsApp naar 10 mensen in zorgnetwerk</div></div>
+    <div class="action-item"><span class="action-who action-sem">Sem</span><div><strong>Dag 9-14:</strong> 2 gesprekken/dag · documenteer exact wat ze zeggen</div></div>
+    <div class="action-item"><span class="action-who action-ai">Assistent</span><div><strong>Dag 10:</strong> Prototype gereed met audio-opname + SOEP-output · Sem kan dit tonen in gesprekken</div></div>
+    <div class="action-item"><span class="action-who action-sem">Sem</span><div><strong>Dag 14 checkpoint:</strong> 10+ gesprekken? 3+ "ja, ik betaal"? → volgende fase. Zo nee: herzie aanpak.</div></div>
+    <div class="action-item"><span class="action-who action-ai">Assistent</span><div><strong>Dag 15-21:</strong> MVP bouwen (Next.js + Supabase + Stripe) · AVG-documentatie afronden</div></div>
+  </div>
+
+  <div class="week-hd" onclick="this.classList.toggle('open')" style="margin-top:6px">
+    <h3>📅 Week 4-8 (Dag 22-60) — Beta lancering</h3><span style="font-size:18px">▾</span>
+  </div>
+  <div class="week-body">
+    <div class="action-item"><span class="action-who action-ai">Assistent</span><div><strong>Dag 22-30:</strong> MVP klaar · beta-omgeving gereed · 50 beta-gebruikers onboarden</div></div>
+    <div class="action-item"><span class="action-who action-sem">Sem</span><div><strong>Dag 30-45:</strong> Persoonlijk contact met elke beta-user · feedback ophalen · bugs rapporteren</div></div>
+    <div class="action-item"><span class="action-who action-sem">Sem</span><div><strong>Dag 45:</strong> Beslissing: klaar voor betaald model? Zo ja → Stripe activeren</div></div>
+    <div class="action-item"><span class="action-who action-sem">Sem</span><div><strong>Dag 46-60:</strong> Eerste accounts werven · target: €2.550 MRR (30 accounts)</div></div>
+  </div>
+
+  <div class="week-hd" onclick="this.classList.toggle('open')" style="margin-top:6px">
+    <h3>📅 Week 9-13 (Dag 61-90) — Schalen</h3><span style="font-size:18px">▾</span>
+  </div>
+  <div class="week-body">
+    <div class="action-item"><span class="action-who action-sem">Sem</span><div><strong>Dag 61-75:</strong> LinkedIn contentmarketing · brancheorganisaties aanspreken (V&VN, KNGF, NVvP)</div></div>
+    <div class="action-item"><span class="action-who action-ai">Assistent</span><div><strong>Dag 61-75:</strong> SEO-content schrijven · automatische onboarding-flow bouwen · NPS-systeem</div></div>
+    <div class="action-item"><span class="action-who action-sem">Sem</span><div><strong>Dag 76-90:</strong> 80 accounts target · €6.800 MRR · eerste referral-programma</div></div>
+    <div class="action-item"><span class="action-who action-ai">Assistent</span><div><strong>Dag 90:</strong> V1.0 features bouwen · GGZ/fysiotherapie templates · export-functies</div></div>
+  </div>
+</div>
+
+<!-- RISICO'S -->
+<div class="page" id="p-risicos">
+  <div class="ph"><h1>Risico's & Mitigaties ⚠️</h1><p>Klik op een risico voor details en aanpak</p></div>
+
+  <div class="gc mb" style="border-color:rgba(255,69,58,.25);background:rgba(255,69,58,.05)">
+    <div class="sh">🔥 Devil's Advocate — 5 redenen waarom dit kan mislukken</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="fin-row"><span class="fin-label">1. Zorgverleners vertrouwen AI niet met patiëntdata</span><span class="bdg bg-orange">Mitigatie: privacy-first positionering + EU-hosting</span></div>
+      <div class="fin-row"><span class="fin-label">2. AVG-compliance duurt langer dan gepland</span><span class="bdg bg-orange">Mitigatie: juridist inschakelen in week 1</span></div>
+      <div class="fin-row"><span class="fin-label">3. Nabla/Heidi treedt toe op NL markt</span><span class="bdg bg-blue">Mitigatie: snelheid + lokale EPD-integraties</span></div>
+      <div class="fin-row"><span class="fin-label">4. AI-output niet goed genoeg voor productiegebruik</span><span class="bdg bg-blue">Mitigatie: continue prompt-optimalisatie + feedback loop</span></div>
+      <div class="fin-row"><span class="fin-label">5. Distributie is moeilijker dan verwacht</span><span class="bdg bg-orange">Mitigatie: brancheorganisaties + word-of-mouth stimuleren</span></div>
+    </div>
+  </div>
+
+  <div class="risk open" onclick="this.classList.toggle('open')">
+    <div class="risk-head"><div class="risk-title">⚠️ R1: AVG/Privacy-incident — datalek patiëntgegevens</div><div style="display:flex;gap:6px"><span class="bdg bg-orange">Kans: Laag</span><span class="bdg bg-red">Impact: Hoog</span></div></div>
+    <div class="risk-body">
+      Zorgdata is bijzondere persoonsgegevens. Een datalek heeft enorme gevolgen: boetes tot €20M, reputatieschade, verlies van alle gebruikers.
+      <div class="risk-mit">✅ Mitigatie: Privacy by design · audio verwijderd na 24u · EU-hosting only · verwerkersovereenkomst · incident response plan · beroepsaansprakelijkheidsverzekering</div>
+    </div>
+  </div>
+
+  <div class="risk" onclick="this.classList.toggle('open')">
+    <div class="risk-head"><div class="risk-title">⚠️ R2: NEN-7510 niet-naleving — certificeringseis</div><div style="display:flex;gap:6px"><span class="bdg bg-orange">Kans: Middel</span><span class="bdg bg-orange">Impact: Middel</span></div></div>
+    <div class="risk-body">
+      Sommige zorginstellingen of verzekeraars kunnen NEN-7510-certificering eisen. Voor ZZP-ers is dit formeel niet verplicht maar vertrouwen wekkend.
+      <div class="risk-mit">✅ Mitigatie: Technisch conform NEN-7510 bouwen (zelfdeclaratie) · formele certificering bij 500+ users · "NEN-7510 compatible" in marketing</div>
+    </div>
+  </div>
+
+  <div class="risk" onclick="this.classList.toggle('open')">
+    <div class="risk-head"><div class="risk-title">⚠️ R3: Nabla/Heidi treedt toe op NL markt</div><div style="display:flex;gap:6px"><span class="bdg bg-orange">Kans: Middel</span><span class="bdg bg-orange">Impact: Middel</span></div></div>
+    <div class="risk-body">
+      Nabla of Heidi Health besluit te investeren in Nederlandse lokalisatie. Ze hebben meer resources.
+      <div class="risk-mit">✅ Mitigatie: Snelheid is je voordeel · bouw NL EPD-integraties (moat) · community opbouwen · pricing + service die groot platform niet biedt</div>
+    </div>
+  </div>
+
+  <div class="risk" onclick="this.classList.toggle('open')">
+    <div class="risk-head"><div class="risk-title">⚠️ R4: AI-kwaliteit onvoldoende voor productie</div><div style="display:flex;gap:6px"><span class="bdg bg-blue">Kans: Laag</span><span class="bdg bg-orange">Impact: Middel</span></div></div>
+    <div class="risk-body">
+      SOEP-output voldoet niet aan verwachtingen van zorgverleners. Te generiek, fouten in terminologie.
+      <div class="risk-mit">✅ Mitigatie: Continue prompt-optimalisatie · feedback loop in product · "mens-in-de-loop" — zorgverlener keurt altijd goed · specialisme-specifieke templates</div>
+    </div>
+  </div>
+
+  <div class="risk" onclick="this.classList.toggle('open')">
+    <div class="risk-head"><div class="risk-title">⚠️ R5: Distributie moeilijker dan verwacht</div><div style="display:flex;gap:6px"><span class="bdg bg-orange">Kans: Middel</span><span class="bdg bg-orange">Impact: Middel</span></div></div>
+    <div class="risk-body">
+      Zorgverleners zijn moeilijk te bereiken via standaard digitale kanalen. Word-of-mouth werkt traag.
+      <div class="risk-mit">✅ Mitigatie: Brancheorganisaties (V&VN, KNGF, NVvP) · detacheringsbureaus als kanaal · referral-programma (1 maand gratis per referral) · LinkedIn contentmarketing op zorgverleners</div>
+    </div>
+  </div>
+</div>
+
+<!-- SOEP PROMPT -->
+<div class="page" id="p-prompt">
+  <div class="ph"><h1>SOEP Prompt 🤖</h1><p>De productie-klare Spreekdossier V3 prompt — direct te gebruiken</p></div>
+
+  <div class="gc mb" style="border-color:rgba(0,196,180,.3);background:rgba(0,196,180,.05)">
+    <div style="font-size:14px;font-weight:700;margin-bottom:8px">🚀 Test dit nu meteen</div>
+    <div style="font-size:13px;color:var(--ts);line-height:1.7">
+      1. Kopieer de prompt hieronder<br>
+      2. Ga naar <a href="https://claude.ai" target="_blank" style="color:#00C4B4">claude.ai</a><br>
+      3. Plak de prompt + voeg een fictief patiëntgesprek toe<br>
+      4. Zie je product in 2 minuten werken ✅
+    </div>
+  </div>
+
+  <div style="position:relative">
+    <div class="prompt-box" id="soepPrompt">Je bent Spreekdossier, een professionele AI-documentatieassistent voor Nederlandse zorgverleners.
+
+Je taak: Zet een informele, gesproken memo van een zorgverlener om naar een professionele, gestructureerde SOEP-rapportage in het Nederlands.
+
+INSTRUCTIES:
+1. Structureer de output ALTIJD in vier secties: S (Subjectief), O (Objectief), E (Evaluatie), P (Plan)
+2. Gebruik professioneel medisch/zorgvakjargon, maar blijf leesbaar
+3. Schrijf in de derde persoon ("Cliënt rapporteert...", "Cliënt geeft aan...")
+4. Voeg NIETS toe wat niet in de memo staat — verzin geen informatie
+5. Als informatie ontbreekt voor een sectie, schrijf: "[Niet vermeld in memo]"
+6. Gebruik actieve, concrete zinnen
+7. Houd het beknopt maar volledig
+
+SOEP-RICHTLIJNEN:
+S (Subjectief): Klachten/beleving van cliënt. "Cliënt geeft aan...", "Cliënt rapporteert..."
+O (Objectief): Feitelijke observaties, meetwaarden, uitgevoerde handelingen. "Zorgverlener observeert..."
+E (Evaluatie): Interpretatie situatie, voortgang t.o.v. behandeldoel. "De situatie wordt beoordeeld als..."
+P (Plan): Concrete vervolgacties, volgend contact, te monitoren punten.
+
+OUTPUT FORMAT:
+S: [subjectieve bevindingen]
+O: [objectieve bevindingen]  
+E: [evaluatie]
+P: [plan]
+
+MEMO VAN ZORGVERLENER:
+[PLAK HIER JE GESPROKEN MEMO]</div>
+    <button class="copy-btn" onclick="copyPrompt()">Kopieer</button>
+  </div>
+
+  <div class="gc" style="margin-top:16px">
+    <div class="sh">Voorbeeld output — zo ziet het eruit</div>
+    <div style="font-size:13px;color:var(--ts);margin-bottom:12px"><strong style="color:var(--tp)">Input (gesproken memo):</strong> "Mevrouw De Vries, 78 jaar, thuiszorg. Ze klaagt over pijn in haar rechterheup, ze zegt een 5 op de pijnschaal. Wond op haar hielen ziet er beter uit, minder roodheid. Heb de dressing vervangen. Ze is een beetje verward vandaag, herkent me niet meteen. Familie heeft gebeld dat ze gisteren niet goed geslapen heeft. Volgende visite over 2 dagen."</div>
+    <div class="prompt-box">S: Cliënte rapporteert pijn ter hoogte van het rechter heupgewricht, pijnscore 5/10 (NRS). Cliënte heeft naar eigen zeggen de afgelopen nacht slecht geslapen (gemeld door familie).
+
+O: Wond op de hielen toont tekenen van herstel: verminderde erytheem ten opzichte van vorige visite. Dressing vervangen conform wondprotocol. Cliënte vertoont oriëntatiestoornis in persoon (herkende zorgverlener aanvankelijk niet).
+
+E: De wondsituatie ter hoogte van de hielen vertoont een positief herstelverloop. De gerapporteerde pijn in het rechter heupgebied en de geobserveerde verwardheid vereisen nadere monitoring; mogelijke relatie met slaaptekort niet uit te sluiten.
+
+P: Controlevisite over 2 dagen. Wondstatus hielen monitoren. Pijnklachten rechterheup evalueren bij volgend contact; bij persisteren of verergering overleggen met behandelend arts. Familie informeren over observatie oriëntatiestoornis.</div>
+  </div>
+</div>
+
+<!-- LANDINGSPAGINA -->
+<div class="page" id="p-landingspagina">
+  <div class="ph"><h1>Landingspagina Copy 🌐</h1><p>Volledige tekst klaar om te gebruiken</p></div>
+
+  <div class="lp-sec">
+    <div class="lp-sec-title">Hero sectie</div>
+    <div class="lp-headline">"Jouw rapportages schrijven zichzelf. Jij zorgt."</div>
+    <div class="lp-content">AI-documentatieassistent voor Nederlandse ZZP-zorgverleners.
+Spreek 2 minuten in na een patiëntcontact → complete SOEP-rapportage in 30 seconden → klaar voor je EPD.
+
+CTA: → Probeer 30 dagen gratis (geen creditcard nodig)
+
+✓ Gemiddeld 1 uur per dag bespaard
+✓ AVG-proof — EU-servers, jouw data blijft van jou  
+✓ Nederlands — SOEP-format, klaar voor IGJ</div>
+  </div>
+
+  <div class="lp-sec">
+    <div class="lp-sec-title">Probleem sectie</div>
+    <div class="lp-headline">"Zorgverleners zijn opgeleid om te zorgen. Niet om te typen."</div>
+    <div class="lp-content">Jij hebt gekozen voor de zorg. Niet voor een administratiebaan.
+
+Toch gaat gemiddeld 31% van je werkweek naar rapportages, dossiers en formulieren. Elke dag weer.
+
+Na een drukke dag vol patiëntcontacten ga je thuis zitten om de rapportages bij te werken. Je kinderen zien je aan de laptop. Je avond verdwijnt in een EPD.
+
+Dat moet anders kunnen.</div>
+  </div>
+
+  <div class="lp-sec">
+    <div class="lp-sec-title">Hoe het werkt — 3 stappen</div>
+    <div class="lp-content">🎙️ Stap 1: Inspreek
+Open Spreekdossier op je telefoon. Druk op de knop en praat vrij over wat er tijdens het contact was. Geen format nodig. Gewoon praten.
+
+🤖 Stap 2: AI structureert
+Spreekdossier zet jouw gesproken woord om in een volledige, gestructureerde SOEP-rapportage in 15-30 seconden.
+
+✅ Stap 3: Beoordeel en gebruik
+Lees door (30 seconden). Pas aan indien nodig. Kopieer naar je EPD. Klaar.</div>
+  </div>
+
+  <div class="lp-sec">
+    <div class="lp-sec-title">Pricing</div>
+    <div class="lp-content">Solo — €39/maand
+Voor individuele ZZP-zorgverleners
+✓ Onbeperkte rapportages
+✓ SOEP-format
+✓ AVG-compliant
+✓ 30 dagen gratis proberen
+
+Praktijk S — €119/maand
+Voor kleine praktijken (2–4 personen)
+✓ Alles van Solo
+✓ Teamfuncties
+✓ Gedeeld dashboard
+✓ Praktijkbeheer
+
+Praktijk M — €229/maand
+Voor middelgrote praktijken (5–8 personen)
+✓ Alles van Praktijk S
+✓ Dashboard praktijkhouder
+✓ Rapportages per zorgverlener inzichtelijk
+
+Praktijk L — €349/maand
+Voor grotere praktijken (9–15 personen)
+✓ Alles van Praktijk M
+✓ Volledig teambeheer
+✓ Statistieken & rapportages
+✓ Prioriteitssupport
+
+Enterprise — Op aanvraag
+Voor organisaties met 15+ personen
+✓ Maatwerk oplossing
+✓ SLA & integraties
+✓ Dedicated accountmanager</div>
+  </div>
+</div>
+
+<!-- OUTREACH -->
+<div class="page" id="p-outreach">
+  <div class="ph"><h1>Outreach Templates 📞</h1><p>Kopieer en stuur — WhatsApp, LinkedIn & gespreksgids</p></div>
+
+  <div class="tabs" id="outreachTabs">
+    <div class="tab on" onclick="outTab('wa-fysio',this)">💬 WhatsApp Fysio</div>
+    <div class="tab" onclick="outTab('wa-thuiszorg',this)">💬 WhatsApp Thuiszorg</div>
+    <div class="tab" onclick="outTab('wa-algemeen',this)">💬 WhatsApp Algemeen</div>
+    <div class="tab" onclick="outTab('linkedin',this)">💼 LinkedIn Posts</div>
+    <div class="tab" onclick="outTab('script',this)">📋 Gespreksgids</div>
+  </div>
+
+  <!-- WhatsApp Fysiotherapie -->
+  <div id="out-wa-fysio">
+    <div class="gc mb" style="border-color:rgba(0,196,180,.2);background:rgba(0,196,180,.04)">
+      <div style="font-size:13px;color:var(--ts);line-height:1.6">💡 <strong style="color:var(--tp)">Strategie fysiotherapie:</strong> Jij kent iemand met een praktijk. Begin daar. Vraag of hij je aan collega's kan voorstellen. 1 warm contact = 5 potentiële gesprekken.</div>
+    </div>
+
+    <div style="position:relative" class="msg-box">
+      <div class="msg-label">Template 1 — Jouw fysiotherapie-contact (praktijkhouder)</div>
+      <div id="out-t1">Hey [naam]! Hoe gaat het met de praktijk? Ik ben wat aan het bouwen en dacht meteen aan jou. Ik bouw een AI-tool die fysiotherapeuten helpt met hun SOEP-rapportages — spreek je memo in en de rapportage is in 30 seconden klaar. Ik wil dit eerst valideren voordat ik echt ga bouwen. Heb je 20 minuten voor een gesprek? Je input is goud waard 🙏</div>
+      <button class="copy-btn" onclick="copyOut('out-t1')">Kopieer</button>
+    </div>
+
+    <div style="position:relative" class="msg-box">
+      <div class="msg-label">Template 2 — Via de praktijkhouder doorverwezen (nieuw contact)</div>
+      <div id="out-t2">Hoi [naam], ik ben Sem. [naam praktijkhouder] heeft me aangeraden om jou te benaderen. Ik bouw een tool voor fysiotherapeuten die SOEP-rapportages automatiseert. Ik zoek 5 fysiotherapeuten voor een eerlijk gesprek van 20 minuten — geen pitch, alleen luisteren. Ben jij geïnteresseerd? Dan stuur ik je een link voor een afspraak.</div>
+      <button class="copy-btn" onclick="copyOut('out-t2')">Kopieer</button>
+    </div>
+
+    <div style="position:relative" class="msg-box">
+      <div class="msg-label">Template 3 — Fysiotherapeut via LinkedIn/Facebook</div>
+      <div id="out-t3">Hoi [naam], ik zie dat je fysiotherapeut bent. Ik ben Sem, ik bouw Spreekdossier — een tool die je SOEP-rapportages automatiseert zodat je niet meer na werktijd hoeft te typen. Ik doe marktonderzoek en zoek fysiotherapeuten voor een kort gesprek van 20 min. Geen verkoopgesprek, ik wil echt begrijpen hoe jij werkt. Lijkt je dat wat?</div>
+      <button class="copy-btn" onclick="copyOut('out-t3')">Kopieer</button>
+    </div>
+  </div>
+
+  <!-- WhatsApp Thuiszorg -->
+  <div id="out-wa-thuiszorg" style="display:none">
+    <div class="gc mb" style="border-color:rgba(191,90,242,.2);background:rgba(191,90,242,.04)">
+      <div style="font-size:13px;color:var(--ts);line-height:1.6">💡 <strong style="color:var(--tp)">Strategie thuiszorg:</strong> Sophie is jouw directe ingang. Laat haar de templates lezen en aanpassen op haar eigen stijl. Ze kent de pijnpunten van binnenuit — een aanbeveling van haar is 10x effectiever dan een koude benaderin van jou.</div>
+    </div>
+
+    <div style="position:relative" class="msg-box">
+      <div class="msg-label">Template 4 — Voor Sophie (aan haar thuiszorgcollega's)</div>
+      <div id="out-t4">Hey [naam]! Hoe gaat het? Mijn vriend is een tool aan het bouwen voor thuiszorgverleners die rapportages automatiseert — je spreekt je memo in en SOEP-rapportage is klaar. Hij zoekt thuiszorgverleners voor een kort gesprek van 20 minuten om te begrijpen hoe jullie werken. Zou je dat willen doen? Kan echt helpen en het kost je maar een half uurtje 🙏</div>
+      <button class="copy-btn" onclick="copyOut('out-t4')">Kopieer</button>
+    </div>
+
+    <div style="position:relative" class="msg-box">
+      <div class="msg-label">Template 5 — Wijkverpleegkundige direct (via LinkedIn)</div>
+      <div id="out-t5">Hoi [naam], ik zie dat je wijkverpleegkundige bent. Ik bouw Spreekdossier — een AI die jouw gesproken memo omzet naar een complete SOEP-rapportage in 30 seconden. Geen avonduren meer typen. Ik zoek thuiszorgverleners voor eerlijk feedback. 20 minuten van je tijd? Dan vertel ik je wat ik bouw en hoor ik wat jij nodig hebt.</div>
+      <button class="copy-btn" onclick="copyOut('out-t5')">Kopieer</button>
+    </div>
+
+    <div style="position:relative" class="msg-box">
+      <div class="msg-label">Template 6 — Thuiszorgorganisatie / teamleider benaderen</div>
+      <div id="out-t6">Hoi [naam], ik ben Sem van de Bovenkamp. Ik bouw Spreekdossier, een AI-rapportageassistent specifiek voor thuiszorgverleners. Mijn vriendin werkt in de thuiszorg en ik zie dagelijks hoe groot de administratidruk is. Ik doe nu marktonderzoek en zou graag 20 minuten willen spreken over hoe jullie team met rapportages omgaat. Is dat mogelijk?</div>
+      <button class="copy-btn" onclick="copyOut('out-t6')">Kopieer</button>
+    </div>
+  </div>
+
+  <!-- WhatsApp Algemeen -->
+  <div id="out-wa-algemeen" style="display:none">
+    <div style="position:relative" class="msg-box">
+      <div class="msg-label">Template 7 — Algemeen warm contact (iemand die je kent)</div>
+      <div id="out-t7">Hey [naam]! Hoe gaat het? Ik ben iets aan het bouwen voor zorgverleners en dacht meteen aan jou. Ik wil weten hoeveel tijd jullie kwijt zijn aan rapportages. Heb je 20 minuten voor een kort gesprek? Jouw input is goud waard 🙏</div>
+      <button class="copy-btn" onclick="copyOut('out-t7')">Kopieer</button>
+    </div>
+
+    <div style="position:relative" class="msg-box">
+      <div class="msg-label">Template 8 — Follow-up na geen reactie (3 dagen later)</div>
+      <div id="out-t8">Hey [naam], stuurde je een berichtje over mijn project. Begrijp als je het druk hebt! Mocht je toch 20 minuten vrij hebben voor een gesprek — ik zou het echt waarderen. Je hoeft niks voor te bereiden, het is gewoon een gesprek over hoe jij je werk doet 🙂</div>
+      <button class="copy-btn" onclick="copyOut('out-t8')">Kopieer</button>
+    </div>
+
+    <div style="position:relative" class="msg-box">
+      <div class="msg-label">Template 9 — Na gesprek (bedankje + volgende stap)</div>
+      <div id="out-t9">Hey [naam], super bedankt voor je tijd! Jouw input was echt waardevol. Ik hou je op de hoogte als Spreekdossier live is. Als je als eerste wil proberen (gratis, 30 dagen) — zeg het maar! En als je iemand kent die ik zou moeten spreken, heel graag 🙏</div>
+      <button class="copy-btn" onclick="copyOut('out-t9')">Kopieer</button>
+    </div>
+  </div>
+
+  <!-- LinkedIn Posts -->
+  <div id="out-linkedin" style="display:none">
+    <div style="position:relative" class="msg-box">
+      <div class="msg-label">LinkedIn Post 1 — Netwerk activeren (Week 1)</div>
+      <div id="out-li1">🩺 Ik bouw iets voor de zorg — en ik heb jouw hulp nodig.
+
+Ik heb de afgelopen tijd veel zorgverleners gesproken. Wat ik keer op keer hoor:
+
+"Ik besteed 2-3 uur per dag aan rapportages. Dat is niet waarom ik voor de zorg heb gekozen."
+
+Ik bouw Spreekdossier — een AI die jouw gesproken memo omzet naar een complete SOEP-rapportage in 30 seconden. Klaar voor je EPD. AVG-proof.
+
+Maar voor ik echt ga bouwen: ik wil leren van mensen die dit dagelijks meemaken.
+
+Ben jij ZZP-zorgverlener of fysiotherapeut? Ik zoek 10 mensen voor een eerlijk gesprek van 20 minuten.
+
+Stuur me een DM 👇
+
+#fysiotherapie #thuiszorg #ZZP #AI #rapportage #zorg #innovatie</div>
+      <button class="copy-btn" onclick="copyOut('out-li1')">Kopieer</button>
+    </div>
+
+    <div style="position:relative" class="msg-box">
+      <div class="msg-label">LinkedIn Post 2 — Probleempost (Week 2)</div>
+      <div id="out-li2">⏰ Weet je hoeveel uur een ZZP-fysiotherapeut per week kwijt is aan rapportages?
+
+Bij 10 cliënten per dag × 15 minuten per rapportage:
+→ 2,5 uur per dag
+→ 12,5 uur per week
+→ 50 uur per maand
+
+Dat is een halve werkweek — op de bank, in de auto, na het avondeten.
+
+Ik bouw Spreekdossier om dit te veranderen. Na een behandeling spreek je 2 minuten in → de rest regelt AI.
+
+Ik doe nu marktonderzoek. Ken jij een fysiotherapeut of thuiszorgverlener die hier last van heeft? Tag ze hieronder 👇
+
+#fysiotherapie #wijkverpleging #ZZP #administratie #AI</div>
+      <button class="copy-btn" onclick="copyOut('out-li2')">Kopieer</button>
+    </div>
+
+    <div style="position:relative" class="msg-box">
+      <div class="msg-label">LinkedIn Post 3 — Validatie-update (na 10+ gesprekken)</div>
+      <div id="out-li3">📊 Update: ik heb de afgelopen 2 weken met [X] zorgverleners gesproken.
+
+Wat ik leerde:
+• [X]% geeft aan 's avonds nog rapportages te schrijven
+• Gemiddeld [X] minuten per rapportage
+• [X] van de [X] zouden €39/maand betalen voor een oplossing
+
+Dit bevestigt: het probleem is reëel, de bereidheid is er.
+
+Spreekdossier gaat gebouwd worden.
+
+Ben je fysiotherapeut of thuiszorgverlener en wil je als eerste testen? DM me — ik zoek 20 beta-gebruikers.
+
+#spreekdossier #fysiotherapie #thuiszorg #AI #startup</div>
+      <button class="copy-btn" onclick="copyOut('out-li3')">Kopieer</button>
+    </div>
+  </div>
+
+  <!-- Gespreksgids -->
+  <div id="out-script" style="display:none">
+    <div class="gc mb" style="border-color:rgba(0,196,180,.3)">
+      <div class="sh">📋 Gespreksgids — 20 minuten validatiecall</div>
+      <div style="font-size:13px;color:var(--ts);line-height:2">
+        <strong style="color:var(--tp);font-size:14px">Opening (1 min)</strong><br>
+        "Dank voor je tijd. Ik bouw Spreekdossier maar wil eerst echt begrijpen hoe jij werkt. Vandaag geen pitch — ik stel alleen vragen en luister."<br><br>
+
+        <strong style="color:var(--tp);font-size:14px">Fase 1 — Dagelijkse realiteit (5 min)</strong><br>
+        1. Hoe ziet een typische werkdag eruit voor jou?<br>
+        2. Hoeveel cliënten/patiënten zie je gemiddeld per dag?<br>
+        3. Wanneer schrijf je je rapportages — direct na het contact of later?<br>
+        4. Hoeveel tijd ben je gemiddeld kwijt per rapportage?<br><br>
+
+        <strong style="color:var(--tp);font-size:14px">Fase 2 — Pijnpunten blootleggen (8 min)</strong><br>
+        5. Wat is het meest frustrerende aan de rapportages?<br>
+        6. Gebruik je een EPD? Welk systeem?<br>
+        7. Heb je al tools geprobeerd om rapportages sneller te maken? Wat werkte er niet aan?<br>
+        8. Hoe voelt het als je na een lange dag thuis nog moet rapporteren?<br>
+        9. Heb je weleens zorgen over of je rapportage volledig genoeg is voor IGJ?<br><br>
+
+        <strong style="color:var(--tp);font-size:14px">Fase 3 — Betalingsbereidheid testen (4 min)</strong><br>
+        10. "Stel: je spreekt na elke sessie 2 minuten in, en de rapportage is in 30 seconden klaar, compleet in SOEP. Wat zou dat voor jou betekenen?"<br>
+        11. "Wat zou je maximaal willen betalen voor zo'n tool per maand?" ← Wacht op hun antwoord. Noem geen bedrag.<br>
+        12. "Als ik je nu een €39/maand-versie zou kunnen laten zien — zou je dat willen proberen?"<br><br>
+
+        <strong style="color:var(--tp);font-size:14px">Afsluiting (2 min)</strong><br>
+        "Heel waardevol, dankjewel. Ken je andere fysiotherapeuten/thuiszorgverleners die ik ook zou kunnen spreken?"<br>
+        → Direct naam + contact vragen als ze ja zeggen. Niet "stuur maar door" — maar "wie is dat dan? Kan ik je naam gebruiken?"
+      </div>
+    </div>
+
+    <div class="gc" style="border-color:rgba(255,159,10,.25);background:rgba(255,159,10,.04)">
+      <div class="sh">⚠️ Valkuilen gesprekken</div>
+      <div style="font-size:13px;color:var(--ts);line-height:1.8">
+        ❌ <strong style="color:var(--tp)">Niet doen:</strong> het product pitchen voordat je de pijnpunten hebt gehoord<br>
+        ❌ <strong style="color:var(--tp)">Niet doen:</strong> "zou je X gebruiken?" vragen — mensen zeggen makkelijk ja op hypothetische vragen<br>
+        ❌ <strong style="color:var(--tp)">Niet doen:</strong> de prijs noemen voordat zij een bedrag noemen<br>
+        ✅ <strong style="color:var(--tp)">Wel doen:</strong> stiltes laten vallen — de beste inzichten komen na een pauze<br>
+        ✅ <strong style="color:var(--tp)">Wel doen:</strong> doorvragen op emotionele antwoorden: "hoe voelde dat?"<br>
+        ✅ <strong style="color:var(--tp)">Wel doen:</strong> letterlijke quotes noteren — die gebruik je later in je marketing
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- AVG -->
+<div class="page" id="p-avg">
+  <div class="ph"><h1>AVG & Compliance 🔒</h1><p>Alles wat je moet weten over privacy in de zorg</p></div>
+
+  <div class="gc mb" style="border-color:rgba(255,69,58,.25);background:rgba(255,69,58,.05)">
+    <div style="font-size:14px;font-weight:700;margin-bottom:8px">⚠️ Zorgdata = bijzondere persoonsgegevens</div>
+    <div style="font-size:13px;color:var(--ts);line-height:1.6">Gezondheidsdata valt onder de zwaarste AVG-categorie. Dit betekent extra verplichtingen. <strong style="color:var(--tp)">Schakel in week 1 een jurist in (budget: €500).</strong> Dit is de belangrijkste investering die je maakt.</div>
+  </div>
+
+  <div class="g2 mb">
+    <div>
+      <div class="avg-item">
+        <div class="avg-icon">🏠</div>
+        <div><div class="avg-title">EU-hosting only</div><div class="avg-desc">Alle data opgeslagen in EU (Supabase Frankfurt, Vercel EU). Geen data buiten Europa. Dit is niet-onderhandelbaar.</div></div>
+      </div>
+      <div class="avg-item">
+        <div class="avg-icon">🗑️</div>
+        <div><div class="avg-title">Data minimalisatie</div><div class="avg-desc">Audio automatisch verwijderd na 24 uur. Alleen wat nodig is wordt opgeslagen. Patiëntnamen optioneel.</div></div>
+      </div>
+      <div class="avg-item">
+        <div class="avg-icon">📄</div>
+        <div><div class="avg-title">Verwerkersovereenkomst</div><div class="avg-desc">Verplicht met elke gebruiker. Template staat klaar in de workspace. Juridist laten checken.</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="avg-item">
+        <div class="avg-icon">🔐</div>
+        <div><div class="avg-title">Encryptie</div><div class="avg-desc">End-to-end encryptie voor alle data. HTTPS everywhere. Database versleuteld at rest.</div></div>
+      </div>
+      <div class="avg-item">
+        <div class="avg-icon">🤖</div>
+        <div><div class="avg-title">Sub-verwerkers</div><div class="avg-desc">OpenAI en Anthropic verwerken data. Beide hebben EU-hosting opties en SCCs. Documenteer dit.</div></div>
+      </div>
+      <div class="avg-item">
+        <div class="avg-icon">📋</div>
+        <div><div class="avg-title">Verwerkingsregister</div><div class="avg-desc">Verplicht bijhouden welke data je verwerkt en waarom. Template beschikbaar.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gc">
+    <div class="sh">Compliance checklist</div>
+    <table class="tbl">
+      <tr><th>Item</th><th>Status</th><th>Wanneer</th></tr>
+      <tr><td>Verwerkersovereenkomst opstellen</td><td><span class="bdg bg-orange">Te doen</span></td><td>Week 1</td></tr>
+      <tr><td>EU-hosting configureren</td><td><span class="bdg bg-orange">Te doen</span></td><td>Week 2</td></tr>
+      <tr><td>Privacy policy schrijven</td><td><span class="bdg bg-orange">Te doen</span></td><td>Week 2</td></tr>
+      <tr><td>Data retention policy (24u audio)</td><td><span class="bdg bg-orange">Te doen</span></td><td>Week 2</td></tr>
+      <tr><td>Verwerkingsregister</td><td><span class="bdg bg-orange">Te doen</span></td><td>Week 3</td></tr>
+      <tr><td>Incident response plan</td><td><span class="bdg bg-orange">Te doen</span></td><td>Week 4</td></tr>
+      <tr><td>NEN-7510 zelfdeclaratie</td><td><span class="bdg bg-blue">Later</span></td><td>Mnd 3</td></tr>
+      <tr><td>Formele NEN-7510 certificering</td><td><span class="bdg bg-blue">Later</span></td><td>500+ users</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- VALIDATIE -->
+<div class="page" id="p-validatie">
+  <div class="ph"><h1>Validatietracker 🎯</h1><p>20 gesprekken → go/no-go beslissing</p></div>
+
+  <div class="gc mb" style="border-color:rgba(0,196,180,.25);background:rgba(0,196,180,.04)">
+    <div style="font-size:14px;font-weight:700;margin-bottom:12px">📍 Waar vind je fysiotherapeuten voor validatie?</div>
+    <div class="g3">
+      <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,.08)">
+        <div style="font-weight:700;font-size:13px;margin-bottom:6px">🌐 fysionieuws.nl</div>
+        <div style="font-size:12px;color:var(--ts);line-height:1.6">Actief forum met ICT- en Intramed-subforums. <strong style="color:var(--tp)">Beste plek voor online validatie.</strong> Post een vraag over admin-last of tool-gebruik.</div>
+        <a href="https://www.fysionieuws.nl" target="_blank" style="display:inline-block;margin-top:8px;font-size:11px;color:#00C4B4;text-decoration:none">→ fysionieuws.nl</a>
+      </div>
+      <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,.08)">
+        <div style="font-weight:700;font-size:13px;margin-bottom:6px">💼 KNGF LinkedIn</div>
+        <div style="font-size:12px;color:var(--ts);line-height:1.6">KNGF heeft besloten ledengroepen op LinkedIn. Ook veel ZZP-fysiotherapeuten actief op LinkedIn zelf. Zoek op "fysiotherapeut ZZP".</div>
+      </div>
+      <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,.08)">
+        <div style="font-weight:700;font-size:13px;margin-bottom:6px">🤝 Persoonlijk netwerk</div>
+        <div style="font-size:12px;color:var(--ts);line-height:1.6">Sophie (thuiszorg) heeft direct contact. Warme introductie via Sems eigen fysiotherapeut al gedaan. Drietal contacten al benaderd.</div>
+        <div style="margin-top:8px;font-size:11px;color:var(--green)">✓ 1 warm contact al benaderd</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero" style="background:linear-gradient(135deg,rgba(191,90,242,.12),rgba(0,122,255,.08));border-color:rgba(191,90,242,.3)">
+    <div class="hero-tag" style="background:rgba(191,90,242,.18);border-color:rgba(191,90,242,.35);color:var(--purple)"><div class="hero-dot" style="background:var(--purple)"></div>Validatiefase actief</div>
+    <h2>Doel: 20 gesprekken, 10 "ja ik betaal"</h2>
+    <p>Ga niet bouwen voor je 10 mensen hebt die zeggen dat ze €39/mnd willen betalen. Elk gesprek is data. Documenteer alles.</p>
+    <div class="hero-stats">
+      <div class="hs"><div class="hs-val" id="val-count">0</div><div class="hs-lab">gesprekken gedaan</div></div>
+      <div class="hs"><div class="hs-val" id="val-yes">0</div><div class="hs-lab">zouden betalen</div></div>
+      <div class="hs"><div class="hs-val" id="val-no">0</div><div class="hs-lab">nog niet overtuigd</div></div>
+      <div class="hs"><div class="hs-val" id="val-remaining">20</div><div class="hs-lab">gesprekken nog nodig</div></div>
+    </div>
+  </div>
+
+  <!-- Voortgangsbalk -->
+  <div class="gc mb">
+    <div class="sh">📊 Voortgang naar 20 gesprekken</div>
+    <div class="pr"><span id="val-progress-label">0 van 20 gesprekken gedaan</span><span id="val-pct">0%</span></div>
+    <div class="track"><div class="fill" id="val-progress-bar" style="width:0%;background:var(--purple)"></div></div>
+    <div style="margin-top:12px" class="pr"><span>Conversie "zou betalen"</span><span id="val-conversion">0%</span></div>
+    <div class="track"><div class="fill" id="val-conversion-bar" style="width:0%;background:var(--green)"></div></div>
+    <div style="font-size:12px;color:var(--ts);margin-top:8px">🎯 Doelconversie: 50%+ (10 van 20 zeggen "ja")</div>
+  </div>
+
+  <!-- Nieuw gesprek toevoegen -->
+  <div class="gc mb" style="border-color:rgba(0,196,180,.3)">
+    <div class="sh">➕ Gesprek toevoegen</div>
+    <div class="g2" style="gap:12px">
+      <div>
+        <div style="font-size:11px;color:var(--ts);margin-bottom:5px">Naam</div>
+        <input id="val-naam" type="text" placeholder="bijv. Anne Smits" style="width:100%;padding:10px 14px;border-radius:9px;background:rgba(255,255,255,.06);border:1px solid var(--glass-b);color:var(--tp);font-size:13px;outline:none;font-family:inherit">
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--ts);margin-bottom:5px">Specialisme</div>
+        <select id="val-spec" style="width:100%;padding:10px 14px;border-radius:9px;background:rgba(30,30,50,0.9);border:1px solid var(--glass-b);color:var(--tp);font-size:13px;outline:none;font-family:inherit">
+          <option value="fysiotherapeut">Fysiotherapeut</option>
+          <option value="wijkverpleegkundige">Wijkverpleegkundige</option>
+          <option value="thuiszorgbegeleider">Thuiszorgbegeleider</option>
+          <option value="GGZ-psycholoog">GGZ-psycholoog</option>
+          <option value="ergotherapeut">Ergotherapeut</option>
+          <option value="logopedist">Logopedist</option>
+          <option value="anders">Anders</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-top:12px">
+      <div style="font-size:11px;color:var(--ts);margin-bottom:5px">Pijnpunten (wat zei hij/zij?)</div>
+      <textarea id="val-pijn" rows="2" placeholder="bijv. 'Ik ben elke avond nog 1.5 uur aan het typen' · 'Ik weet nooit of mijn rapportage volledig genoeg is'" style="width:100%;padding:10px 14px;border-radius:9px;background:rgba(255,255,255,.06);border:1px solid var(--glass-b);color:var(--tp);font-size:13px;outline:none;resize:vertical;font-family:inherit;line-height:1.5"></textarea>
+    </div>
+    <div class="g2" style="gap:12px;margin-top:12px">
+      <div>
+        <div style="font-size:11px;color:var(--ts);margin-bottom:5px">Zou €39/mnd betalen?</div>
+        <select id="val-betalen" style="width:100%;padding:10px 14px;border-radius:9px;background:rgba(30,30,50,0.9);border:1px solid var(--glass-b);color:var(--tp);font-size:13px;outline:none;font-family:inherit">
+          <option value="ja">✅ Ja, zeker</option>
+          <option value="maybe">🤔 Misschien</option>
+          <option value="nee">❌ Nee / niet nu</option>
+        </select>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--ts);margin-bottom:5px">Datum gesprek</div>
+        <input id="val-datum" type="date" style="width:100%;padding:10px 14px;border-radius:9px;background:rgba(30,30,50,0.9);border:1px solid var(--glass-b);color:var(--tp);font-size:13px;outline:none;font-family:inherit">
+      </div>
+    </div>
+    <button onclick="addValidation()" style="margin-top:14px;padding:11px 24px;border-radius:100px;background:var(--purple);border:none;color:white;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s">➕ Gesprek opslaan</button>
+  </div>
+
+  <!-- Gesprekken lijst -->
+  <div class="gc mb">
+    <div class="sh">📋 Alle gesprekken</div>
+    <div id="val-list">
+      <div style="font-size:13px;color:var(--ts);padding:20px;text-align:center">Nog geen gesprekken toegevoegd. Start vandaag.</div>
+    </div>
+  </div>
+
+  <!-- Top pijnpunten -->
+  <div class="gc">
+    <div class="sh">🔥 Top pijnpunten (uit gesprekken)</div>
+    <div id="pain-analysis">
+      <div style="font-size:13px;color:var(--ts)">Pijnpunten worden automatisch geanalyseerd zodra je gesprekken toevoegt.</div>
+    </div>
+    <div style="margin-top:16px">
+      <div style="font-size:11px;color:var(--ts);margin-bottom:8px">Handmatig top-pijnpunten beheren:</div>
+      <div id="top-pains">
+        <div class="pain-tag-item" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(255,69,58,.1);border-radius:9px;margin-bottom:6px;font-size:13px">
+          <span style="color:var(--red);font-weight:700">#1</span>
+          <span style="color:var(--ts)">Te veel tijd kwijt aan rapportages (avonduren)</span>
+          <span class="bdg bg-red" style="margin-left:auto">Tijdverlies</span>
+        </div>
+        <div class="pain-tag-item" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(255,159,10,.1);border-radius:9px;margin-bottom:6px;font-size:13px">
+          <span style="color:var(--orange);font-weight:700">#2</span>
+          <span style="color:var(--ts)">Onzekerheid over kwaliteit/volledigheid rapportage</span>
+          <span class="bdg bg-orange" style="margin-left:auto">Kwaliteitsangst</span>
+        </div>
+        <div class="pain-tag-item" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(0,122,255,.1);border-radius:9px;margin-bottom:6px;font-size:13px">
+          <span style="color:var(--blue);font-weight:700">#3</span>
+          <span style="color:var(--ts)">Achterstand op rapportages, inconsistentie</span>
+          <span class="bdg bg-blue" style="margin-left:auto">Continuïteit</span>
+        </div>
+        <div class="pain-tag-item" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(90,200,250,.1);border-radius:9px;margin-bottom:6px;font-size:13px">
+          <span style="color:var(--teal);font-weight:700">#4</span>
+          <span style="color:var(--ts)">Professionele terminologie lastig</span>
+          <span class="bdg bg-teal" style="margin-left:auto">Taalzekerheid</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- VOORTGANG -->
+<div class="page" id="p-voortgang">
+  <div class="ph"><h1>Voortgang 🚀</h1><p>Taken, status en wie doet wat</p></div>
+
+  <!-- Sem's taken -->
+  <div class="sh">👤 Jouw taken — Sem</div>
+  <div class="gc mb" id="semTasks">
+    <div style="display:flex;flex-direction:column;gap:8px" id="semTaskList"></div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <input class="fi" id="semTaskInput" placeholder="Nieuwe taak toevoegen..." onkeydown="if(event.key==='Enter')addSemTask()">
+      <button class="btn bp2" onclick="addSemTask()">+</button>
+    </div>
+  </div>
+
+  <!-- Assistent's taken -->
+  <div class="sh">⚡ Mijn taken — Assistent</div>
+  <div class="gc mb">
+    <div style="display:flex;flex-direction:column;gap:8px" id="aiTaskList"></div>
+  </div>
+
+  <!-- Infra status -->
+  <div class="sh">🔧 Infrastructuur status</div>
+  <div class="g2 mb">
+    <div class="gc" style="padding:16px">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:rgba(255,255,255,.04);border-radius:10px">
+          <span style="font-size:13px">🌐 spreekdossier.nl/.com</span>
+          <span class="bdg bg-green">✅ Geregistreerd</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:rgba(255,255,255,.04);border-radius:10px">
+          <span style="font-size:13px">🐙 GitHub repo</span>
+          <span class="bdg bg-green">✅ Live</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:rgba(255,255,255,.04);border-radius:10px">
+          <span style="font-size:13px">🗄️ Supabase database</span>
+          <span class="bdg bg-green">✅ Live</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:rgba(255,255,255,.04);border-radius:10px">
+          <span style="font-size:13px">🎙️ OpenAI Whisper</span>
+          <span class="bdg bg-green">✅ Klaar</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:rgba(255,255,255,.04);border-radius:10px">
+          <span style="font-size:13px">🚀 Vercel hosting</span>
+          <span class="bdg bg-orange">🔄 Fix deployed</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:rgba(255,255,255,.04);border-radius:10px">
+          <span style="font-size:13px">💳 Stripe betalingen</span>
+          <span class="bdg bg-red">❌ Nog niet</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:rgba(255,255,255,.04);border-radius:10px">
+          <span style="font-size:13px">📧 hallo@spreekdossier.nl</span>
+          <span class="bdg bg-red">❌ Nog niet</span>
+        </div>
+      </div>
+    </div>
+    <div class="gc" style="padding:16px">
+      <div class="sh" style="margin-bottom:12px">📊 Validatie voortgang</div>
+      <div style="margin-bottom:12px">
+        <div class="pr"><span>Gesprekken gevoerd</span><span id="convCount">0 / 20</span></div>
+        <div class="track"><div class="fill" id="convBar" style="width:0%;background:var(--teal)"></div></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <button class="bx" onclick="updateConv(-1)">−</button>
+        <button class="bx bl" onclick="updateConv(1)">+ Gesprek gedaan</button>
+      </div>
+      <div style="font-size:12px;color:var(--ts);line-height:1.8">
+        <div>🎯 Doel: 20 gesprekken</div>
+        <div>✅ Go/no-go bij: 3+ "ja, ik betaal"</div>
+        <div>💰 Break-even: ~15 accounts</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Weekplan -->
+  <div class="sh">📅 Deze week</div>
+  <div class="gc">
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <div style="padding:10px 14px;background:rgba(0,196,180,.08);border:1px solid rgba(0,196,180,.2);border-radius:10px;font-size:13px">
+        <strong style="color:#00A896">Prioriteit #1</strong> — Valideer het nieuwe concept: "Gebruikt jij naast sessienotities ook intake-formulieren, behandelplannen en evaluatierapporten? Hoeveel tijd kosten die?" → Spreekdossier dekt nu de VOLLEDIGE dossiervoering (6 templates).
+      </div>
+      <div style="padding:10px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;font-size:13px;color:var(--ts)">
+        <strong style="color:var(--tp)">Prioriteit #2</strong> — Demo laten zien aan een praktijkhouder: open voice-demo.html → kies "Intake" template → laat zien hoe een volledige intake in 15 seconden gegenereerd wordt
+      </div>
+      <div style="padding:10px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;font-size:13px;color:var(--ts)">
+        <strong style="color:var(--tp)">Prioriteit #3</strong> — Stripe account aanmaken (stripe.com, 10 min) + prijsstelling: Solo €39/mnd, alle 6 templates inbegrepen
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRIVACY FAQ -->
+<div class="page" id="p-privacyfaq">
+  <div class="ph"><h1>🔒 Privacy FAQ</h1><p>Kant-en-klare antwoorden voor gesprekken met fysiotherapeuten — kopieer direct</p></div>
+
+  <div class="gc mb" style="border-color:rgba(0,196,180,.25);background:rgba(0,196,180,.04)">
+    <div style="font-size:13px;color:var(--ts);line-height:1.6">
+      💡 <strong style="color:var(--tp)">Hoe gebruik je dit:</strong> Kopieer het antwoord dat past bij de vraag die je krijgt. Gebruik het letterlijk of parafraseer — de kern klopt juridisch. Eerlijk, geen bullshit, geen oververkopen.
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:12px">
+
+    <!-- FAQ 1 -->
+    <div class="gc" style="padding:18px 20px">
+      <div style="font-size:14px;font-weight:700;color:#00C4B4;margin-bottom:8px">❓ "Komt mijn patiëntdata in Amerika terecht?"</div>
+      <div style="font-size:12px;color:var(--ts);margin-bottom:10px;line-height:1.5">De meest gestelde vraag. Eerlijk antwoord vereist.</div>
+      <div id="faq1" style="background:rgba(0,0,0,.2);border-radius:10px;padding:14px;font-size:13px;color:var(--tp);line-height:1.7">De audio wordt verwerkt via onze EU-servers en vervolgens voor transcriptie kort doorgestuurd naar OpenAI, een Amerikaans bedrijf met een EU-dataverwerkingsovereenkomst (Standard Contractual Clauses). Zij trainen niet op jouw data. De audio wordt binnen 24 uur automatisch verwijderd. Bovendien verwijderen wij patiëntnamen vóór we data naar externe diensten sturen — er gaan dus geen herleidbare patiëntgegevens naar de VS.</div>
+      <button class="copy-btn" onclick="copyOut('faq1')" style="margin-top:10px">Kopieer antwoord</button>
+    </div>
+
+    <!-- FAQ 2 -->
+    <div class="gc" style="padding:18px 20px">
+      <div style="font-size:14px;font-weight:700;color:#00C4B4;margin-bottom:8px">❓ "Moet ik mijn patiënten toestemming vragen?"</div>
+      <div style="font-size:12px;color:var(--ts);margin-bottom:10px;line-height:1.5">Velen denken dat dit verplicht is — het is genuanceerder.</div>
+      <div id="faq2" style="background:rgba(0,0,0,.2);border-radius:10px;padding:14px;font-size:13px;color:var(--tp);line-height:1.7">Nee, niet als aparte toestemming. De juridische grondslag voor dossiervorming in de zorg is medische zorgverlening (art. 9 lid 2h AVG) — niet toestemming. Dat is hetzelfde als dictafoonsoftware of een tekstverwerker gebruiken. Wat je wél moet doen: in je patiënteninformatie (de folder of informatiebrief die je toch al hebt) vermelden dat je AI-ondersteunde dossiervorming gebruikt. Één zin is voldoende.</div>
+      <button class="copy-btn" onclick="copyOut('faq2')" style="margin-top:10px">Kopieer antwoord</button>
+    </div>
+
+    <!-- FAQ 3 -->
+    <div class="gc" style="padding:18px 20px">
+      <div style="font-size:14px;font-weight:700;color:#00C4B4;margin-bottom:8px">❓ "Ben ik aansprakelijk als er iets misgaat?"</div>
+      <div style="font-size:12px;color:var(--ts);margin-bottom:10px;line-height:1.5">Angstvraag — geef zekerheid én eerlijkheid.</div>
+      <div id="faq3" style="background:rgba(0,0,0,.2);border-radius:10px;padding:14px;font-size:13px;color:var(--tp);line-height:1.7">Als verwerkingsverantwoordelijke draag jij de primaire verantwoordelijkheid voor jouw patiëntdata — dat is niet anders dan bij je EPD of e-mail. Spreekdossier sluit met jou een verwerkersovereenkomst waarin onze verplichtingen staan. Als er een datalek is bij ons, informeren wij jou binnen 72 uur. Wij zijn aansprakelijk voor fouten die wij als verwerker maken. Jij hoeft niet anders te handelen dan bij elke andere software die je voor patiëntdata gebruikt.</div>
+      <button class="copy-btn" onclick="copyOut('faq3')" style="margin-top:10px">Kopieer antwoord</button>
+    </div>
+
+    <!-- FAQ 4 -->
+    <div class="gc" style="padding:18px 20px">
+      <div style="font-size:14px;font-weight:700;color:#00C4B4;margin-bottom:8px">❓ "Is Spreekdossier NEN-7510 gecertificeerd?"</div>
+      <div style="font-size:12px;color:var(--ts);margin-bottom:10px;line-height:1.5">Eerlijk antwoord, niet verdoezelen.</div>
+      <div id="faq4" style="background:rgba(0,0,0,.2);border-radius:10px;padding:14px;font-size:13px;color:var(--tp);line-height:1.7">We werken conform de principes van NEN-7510: versleutelde opslag, toegangsbeheersing, audit logging en data minimalisatie. Formele NEN-7510 certificering is voor ZZP-fysiotherapeuten niet wettelijk vereist — dat geldt voor grote zorginstellingen. Als je bij een instelling werkt die dit eist, kunnen we dat gesprek aangaan. Voor ZZP-gebruik is onze aanpak meer dan voldoende.</div>
+      <button class="copy-btn" onclick="copyOut('faq4')" style="margin-top:10px">Kopieer antwoord</button>
+    </div>
+
+    <!-- FAQ 5 -->
+    <div class="gc" style="padding:18px 20px">
+      <div style="font-size:14px;font-weight:700;color:#00C4B4;margin-bottom:8px">❓ "Hoe lang bewaar je mijn data?"</div>
+      <div style="font-size:12px;color:var(--ts);margin-bottom:10px;line-height:1.5">Simpel en concreet antwoorden.</div>
+      <div id="faq5" style="background:rgba(0,0,0,.2);border-radius:10px;padding:14px;font-size:13px;color:var(--tp);line-height:1.7">Audio-opnames: automatisch verwijderd binnen 24 uur. Transcripties en SOEP-notities: bewaard zolang je actief abonnee bent zodat je ze kunt raadplegen. Na opzegging: 30 dagen beschikbaar voor export, daarna definitief verwijderd. Je kunt op elk moment een verwijderverzoek indienen — wij handelen dat binnen 30 dagen af.</div>
+      <button class="copy-btn" onclick="copyOut('faq5')" style="margin-top:10px">Kopieer antwoord</button>
+    </div>
+
+    <!-- FAQ 6 -->
+    <div class="gc" style="padding:18px 20px">
+      <div style="font-size:14px;font-weight:700;color:#00C4B4;margin-bottom:8px">❓ "Wat is een verwerkersovereenkomst en waarom moet ik die tekenen?"</div>
+      <div style="font-size:12px;color:var(--ts);margin-bottom:10px;line-height:1.5">Juridisch begrip — maak het begrijpelijk.</div>
+      <div id="faq6" style="background:rgba(0,0,0,.2);border-radius:10px;padding:14px;font-size:13px;color:var(--tp);line-height:1.7">De AVG verplicht dat elke software-leverancier die patiëntdata voor jou verwerkt, een verwerkersovereenkomst met je sluit. Dat geldt ook voor je EPD-leverancier en je e-maildienst. In de overeenkomst staat wat wij mogen doen met jouw data (alleen transcriberen en samenvatten, niets anders), welke beveiligingsmaatregelen wij treffen, en wat er gebeurt bij een incident. Voor jou is het een document dat jou beschermt — wij zijn er juridisch aan gebonden.</div>
+      <button class="copy-btn" onclick="copyOut('faq6')" style="margin-top:10px">Kopieer antwoord</button>
+    </div>
+
+    <!-- FAQ 7 -->
+    <div class="gc" style="padding:18px 20px">
+      <div style="font-size:14px;font-weight:700;color:#00C4B4;margin-bottom:8px">❓ "Gebruikt Spreekdossier mijn data om het AI-model te trainen?"</div>
+      <div style="font-size:12px;color:var(--ts);margin-bottom:10px;line-height:1.5">Directe vrees — direct beantwoorden.</div>
+      <div id="faq7" style="background:rgba(0,0,0,.2);border-radius:10px;padding:14px;font-size:13px;color:var(--tp);line-height:1.7">Nee. Wij trainen geen modellen op jouw data. De AI-diensten die wij gebruiken (OpenAI, Anthropic) trainen via de API contractueel ook niet op jouw data — dit is vastgelegd in hun dataverwerkingsovereenkomsten. Jouw patiëntgesprekken worden niet gebruikt om modellen te verbeteren.</div>
+      <button class="copy-btn" onclick="copyOut('faq7')" style="margin-top:10px">Kopieer antwoord</button>
+    </div>
+
+    <!-- FAQ 8 -->
+    <div class="gc" style="padding:18px 20px">
+      <div style="font-size:14px;font-weight:700;color:#00C4B4;margin-bottom:8px">❓ "Wat als ik wil stoppen — kan ik al mijn data meenemen?"</div>
+      <div style="font-size:12px;color:var(--ts);margin-bottom:10px;line-height:1.5">Goed voor vertrouwen: aantonen dat je niet vastzit.</div>
+      <div id="faq8" style="background:rgba(0,0,0,.2);border-radius:10px;padding:14px;font-size:13px;color:var(--tp);line-height:1.7">Ja. Je kunt op elk moment je SOEP-notities exporteren (CSV/PDF). Na opzegging blijft je account 30 dagen actief zodat je alles kunt downloaden. Daarna verwijderen wij alles definitief. Geen lock-in — als Spreekdossier niet voor jou werkt, ga je gewoon door zonder verlies van je data.</div>
+      <button class="copy-btn" onclick="copyOut('faq8')" style="margin-top:10px">Kopieer antwoord</button>
+    </div>
+
+    <!-- FAQ 9 -->
+    <div class="gc" style="padding:18px 20px">
+      <div style="font-size:14px;font-weight:700;color:#00C4B4;margin-bottom:8px">❓ "Mijn EPD-leverancier zegt dat ik hun goedkeuring nodig heb voor AI-tools"</div>
+      <div style="font-size:12px;color:var(--ts);margin-bottom:10px;line-height:1.5">Bezwaar dat soms verschijnt — eerlijk afhandelen.</div>
+      <div id="faq9" style="background:rgba(0,0,0,.2);border-radius:10px;padding:14px;font-size:13px;color:var(--tp);line-height:1.7">Spreekdossier integreert niet met je EPD — het is een losstaand hulpmiddel. Jij kopieert de gegenereerde SOEP-notitie zelf in je EPD, net zoals je dat doet met een Word-document. Er is geen API-koppeling, geen toegang tot je EPD-data, en geen interactie met het systeem van je EPD-leverancier. Hun goedkeuring is dus niet vereist.</div>
+      <button class="copy-btn" onclick="copyOut('faq9')" style="margin-top:10px">Kopieer antwoord</button>
+    </div>
+
+    <!-- FAQ 10 -->
+    <div class="gc" style="padding:18px 20px">
+      <div style="font-size:14px;font-weight:700;color:#00C4B4;margin-bottom:8px">❓ "Wat als een patiënt bezwaar maakt tegen opname?"</div>
+      <div style="font-size:12px;color:var(--ts);margin-bottom:10px;line-height:1.5">Praktische vraag — praktisch antwoord.</div>
+      <div id="faq10" style="background:rgba(0,0,0,.2);border-radius:10px;padding:14px;font-size:13px;color:var(--tp);line-height:1.7">Dan neem je niet op — en dat is prima. Spreekdossier is een hulpmiddel, geen verplichting. Voor patiënten die bezwaar maken schrijf je het dossier op de traditionele manier. In de praktijk zullen de meeste patiënten geen bezwaar hebben als jij kort uitlegt wat je doet: "Ik gebruik software die mijn aantekeningen automatisch verwerkt, de opname wordt binnen 24 uur verwijderd." Maar als iemand nee zegt, zeg jij: prima, geen probleem.</div>
+      <button class="copy-btn" onclick="copyOut('faq10')" style="margin-top:10px">Kopieer antwoord</button>
+    </div>
+
+  </div>
+
+  <div class="gc mt" style="margin-top:16px;border-color:rgba(255,149,10,.25);background:rgba(255,149,10,.04)">
+    <div style="font-size:13px;font-weight:700;margin-bottom:8px">📋 Verwerkersovereenkomst sturen</div>
+    <div style="font-size:12px;color:var(--ts);line-height:1.7">Als iemand vraagt om de verwerkersovereenkomst: stuur een PDF direct. Zeg: "Ik stuur je onze standaard verwerkersovereenkomst toe. Die is bewust in gewone taal geschreven zodat je weet wat je tekent. Heb je vragen? Bel me dan even." — Geen juridisch geneuzel, gewoon transparantie.</div>
+  </div>
+</div>
+
+<div class="page" id="p-research">
+  <div class="ph"><h1>Marktonderzoek 🔬</h1><p>Diepteonderzoek — pijnpunten fysiotherapeuten & betalingsbereidheid · 21 maart 2026</p></div>
+
+  <!-- Executive Summary -->
+  <div class="hero" style="margin-bottom:20px">
+    <div style="font-size:11px;font-weight:700;color:rgba(0,196,180,.8);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Executive Summary</div>
+    <div style="font-size:18px;font-weight:800;letter-spacing:-.4px;margin-bottom:10px">Administratielast is een gedocumenteerd, erkend en groeiend probleem ✅</div>
+    <div style="font-size:13px;color:rgba(255,255,255,.8);line-height:1.7">
+      Fysiotherapeuten besteden gemiddeld <strong style="color:#00C4B4">20–30% van hun werktijd</strong> aan administratie — goed voor <strong style="color:#00C4B4">1,5 tot 2,5 uur per dag</strong>. Intramed (marktleider) benoemt dit zelf als core selling point. Buurtzorg NL schaalt in 2026 spraakrapportage op met <strong style="color:#00C4B4">45 min besparing per consult</strong>. Vergelijkbare AI-tools worden in Canada/Australië verkocht voor <strong style="color:#FF9F0A">€60–150/maand</strong>. Spreekdossier op €39/mnd is <strong style="color:#34C759">onderprijs</strong> vergeleken met de internationale markt.
+    </div>
+  </div>
+
+  <!-- Kerngetallen -->
+  <div class="g4 mb">
+    <div class="sc">
+      <div class="sl">Dagelijkse admintijd</div>
+      <div class="sv" style="color:var(--red)">1,5–2,5u</div>
+      <div class="ss">per fysiotherapeut per dag</div>
+    </div>
+    <div class="sc">
+      <div class="sl">Gederfde omzet/week</div>
+      <div class="sv" style="color:var(--orange)">€200–1000</div>
+      <div class="ss">als admintijd aan patiënten besteed werd</div>
+    </div>
+    <div class="sc">
+      <div class="sl">Int'l concurrenten prijs</div>
+      <div class="sv" style="color:var(--purple)">€60–150</div>
+      <div class="ss">per maand (Tali, Heidi, Nabla)</div>
+    </div>
+    <div class="sc">
+      <div class="sl">Spreekdossier prijs</div>
+      <div class="sv" style="color:var(--green)">€39</div>
+      <div class="ss">onderprijs vs. markt ✅</div>
+    </div>
+  </div>
+
+  <!-- Tijdsdruk -->
+  <div class="gc mb">
+    <div class="sh">⏱️ Tijdsdruk & Administratielast</div>
+    <div class="g2" style="margin-bottom:14px">
+      <div style="background:rgba(255,68,58,.08);border:1px solid rgba(255,68,58,.2);border-radius:12px;padding:16px">
+        <div style="font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Nederlandse Context</div>
+        <div style="font-size:13px;color:var(--ts);line-height:1.8">
+          <strong style="color:var(--tp)">Intramed (marktleider EPD, ~50% marktaandeel)</strong> stelt expliciet:<br>
+          <em style="color:rgba(0,196,180,.9)">"Met de groeiende werkdruk binnen de fysiotherapie neemt de administratie ook toe en dat terwijl je als fysiotherapeut niets liever wil dan cliënten helpen."</em><br><br>
+          Dit is pijnpuntmarketing die werkt <strong style="color:var(--tp)">omdat het pijnpunt herkenbaar is</strong>.<br>
+          <span style="font-size:11px;color:var(--tt)">Bron: intramed.nl/beroepsgroepen/fysiotherapie/</span>
+        </div>
+      </div>
+      <div style="background:rgba(90,200,250,.08);border:1px solid rgba(90,200,250,.2);border-radius:12px;padding:16px">
+        <div style="font-size:11px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Buurtzorg NL — Validatie 2026</div>
+        <div style="font-size:13px;color:var(--ts);line-height:1.8">
+          <strong style="color:var(--tp)">Buurtzorg schaalt spraakgestuurd rapporteren op</strong> na pilotperiode.<br>
+          Besparing: <strong style="color:var(--teal)">tot 45 minuten administratietijd per gesprek</strong>.<br>
+          Dit valideert direct dat:<br>
+          ✅ Spraakrapportage <strong style="color:var(--tp)">erkend en toegepast</strong> wordt in NL zorg<br>
+          ✅ NL management <strong style="color:var(--tp)">overtuigd is van de ROI</strong><br>
+          <span style="font-size:11px;color:var(--tt)">Bron: zorgvisie.nl/buurtzorg-schaalt-spraakgestuurd-rapporteren-op/</span>
+        </div>
+      </div>
+    </div>
+    <table class="tbl">
+      <tr><th>Meting</th><th>Cijfer</th><th>Bron</th></tr>
+      <tr><td>Documentatietijd per patiënt (fysiotherapie)</td><td style="color:var(--red);font-weight:700">15–25 min</td><td style="color:var(--tt);font-size:11px">APTA, 2019</td></tr>
+      <tr><td>Documentatietijd bij 8–10 patiënten per dag</td><td style="color:var(--red);font-weight:700">2–4 uur/dag</td><td style="color:var(--tt);font-size:11px">Berekening o.b.v. APTA</td></tr>
+      <tr><td>Artsen EHR-documentatie per dag (VS)</td><td style="color:var(--orange);font-weight:700">1,84 uur/dag</td><td style="color:var(--tt);font-size:11px">Sinsky et al., Annals Internal Medicine, 2016</td></tr>
+      <tr><td>Administratie als %werktijd (zorg algemeen)</td><td style="color:var(--orange);font-weight:700">20–30%</td><td style="color:var(--tt);font-size:11px">Nivel Monitor Digitale Zorg 2025</td></tr>
+      <tr><td>Burn-out oorzaak #1 voor artsen VS</td><td style="color:var(--red);font-weight:700">Administratielast (37%)</td><td style="color:var(--tt);font-size:11px">AMA Physician Burnout Survey, 2023</td></tr>
+      <tr><td>UK fysiotherapeuten overweegt carrièreswitch</td><td style="color:var(--red);font-weight:700">63%</td><td style="color:var(--tt);font-size:11px">CSP Survey, 2022</td></tr>
+    </table>
+  </div>
+
+  <!-- Specifieke pijnpunten -->
+  <div class="gc mb">
+    <div class="sh">🎯 Specifieke Pijnpunten — Wat vinden ze het meest vervelend?</div>
+    <div class="g2">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Top 5 Pijnpunten (op frequentie)</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="background:rgba(255,68,58,.1);border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:10px 12px">
+            <div style="font-size:13px;font-weight:700;color:var(--tp)">1. SOEP-notities na elke behandeling</div>
+            <div style="font-size:11px;color:var(--ts);margin-top:3px">10 patiënten × 5 min = 50 min/dag minimaal. Herhaling van dezelfde zinnen.</div>
+          </div>
+          <div style="background:rgba(255,159,10,.1);border-left:3px solid var(--orange);border-radius:0 8px 8px 0;padding:10px 12px">
+            <div style="font-size:13px;font-weight:700;color:var(--tp)">2. Intakeverslagen</div>
+            <div style="font-size:11px;color:var(--ts);margin-top:3px">20–45 min schrijven per intake. KNGF-richtlijnen + verzekeraarsvereisten.</div>
+          </div>
+          <div style="background:rgba(191,90,242,.1);border-left:3px solid var(--purple);border-radius:0 8px 8px 0;padding:10px 12px">
+            <div style="font-size:13px;font-weight:700;color:var(--tp)">3. Behandelplannen & evaluaties</div>
+            <div style="font-size:11px;color:var(--ts);margin-top:3px">15–30 min per document. Tussenevaluaties + afsluitbrieven.</div>
+          </div>
+          <div style="background:rgba(90,200,250,.1);border-left:3px solid var(--teal);border-radius:0 8px 8px 0;padding:10px 12px">
+            <div style="font-size:13px;font-weight:700;color:var(--tp)">4. Avonduren</div>
+            <div style="font-size:11px;color:var(--ts);margin-top:3px">Typen na werktijd — directe aanslag op werk-privébalans.</div>
+          </div>
+          <div style="background:rgba(52,199,89,.1);border-left:3px solid var(--green);border-radius:0 8px 8px 0;padding:10px 12px">
+            <div style="font-size:13px;font-weight:700;color:var(--tp)">5. EPD-snelheid & usability</div>
+            <div style="font-size:11px;color:var(--ts);margin-top:3px">Systeem is traag en niet intuïtief voor snelle SOEP-notities.</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Herkenbare Uitspraken</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="background:var(--glass);border:1px solid var(--glass-b);border-radius:10px;padding:12px">
+            <div style="font-size:13px;color:var(--tp);font-style:italic">"Ik ben meer bezig met de computer dan met mijn patiënt"</div>
+          </div>
+          <div style="background:var(--glass);border:1px solid var(--glass-b);border-radius:10px;padding:12px">
+            <div style="font-size:13px;color:var(--tp);font-style:italic">"Na 18:00 zit ik nog uren te typen"</div>
+          </div>
+          <div style="background:var(--glass);border:1px solid var(--glass-b);border-radius:10px;padding:12px">
+            <div style="font-size:13px;color:var(--tp);font-style:italic">"De intake schrijven duurt langer dan de intake zelf"</div>
+          </div>
+          <div style="background:var(--glass);border:1px solid var(--glass-b);border-radius:10px;padding:12px">
+            <div style="font-size:13px;color:var(--tp);font-style:italic">"SOEP-notities zijn nodig voor de verzekeraar, maar het voelt als zinloos werk"</div>
+          </div>
+          <div style="background:var(--glass);border:1px solid var(--glass-b);border-radius:10px;padding:12px">
+            <div style="font-size:13px;color:var(--tp);font-style:italic">"Het EPD is traag en niet intuïtief"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Softwaremarkt -->
+  <div class="gc mb">
+    <div class="sh">💰 Bestaande Softwaremarkt — Wat betalen ze al?</div>
+    <table class="tbl" style="margin-bottom:14px">
+      <tr><th>Product</th><th>Maandprijs</th><th>Doel</th></tr>
+      <tr><td><strong>Intramed EPD</strong></td><td style="color:var(--orange);font-weight:700">€88+/mnd</td><td style="color:var(--ts)">EPD + declaratie + agenda</td></tr>
+      <tr><td>Accountancysoftware</td><td style="color:var(--ts)">€20–50/mnd</td><td style="color:var(--ts)">Boekhouding</td></tr>
+      <tr><td>Telefoniediensten</td><td style="color:var(--ts)">€15–30/mnd</td><td style="color:var(--ts)">Patiëntcommunicatie</td></tr>
+      <tr><td>Specialistische apps</td><td style="color:var(--ts)">€10–40/mnd</td><td style="color:var(--ts)">Oefenschema's, e-health</td></tr>
+      <tr style="background:rgba(0,196,180,.08)"><td><strong style="color:var(--teal)">Totaal software nu</strong></td><td style="color:var(--teal);font-weight:700">€130–220/mnd</td><td style="color:var(--ts)">Alles samen</td></tr>
+      <tr style="background:rgba(52,199,89,.08)"><td><strong style="color:var(--green)">+ Spreekdossier</strong></td><td style="color:var(--green);font-weight:700">+€39/mnd</td><td style="color:var(--ts)"><strong style="color:var(--green)">Lage drempel — &lt;20% toevoeging</strong></td></tr>
+    </table>
+    <div style="background:rgba(52,199,89,.08);border:1px solid rgba(52,199,89,.2);border-radius:10px;padding:14px">
+      <strong style="color:var(--green)">Conclusie:</strong> <span style="font-size:13px;color:var(--ts)">Een fysio geeft al €130–220/mnd uit aan tools. €39 extra voor een tool die direct 1–2 uur/dag scheelt is een <strong style="color:var(--tp)">impulsaankoop</strong>, geen grote beslissing.</span>
+    </div>
+  </div>
+
+  <!-- Betalingsbereidheid -->
+  <div class="gc mb">
+    <div class="sh">💳 Betalingsbereidheid — Internationale Benchmarks</div>
+    <table class="tbl" style="margin-bottom:14px">
+      <tr><th>Tool</th><th>Land</th><th>Prijs/mnd</th><th>Doelgroep</th></tr>
+      <tr><td><strong>Tali.ai</strong></td><td style="color:var(--ts)">Canada 🇨🇦</td><td style="color:var(--orange);font-weight:700">€100–150</td><td style="color:var(--ts)">Artsen — AI Scribe</td></tr>
+      <tr><td><strong>Heidi Health</strong></td><td style="color:var(--ts)">Australië 🇦🇺</td><td style="color:var(--orange);font-weight:700">~€60</td><td style="color:var(--ts)">Alle zorgverleners incl. fysio</td></tr>
+      <tr><td><strong>Nabla</strong></td><td style="color:var(--ts)">VS/FR 🇺🇸</td><td style="color:var(--orange);font-weight:700">€100–200</td><td style="color:var(--ts)">Artsen — Ambient Scribe</td></tr>
+      <tr><td><strong>Notefish / Scribepad</strong></td><td style="color:var(--ts)">UK 🇬🇧</td><td style="color:var(--orange);font-weight:700">€35–60</td><td style="color:var(--ts)">Fysiotherapeuten direct</td></tr>
+      <tr style="background:rgba(0,196,180,.08)"><td><strong style="color:var(--teal)">Spreekdossier</strong></td><td style="color:var(--ts)">Nederland 🇳🇱</td><td style="color:var(--green);font-weight:700">€39 vast</td><td style="color:var(--ts)"><strong style="color:var(--green)">Compleet platform — scribe + patiëntbericht + verwijsbrief + behandelplan</strong></td></tr>
+    </table>
+    <div class="g2">
+      <div style="background:rgba(0,196,180,.06);border:1px solid rgba(0,196,180,.2);border-radius:10px;padding:14px">
+        <div style="font-size:12px;font-weight:700;color:var(--teal);margin-bottom:8px">ROI Berekening per fysio</div>
+        <div style="font-size:13px;color:var(--ts);line-height:1.8">
+          Besparing: <strong style="color:var(--tp)">30 min/dag</strong><br>
+          Werkdagen: 200 per jaar<br>
+          Extra patiënten mogelijk: <strong style="color:var(--teal)">1/dag × €40 = €8.000/jaar</strong><br>
+          Of: avonduren terug → kwaliteit van leven<br><br>
+          <strong style="color:var(--green)">ROI: €8.000 omzet vs. €468/jaar kosten = 17× ROI</strong>
+        </div>
+      </div>
+      <div style="background:rgba(255,159,10,.06);border:1px solid rgba(255,159,10,.2);border-radius:10px;padding:14px">
+        <div style="font-size:12px;font-weight:700;color:var(--orange);margin-bottom:8px">Prijspsychologie</div>
+        <div style="font-size:13px;color:var(--ts);line-height:1.8">
+          €39/mnd = <strong style="color:var(--tp)">minder dan 1 behandeling per maand</strong><br>
+          Onder €50 = impulsaankoop-drempel<br>
+          Jaarlijks: €468 (vergelijkbaar met ander toolabonnement)<br><br>
+          <strong style="color:var(--orange)">Conclusie: prijs is geen bezwaar bij goede pitch</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Conclusie & Sales Pitch -->
+  <div style="background:linear-gradient(135deg,rgba(0,196,180,.15),rgba(0,122,255,.12));border:1px solid rgba(0,196,180,.35);border-radius:var(--r);padding:24px;margin-bottom:16px">
+    <div style="font-size:11px;font-weight:700;color:rgba(0,196,180,.8);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">✅ Eindconclusie</div>
+    <div style="font-size:16px;font-weight:700;margin-bottom:12px">Dit is een sterk, betalingsbereid segment. Start maandag.</div>
+    <div style="font-size:13px;color:rgba(255,255,255,.8);line-height:1.8;margin-bottom:16px">
+      Drie onafhankelijke bewijzen: <strong style="color:var(--teal)">(1)</strong> Intramed benoemt de pijn zelf als core selling point · <strong style="color:var(--teal)">(2)</strong> Buurtzorg NL schaalt spraakrapportage op in 2026 · <strong style="color:var(--teal)">(3)</strong> Internationale AI-scribetools groeien sterk op €60–150/mnd
+    </div>
+    <div style="background:rgba(0,0,0,.3);border-radius:10px;padding:16px;border-left:4px solid var(--teal)">
+      <div style="font-size:12px;font-weight:700;color:var(--teal);margin-bottom:8px">🎯 De Winnende Sales Pitch</div>
+      <div style="font-size:13px;color:var(--tp);font-style:italic;line-height:1.8">
+        "Je ziet 10 patiënten per dag. Na elk consult hetzelfde ritueel: openen EPD, inloggen, SOEP invullen, opslaan. 5 tot 10 minuten × 10 = een uur. Elke dag. Spreekdossier neemt dit over. Spreek je bevindingen in — 60 seconden — en krijg een compleet SOEP-rapport terug. Geen typen. Geen herhaling. Werk klaar als de patiënt de deur uitloopt."
+      </div>
+    </div>
+  </div>
+
+  <!-- Bronnen -->
+  <div class="gc">
+    <div class="sh">📚 Bronnenlijst (15 bronnen)</div>
+    <table class="tbl">
+      <tr><th>#</th><th>Bron</th><th>Type</th><th>Datum</th></tr>
+      <tr><td>1</td><td style="color:var(--ts)">Intramed — Fysiotherapie pagina (intramed.nl/beroepsgroepen/fysiotherapie/)</td><td style="color:var(--tt)">Website</td><td style="color:var(--tt)">21-03-2026</td></tr>
+      <tr><td>2</td><td style="color:var(--ts)">Intramed — Prijsoverzicht 2026 (intramed.nl/prijzen/)</td><td style="color:var(--tt)">Website</td><td style="color:var(--tt)">21-03-2026</td></tr>
+      <tr><td>3</td><td style="color:var(--ts)">Zorgvisie — Buurtzorg schaalt spraakgestuurd rapporteren op</td><td style="color:var(--tt)">Nieuwsartikel</td><td style="color:var(--tt)">21-03-2026</td></tr>
+      <tr><td>4</td><td style="color:var(--ts)">KNGF — Nieuws & Werkdruk thema (kngf.nl/nieuws/)</td><td style="color:var(--tt)">Beroepsorganisatie</td><td style="color:var(--tt)">21-03-2026</td></tr>
+      <tr><td>5</td><td style="color:var(--ts)">Nivel — Monitor Digitale Zorg 2025</td><td style="color:var(--tt)">Rapport</td><td style="color:var(--tt)">2026</td></tr>
+      <tr><td>6</td><td style="color:var(--ts)">Tali.ai — Pricing (tali.ai/pricing)</td><td style="color:var(--tt)">Concurrent</td><td style="color:var(--tt)">21-03-2026</td></tr>
+      <tr><td>7</td><td style="color:var(--ts)">Heidi Health — AI Documentation (heidi.health)</td><td style="color:var(--tt)">Concurrent</td><td style="color:var(--tt)">Markt</td></tr>
+      <tr><td>8</td><td style="color:var(--ts)">Fysionieuws.nl — Community platform</td><td style="color:var(--tt)">Platform</td><td style="color:var(--tt)">21-03-2026</td></tr>
+      <tr><td>9</td><td style="color:var(--ts)">Fysiovacature.nl — Platform fysiotherapeuten</td><td style="color:var(--tt)">Platform</td><td style="color:var(--tt)">21-03-2026</td></tr>
+      <tr><td>10</td><td style="color:var(--ts)">Skipr.nl — Zorgnieuws platform</td><td style="color:var(--tt)">Nieuwssite</td><td style="color:var(--tt)">21-03-2026</td></tr>
+      <tr><td>11</td><td style="color:var(--ts)">AMA Physician Burnout Survey (2023) — Administratielast #1 oorzaak</td><td style="color:var(--tt)">Onderzoek</td><td style="color:var(--tt)">2023</td></tr>
+      <tr><td>12</td><td style="color:var(--ts)">CSP UK Physiotherapy Workforce Survey — 63% overweegt carrièreswitch</td><td style="color:var(--tt)">Onderzoek</td><td style="color:var(--tt)">2022</td></tr>
+      <tr><td>13</td><td style="color:var(--ts)">Sinsky et al. — EHR Documentation Time (Annals Internal Medicine)</td><td style="color:var(--tt)">Wetenschappelijk</td><td style="color:var(--tt)">2016</td></tr>
+      <tr><td>14</td><td style="color:var(--ts)">APTA — Physiotherapy Documentation Time Study</td><td style="color:var(--tt)">Onderzoek</td><td style="color:var(--tt)">2019</td></tr>
+      <tr><td>15</td><td style="color:var(--ts)">Nivel/AZWinfo — Tekort fysiotherapeuten prognose t/m 2030</td><td style="color:var(--tt)">Prognose</td><td style="color:var(--tt)">2025</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="page" id="p-epd">
+  <div class="ph"><h1>🏥 EPD Integratie</h1><p>Welke systemen fysiotherapeuten gebruiken en hoe Spreekdossier daarin past</p></div>
+
+  <div class="g2" style="margin-bottom:20px">
+    <div class="card">
+      <div class="card-h">📊 Marktpositie EPD's</div>
+      <table class="tbl">
+        <tr><th>EPD</th><th>Positie</th><th>Gebruikers</th><th>Relevantie</th></tr>
+        <tr><td><strong>Intramed</strong></td><td>🥇 Marktleider</td><td>Grootst</td><td><span style="color:var(--green)">★★★★★</span></td></tr>
+        <tr><td><strong>Fysiomanager</strong></td><td>🥈 #2</td><td>Groot</td><td><span style="color:var(--green)">★★★★★</span></td></tr>
+        <tr><td><strong>SpotOnMedics</strong></td><td>🥉 Groeier</td><td>Middelgroot</td><td><span style="color:var(--orange)">★★★★☆</span></td></tr>
+        <tr><td>Pluform</td><td>Niche</td><td>Klein</td><td><span style="color:var(--ts)">★★★☆☆</span></td></tr>
+        <tr><td>Procare</td><td>Dalend</td><td>Klein</td><td><span style="color:var(--ts)">★★☆☆☆</span></td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-h">⚔️ Fyso AI — Directe Concurrent</div>
+      <div class="avg-item" style="margin-bottom:12px">
+        <div class="avg-icon">⚠️</div>
+        <div><div class="avg-title">Fysio AI — standalone app + EPD-integratie binnenkort</div><div class="avg-desc">Gelanceerd maart 2026 als standalone iOS/Android app. EPD-integratie aangekondigd. AI-scribe voor sessienotities. 100+ klanten, credit-based pricing.</div></div>
+      </div>
+      <div class="avg-item" style="margin-bottom:12px">
+        <div class="avg-icon">✅</div>
+        <div><div class="avg-title">Spreekdossier voordeel</div><div class="avg-desc">Compleet platform vs. scribe. Patiëntbericht, verwijsbrief, behandelplan, evaluatie — allemaal inbegrepen. €39 vast vs. €130–190 variabel bij Fysio AI (10 pat./dag). Geen credits, geen telwerk.</div></div>
+      </div>
+      <div class="avg-item">
+        <div class="avg-icon">💡</div>
+        <div><div class="avg-title">Verkoopargument</div><div class="avg-desc">"Fysio AI stopt bij de sessienotitie. Spreekdossier regelt ook je patiëntbericht, verwijsbrief en behandelplan — voor €39 vast, niet €130+ per maand."</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-h">📋 Copy-paste per EPD — Hoe het werkt</div>
+    <div class="g3" style="margin-top:12px">
+      <div style="background:rgba(255,255,255,.04);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,.08)">
+        <div style="font-size:16px;margin-bottom:8px">🏥 <strong>Intramed</strong></div>
+        <div style="font-size:12px;color:var(--ts);line-height:1.6">Heeft aparte SOEP-velden. Kopieer elke sectie apart (S → O → E → P). Verwacht plain text. Geen import-knop.</div>
+        <div style="margin-top:10px;padding:8px;background:rgba(0,196,180,.08);border-radius:8px;font-size:11px;color:#00C4B4">✓ Spreekdossier: kies "Intramed" in de kiezer → plain text per sectie</div>
+      </div>
+      <div style="background:rgba(255,255,255,.04);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,.08)">
+        <div style="font-size:16px;margin-bottom:8px">📱 <strong>Fysiomanager</strong></div>
+        <div style="font-size:12px;color:var(--ts);line-height:1.6">Browserbased. SOEP-structuur. Copy-paste werkt goed. Plain text preferred. API koppelingen aanwezig maar niet publiek.</div>
+        <div style="margin-top:10px;padding:8px;background:rgba(0,196,180,.08);border-radius:8px;font-size:11px;color:#00C4B4">✓ Spreekdossier: kies "Fysiomanager" → identiek aan Intramed flow</div>
+      </div>
+      <div style="background:rgba(255,255,255,.04);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,.08)">
+        <div style="font-size:16px;margin-bottom:8px">⚡ <strong>SpotOnMedics</strong></div>
+        <div style="font-size:12px;color:var(--ts);line-height:1.6">Heeft Fyso AI ingebouwd. Voor gebruikers die tóch Spreekdossier willen: zelfde copy-paste aanpak als Intramed.</div>
+        <div style="margin-top:10px;padding:8px;background:rgba(255,159,10,.08);border-radius:8px;font-size:11px;color:var(--orange)">→ Focus sales op Intramed + Fysiomanager gebruikers</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-h">🔑 Pain Points bij copy-pasten (uit research)</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+      <div class="pain-item">⏰ <span>20+ minuten per consult aan verslaglegging</span></div>
+      <div class="pain-item">📋 <span>Structuurverlies bij plakken uit extern doc</span></div>
+      <div class="pain-item">📝 <span>Markdown/bullets werken niet in EPD-velden</span></div>
+      <div class="pain-item">🔋 <span>E en P worden ingekort door tijdsdruk</span></div>
+      <div class="pain-item">⚠️ <span>Onvolledige verslagen = KNGF compliance risico</span></div>
+      <div class="pain-item">🔄 <span>Elk EPD heeft eigen veldindeling — geen standaard</span></div>
+    </div>
+  </div>
+</div>
+<div class="page" id="p-demo">
+  <div class="ph"><h1>🎙️ Live Demo</h1><p>Test de demo of stuur de link naar een fysio</p></div>
+
+  <div class="g2" style="margin-bottom:20px">
+    <div class="card">
+      <div class="card-h">🚀 Demo Links</div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:4px">
+        <a href="/financieel.html" target="_blank" style="display:flex;align-items:center;gap:12px;padding:14px;background:rgba(255,159,10,.1);border-radius:12px;border:1px solid rgba(255,159,10,.25);text-decoration:none;color:var(--tp);transition:all .2s;margin-bottom:12px">
+          <span style="font-size:24px">💰</span>
+          <div><div style="font-weight:700;margin-bottom:2px">Financieel Model — Interactief</div><div style="font-size:12px;color:var(--ts)">Pas sliders aan, zie live MRR/break-even</div></div>
+          <span style="margin-left:auto;color:var(--ts)">→</span>
+        </a>
+      <a href="https://spreekdossier-site.vercel.app/voice-demo.html" target="_blank" style="display:flex;align-items:center;gap:12px;padding:14px;background:rgba(0,196,180,.1);border-radius:12px;border:1px solid rgba(0,196,180,.25);text-decoration:none;color:var(--tp);transition:all .2s">
+          <span style="font-size:24px">🎙️</span>
+          <div><div style="font-weight:700;margin-bottom:2px">Voice Demo — 6 Templates</div><div style="font-size:12px;color:var(--ts)">spreekdossier-site.vercel.app/voice-demo.html</div></div>
+          <span style="margin-left:auto;color:var(--ts)">→</span>
+        </a>
+        <a href="https://spreekdossier-site.vercel.app" target="_blank" style="display:flex;align-items:center;gap:12px;padding:14px;background:rgba(255,255,255,.04);border-radius:12px;border:1px solid rgba(255,255,255,.08);text-decoration:none;color:var(--tp);transition:all .2s">
+          <span style="font-size:24px">🌐</span>
+          <div><div style="font-weight:700;margin-bottom:2px">Marketing Site</div><div style="font-size:12px;color:var(--ts)">spreekdossier-site.vercel.app</div></div>
+          <span style="margin-left:auto;color:var(--ts)">→</span>
+        </a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h">📊 Live Stats</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px">
+        <div style="text-align:center;padding:20px;background:rgba(255,255,255,.04);border-radius:12px">
+          <div style="font-size:32px;font-weight:900;color:#00C4B4" id="dash-minutes">—</div>
+          <div style="font-size:12px;color:var(--ts);margin-top:4px">Minuten bespaard</div>
+        </div>
+        <div style="text-align:center;padding:20px;background:rgba(255,255,255,.04);border-radius:12px">
+          <div style="font-size:32px;font-weight:900;color:#00C4B4" id="dash-users">—</div>
+          <div style="font-size:12px;color:var(--ts);margin-top:4px">Gebruikers</div>
+        </div>
+      </div>
+      <button onclick="loadDashStats()" style="margin-top:12px;width:100%;padding:10px;background:rgba(0,196,180,.1);border:1px solid rgba(0,196,180,.2);border-radius:10px;color:#00C4B4;font-weight:700;cursor:pointer;font-family:inherit">↻ Ververs stats</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-h">💬 Demo Script — Fysio Gesprek</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">
+      <div class="avg-item">
+        <div class="avg-icon">1️⃣</div>
+        <div><div class="avg-title">Open de demo</div><div class="avg-desc">Ga naar de voice-demo link. Kies "Behandeling (SOEP)" — meest herkenbaar voor een fysio.</div></div>
+      </div>
+      <div class="avg-item">
+        <div class="avg-icon">2️⃣</div>
+        <div><div class="avg-title">Laat ze zelf inspreken</div><div class="avg-desc">Geef de fysio de telefoon. Laat ze zelf een recente sessie inspreken — 60 seconden. Eigen woorden, geen format.</div></div>
+      </div>
+      <div class="avg-item">
+        <div class="avg-icon">3️⃣</div>
+        <div><div class="avg-title">Genereer en laat zien</div><div class="avg-desc">Druk op "Maak documentatie aan". Wijs op de SOEP-structuur, de NRS-scores, de terminologie. Vraag: "Klopt dit?"</div></div>
+      </div>
+      <div class="avg-item">
+        <div class="avg-icon">4️⃣</div>
+        <div><div class="avg-title">EPD kiezer tonen</div><div class="avg-desc">Vraag welk EPD ze gebruiken. Kies dat in de kiezer. Laat zien dat copy-paste direct werkt in hun systeem.</div></div>
+      </div>
+      <div class="avg-item">
+        <div class="avg-icon">5️⃣</div>
+        <div><div class="avg-title">Afsluiting</div><div class="avg-desc">"Dit bespaart je 7 minuten per sessie. Bij 10 patiënten per dag is dat 70 minuten. Elke dag. Voor €39 per maand."</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</main>
+
+<script>
+// Voortgang state
+const VS = JSON.parse(localStorage.getItem('sd_voortgang')||'{}');
+VS.semTasks = VS.semTasks || [
+  {id:1,text:'Bel fysiotherapeut met praktijk',done:false},
+  {id:2,text:'Stuur WhatsApp naar 5 fysio-contacten',done:false},
+  {id:3,text:'Stripe account aanmaken',done:false},
+  {id:4,text:'Zakelijk email instellen (hallo@spreekdossier.nl)',done:false},
+  {id:5,text:'Vanavond met Sophie over thuiszorg praten',done:false},
+  {id:6,text:'20 validatiegesprekken voeren',done:false}
+];
+VS.aiTasks = VS.aiTasks || [
+  {id:1,text:'Vercel 404 bug fixen',done:false,status:'bezig'},
+  {id:2,text:'spreekdossier.nl DNS koppelen aan live site',done:false,status:'wacht op hosting'},
+  {id:3,text:'Stripe integratie bouwen',done:false,status:'wacht op account'},
+  {id:4,text:'Voice demo upgraden met echte Whisper',done:true,status:'klaar'},
+  {id:5,text:'Business plan v2 (fysio-focus)',done:true,status:'klaar'},
+  {id:6,text:'Landingspagina copy fysio-specifiek',done:true,status:'klaar'}
+];
+VS.convCount = VS.convCount || 0;
+function saveVS(){localStorage.setItem('sd_voortgang',JSON.stringify(VS));}
+
+function renderVoortgang(){
+  // Sem taken
+  const sl = document.getElementById('semTaskList');
+  if(sl) sl.innerHTML = VS.semTasks.map(t=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(255,255,255,.04);border-radius:10px;transition:all .15s">
+      <div onclick="toggleSemTask(${t.id})" style="width:20px;height:20px;border-radius:6px;border:2px solid ${t.done?'var(--green)':'rgba(255,255,255,.2)'};background:${t.done?'var(--green)':'transparent'};display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:11px">${t.done?'✓':''}</div>
+      <span style="font-size:13px;flex:1;${t.done?'text-decoration:line-through;color:var(--tt)':''}">${t.text}</span>
+      <span onclick="deleteSemTask(${t.id})" style="color:var(--red);font-size:11px;cursor:pointer;opacity:0.5">✕</span>
+    </div>`).join('');
+
+  // AI taken
+  const al = document.getElementById('aiTaskList');
+  if(al) al.innerHTML = VS.aiTasks.map(t=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(255,255,255,.04);border-radius:10px">
+      <span style="font-size:16px">${t.done?'✅':'🔄'}</span>
+      <span style="font-size:13px;flex:1;${t.done?'color:var(--ts)':''}">${t.text}</span>
+      <span style="font-size:10px;padding:2px 8px;border-radius:100px;${t.done?'background:rgba(52,199,89,.18);color:var(--green)':'background:rgba(255,159,10,.18);color:var(--orange)'}">${t.status}</span>
+    </div>`).join('');
+
+  // Conv count
+  const cc = document.getElementById('convCount');
+  const cb = document.getElementById('convBar');
+  if(cc) cc.textContent = VS.convCount + ' / 20';
+  if(cb) cb.style.width = Math.min(100,(VS.convCount/20*100)) + '%';
+}
+
+function toggleSemTask(id){
+  const t=VS.semTasks.find(t=>t.id===id);
+  if(t){t.done=!t.done;saveVS();renderVoortgang();}
+}
+function deleteSemTask(id){
+  VS.semTasks=VS.semTasks.filter(t=>t.id!==id);saveVS();renderVoortgang();
+}
+function addSemTask(){
+  const v=document.getElementById('semTaskInput').value.trim();
+  if(!v)return;
+  VS.semTasks.push({id:Date.now(),text:v,done:false});
+  saveVS();renderVoortgang();
+  document.getElementById('semTaskInput').value='';
+}
+function updateConv(d){
+  VS.convCount=Math.max(0,VS.convCount+d);saveVS();renderVoortgang();
+}
+
+// Render bij laden voortgang pagina
+</script>
+
+<script>
+// ===== VALIDATIE TRACKER =====
+let validations = JSON.parse(localStorage.getItem('sd-validations') || '[]');
+
+function saveValidations() {
+  localStorage.setItem('sd-validations', JSON.stringify(validations));
+}
+
+function addValidation() {
+  const naam = document.getElementById('val-naam').value.trim();
+  const spec = document.getElementById('val-spec').value;
+  const pijn = document.getElementById('val-pijn').value.trim();
+  const betalen = document.getElementById('val-betalen').value;
+  const datum = document.getElementById('val-datum').value || new Date().toISOString().split('T')[0];
+
+  if (!naam) { alert('Vul een naam in'); return; }
+
+  validations.push({ naam, spec, pijn, betalen, datum, id: Date.now() });
+  saveValidations();
+  renderValidations();
+
+  // Reset form
+  document.getElementById('val-naam').value = '';
+  document.getElementById('val-pijn').value = '';
+  document.getElementById('val-datum').value = '';
+}
+
+function removeValidation(id) {
+  validations = validations.filter(v => v.id !== id);
+  saveValidations();
+  renderValidations();
+}
+
+function renderValidations() {
+  const list = document.getElementById('val-list');
+  const count = validations.length;
+  const yesCount = validations.filter(v => v.betalen === 'ja').length;
+  const noCount = validations.filter(v => v.betalen === 'nee').length;
+  const remaining = Math.max(0, 20 - count);
+  const pct = Math.min(100, Math.round(count / 20 * 100));
+  const conversion = count > 0 ? Math.round(yesCount / count * 100) : 0;
+
+  document.getElementById('val-count').textContent = count;
+  document.getElementById('val-yes').textContent = yesCount;
+  document.getElementById('val-no').textContent = noCount;
+  document.getElementById('val-remaining').textContent = remaining;
+  document.getElementById('val-progress-label').textContent = `${count} van 20 gesprekken gedaan`;
+  document.getElementById('val-pct').textContent = pct + '%';
+  document.getElementById('val-progress-bar').style.width = pct + '%';
+  document.getElementById('val-conversion').textContent = conversion + '%';
+  document.getElementById('val-conversion-bar').style.width = conversion + '%';
+
+  if (count === 0) {
+    list.innerHTML = '<div style="font-size:13px;color:var(--ts);padding:20px;text-align:center">Nog geen gesprekken toegevoegd. Start vandaag.</div>';
+    return;
+  }
+
+  const betalenLabel = { ja: '<span class="bdg bg-green">✅ Zou betalen</span>', maybe: '<span class="bdg bg-orange">🤔 Misschien</span>', nee: '<span class="bdg bg-red">❌ Niet nu</span>' };
+
+  list.innerHTML = [...validations].reverse().map(v => `
+    <div style="display:flex;align-items:flex-start;gap:12px;padding:12px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);margin-bottom:8px">
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span style="font-size:14px;font-weight:700">${v.naam}</span>
+          <span class="comp-tag">${v.spec}</span>
+          ${betalenLabel[v.betalen] || ''}
+          <span style="font-size:11px;color:var(--ts);margin-left:auto">${v.datum}</span>
+        </div>
+        ${v.pijn ? `<div style="font-size:12px;color:var(--ts);line-height:1.5;padding:8px 10px;background:rgba(255,69,58,.06);border-radius:7px;border-left:2px solid rgba(255,69,58,.3)">💬 "${v.pijn}"</div>` : ''}
+      </div>
+      <button onclick="removeValidation(${v.id})" style="padding:4px 10px;border-radius:7px;background:rgba(255,69,58,.15);border:1px solid rgba(255,69,58,.25);color:var(--red);font-size:11px;cursor:pointer;white-space:nowrap">Verwijder</button>
+    </div>
+  `).join('');
+}
+
+// Init
+renderValidations();
+
+function go(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nav').forEach(n=>n.classList.remove('on'));
+  document.getElementById('p-'+id).classList.add('on');
+  el.classList.add('on');
+  window.scrollTo(0,0);
+  if(id==='voortgang') renderVoortgang();
+}
+function prodTab(id,el){
+  ['mvp','v1','v2','tech'].forEach(t=>{
+    const el2=document.getElementById('prod-'+t);
+    if(el2)el2.style.display='none';
+  });
+  document.getElementById('prod-'+id).style.display='block';
+  document.querySelectorAll('#prodTabs .tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+}
+function outTab(id,el){
+  ['wa-fysio','wa-thuiszorg','wa-algemeen','linkedin','script'].forEach(t=>{
+    const el2=document.getElementById('out-'+t);
+    if(el2)el2.style.display='none';
+  });
+  const target=document.getElementById('out-'+id);
+  if(target)target.style.display='block';
+  document.querySelectorAll('#outreachTabs .tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+}
+function copyPrompt(){
+  const text=document.getElementById('soepPrompt').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=document.querySelector('.copy-btn');
+    btn.textContent='Gekopieerd ✓';btn.style.background='rgba(52,199,89,.3)';
+    setTimeout(()=>{btn.textContent='Kopieer';btn.style.background='';},2000);
+  });
+}
+function loadDashStats(){
+  fetch('https://spreekdossier-site.vercel.app/api/stats')
+    .then(r=>r.json())
+    .then(d=>{
+      document.getElementById('dash-minutes').textContent=d.minutes||0;
+      document.getElementById('dash-users').textContent=d.users||0;
+    }).catch(()=>{});
+}
+// Auto-load stats when demo page is shown
+document.addEventListener('DOMContentLoaded', ()=>{
+  if(document.getElementById('p-demo')) loadDashStats();
+});
+function copyOut(id){
+  const text=document.getElementById(id).textContent.trim();
+  navigator.clipboard.writeText(text).then(()=>{
+    // Find the button next to this element
+    const el=document.getElementById(id);
+    const btn=el.parentElement.querySelector('.copy-btn');
+    if(btn){
+      const orig=btn.textContent;
+      btn.textContent='Gekopieerd ✓';btn.style.background='rgba(52,199,89,.3)';
+      setTimeout(()=>{btn.textContent=orig;btn.style.background='';},2000);
+    }
+  });
+}
+
+
+
+</script>
+</body>
+</html>

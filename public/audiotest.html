@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body { background: #090912; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 20px; }
+.audiometer { display: flex; align-items: flex-end; justify-content: center; gap: 3px; height: 32px; }
+.audiometer-bar { width: 4px; border-radius: 2px; background: #ef4444; height: 4px; }
+button { background: #ef4444; color: white; border: none; padding: 12px 24px; border-radius: 100px; cursor: pointer; font-size: 16px; }
+#status { color: white; font-family: sans-serif; }
+</style>
+</head>
+<body>
+<div id="status">Klaar</div>
+<div class="audiometer" id="audiometer">
+  <div class="audiometer-bar" id="ab1"></div>
+  <div class="audiometer-bar" id="ab2"></div>
+  <div class="audiometer-bar" id="ab3"></div>
+  <div class="audiometer-bar" id="ab4"></div>
+  <div class="audiometer-bar" id="ab5"></div>
+  <div class="audiometer-bar" id="ab6"></div>
+  <div class="audiometer-bar" id="ab7"></div>
+  <div class="audiometer-bar" id="ab8"></div>
+  <div class="audiometer-bar" id="ab9"></div>
+</div>
+<button onclick="toggle()">Start</button>
+<script>
+const barIds = ['ab1','ab2','ab3','ab4','ab5','ab6','ab7','ab8','ab9'];
+const barHeights = [0.3, 0.5, 0.7, 0.9, 1.0, 0.9, 0.7, 0.5, 0.3];
+let animFrame = null;
+let running = false;
+
+function startAudiometer() {
+  if (animFrame) cancelAnimationFrame(animFrame);
+  running = true;
+  let t = 0;
+  function draw() {
+    if (!running) return;
+    animFrame = requestAnimationFrame(draw);
+    t += 0.1;
+    barIds.forEach((id, i) => {
+      const bar = document.getElementById(id);
+      const wave = (Math.sin(t + i * 0.7) + 1) / 2;
+      bar.style.height = Math.round(4 + wave * 24 * barHeights[i]) + 'px';
+    });
+  }
+  draw();
+}
+
+function stopAudiometer() {
+  running = false;
+  if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+  barIds.forEach(id => { document.getElementById(id).style.height = '4px'; });
+}
+
+function toggle() {
+  if (!running) { startAudiometer(); document.querySelector('button').textContent = 'Stop'; document.getElementById('status').textContent = 'Draait'; }
+  else { stopAudiometer(); document.querySelector('button').textContent = 'Start'; document.getElementById('status').textContent = 'Gestopt'; }
+}
+</script>
+</body>
+</html>

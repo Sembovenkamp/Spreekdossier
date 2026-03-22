@@ -1,5 +1,8 @@
 {
   "name": "spreekdossier-site",
   "version": "1.0.0",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "openai": "^4.28.0"
+  }
 }

@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spreekdossier — Financieel Model</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#060610;--card:rgba(255,255,255,.05);--border:rgba(255,255,255,.1);
+  --primary:#00C9B5;--primary-d:rgba(0,201,181,.15);
+  --text:rgba(255,255,255,.95);--muted:rgba(255,255,255,.5);--dim:rgba(255,255,255,.25);
+  --green:#34C759;--red:#FF453A;--orange:#FF9F0A;--blue:#007AFF;--purple:#BF5AF2;
+  --r:14px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:24px}
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+.blob{position:absolute;border-radius:50%;filter:blur(120px);opacity:.15}
+.b1{width:600px;height:600px;background:#0a3a6a;top:-200px;left:-100px}
+.b2{width:500px;height:500px;background:#0a4a3a;bottom:-150px;right:5%}
+
+.wrap{max-width:1200px;margin:0 auto;position:relative;z-index:1}
+h1{font-size:28px;font-weight:800;margin-bottom:4px}
+.subtitle{color:var(--muted);font-size:15px;margin-bottom:32px}
+
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}
+@media(max-width:900px){.g3,.g4{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}}
+@media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px}
+.card-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--primary);margin-bottom:14px}
+
+/* KPI TILES */
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;text-align:center}
+.kpi-val{font-size:28px;font-weight:900;letter-spacing:-.02em;margin-bottom:4px}
+.kpi-label{font-size:12px;color:var(--muted)}
+.kpi-sub{font-size:11px;color:var(--dim);margin-top:3px}
+
+/* SLIDERS */
+.slider-group{margin-bottom:14px}
+.slider-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.slider-label{font-size:13px;color:var(--muted)}
+.slider-val{font-size:13px;font-weight:700;color:var(--primary);min-width:70px;text-align:right}
+input[type=range]{width:100%;-webkit-appearance:none;height:4px;border-radius:2px;background:rgba(255,255,255,.1);outline:none;margin:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--primary);cursor:pointer;box-shadow:0 0 8px rgba(0,201,181,.4)}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{padding:10px 12px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text)}
+tr:last-child td{border-bottom:none}
+tr.highlight td{background:rgba(0,201,181,.08);font-weight:700}
+tr.yr2 td{background:rgba(0,122,255,.05)}
+
+/* SCENARIO BADGES */
+.badge{display:inline-block;padding:3px 9px;border-radius:100px;font-size:11px;font-weight:700}
+.b-green{background:rgba(52,199,89,.2);color:var(--green)}
+.b-orange{background:rgba(255,159,10,.2);color:var(--orange)}
+.b-red{background:rgba(255,69,58,.2);color:var(--red)}
+.b-blue{background:rgba(0,122,255,.2);color:var(--blue)}
+.b-purple{background:rgba(191,90,242,.2);color:var(--purple)}
+.b-teal{background:rgba(0,201,181,.15);color:var(--primary)}
+
+/* CHART BARS */
+.chart{display:flex;align-items:flex-end;gap:4px;height:120px;margin-top:12px}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar{width:100%;border-radius:4px 4px 0 0;min-height:2px;transition:height .3s ease}
+.bar-label{font-size:9px;color:var(--dim);text-align:center}
+
+/* SECTION DIVIDER */
+.sec{font-size:18px;font-weight:800;margin:28px 0 14px;display:flex;align-items:center;gap:10px}
+.sec::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ROW */
+.row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.row:last-child{border-bottom:none}
+.row-label{font-size:13px;color:var(--muted)}
+.row-val{font-size:13px;font-weight:700}
+
+/* TABS */
+.tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.tab{padding:8px 16px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);color:var(--muted);background:transparent;transition:all .2s;font-family:inherit}
+.tab:hover{border-color:var(--primary);color:var(--primary)}
+.tab.on{background:var(--primary-d);border-color:var(--primary);color:var(--primary)}
+
+.panel{display:none}.panel.on{display:block}
+
+/* ALERT */
+.alert{background:rgba(0,201,181,.08);border:1px solid rgba(0,201,181,.2);border-radius:10px;padding:14px 18px;font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px}
+.alert strong{color:var(--text)}
+
+/* TOOLTIP */
+.tooltip-wrap{position:relative;display:inline-flex;align-items:center;gap:4px}
+.tip-icon{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.12);color:rgba(255,255,255,.5);font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;cursor:default;flex-shrink:0;line-height:1}
+.tip-icon:hover+.tip-text,.tip-icon:focus+.tip-text{display:block}
+.tip-text{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(20,20,40,.97);border:1px solid rgba(255,255,255,.15);border-radius:9px;padding:10px 13px;font-size:12px;color:rgba(255,255,255,.8);white-space:nowrap;z-index:99;box-shadow:0 4px 20px rgba(0,0,0,.5);line-height:1.5;min-width:220px;pointer-events:none}
+</style>
+</head>
+<body>
+<div class="bg"><div class="blob b1"></div><div class="blob b2"></div></div>
+
+<div class="wrap">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:4px">
+    <div>
+      <h1>💰 Financieel Model — Spreekdossier</h1>
+      <div class="subtitle">Interactief model · pas de variabelen aan en zie direct het effect</div>
+    </div>
+    <a href="/dashboard.html" style="color:var(--primary);text-decoration:none;font-size:13px;font-weight:600">← Dashboard</a>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab on" onclick="showTab('model',this)">📈 Prognose</button>
+    <button class="tab" onclick="showTab('scenarios',this)">🎯 Scenario's</button>
+    <button class="tab" onclick="showTab('unit',this)">⚙️ Unit Economics</button>
+    <button class="tab" onclick="showTab('markt',this)">🏪 Marktpenetratie</button>
+    <button class="tab" onclick="showTab('kosten',this)">💸 Kosten</button>
+    <button class="tab" onclick="showTab('roi',this)">📐 ROI & IRR</button>
+    <button class="tab" onclick="showTab('investor',this)">🤝 Investeerder</button>
+  </div>
+
+  <!-- TAB: PROGNOSE -->
+  <div class="panel on" id="tab-model">
+
+    <!-- SLIDERS -->
+    <div class="g2" style="margin-bottom:20px">
+      <div class="card">
+        <div class="card-title">🎛️ Aannames aanpassen</div>
+
+        <div class="slider-group">
+          <div class="slider-row"><span class="slider-label">Nieuwe klanten/mnd (start)</span><span class="slider-val" id="v-new-start">3</span></div>
+          <input type="range" min="1" max="20" value="3" id="s-new-start" oninput="update()">
+        </div>
+        <div class="slider-group">
+          <div class="slider-row"><span class="slider-label">Groeisnelheid (% per mnd)</span><span class="slider-val" id="v-growth">15%</span></div>
+          <input type="range" min="5" max="50" value="15" id="s-growth" oninput="update()">
+        </div>
+        <div class="slider-group">
+          <div class="slider-row"><span class="slider-label">Churn (mnd 1-6)</span><span class="slider-val" id="v-churn-early">10%</span></div>
+          <input type="range" min="3" max="25" value="10" id="s-churn-early" oninput="update()">
+        </div>
+        <div class="slider-group">
+          <div class="slider-row"><span class="slider-label">Churn (mnd 7+)</span><span class="slider-val" id="v-churn-late">5%</span></div>
+          <input type="range" min="1" max="15" value="5" id="s-churn-late" oninput="update()">
+        </div>
+        <div class="slider-group">
+          <div class="slider-row"><span class="slider-label">Mix Praktijk S (%)</span><span class="slider-val" id="v-mix-s">10%</span></div>
+          <input type="range" min="0" max="40" value="10" id="s-mix-s" oninput="update()">
+        </div>
+        <div class="slider-group">
+          <div class="slider-row"><span class="slider-label">Mix Praktijk M (%)</span><span class="slider-val" id="v-mix-m">3%</span></div>
+          <input type="range" min="0" max="20" value="3" id="s-mix-m" oninput="update()">
+        </div>
+      </div>
+
+      <!-- LIVE KPI's -->
+      <div>
+        <div class="g2" style="margin-bottom:12px">
+          <div class="kpi">
+            <div class="kpi-val" id="kpi-mrr-12" style="color:var(--green)">€0</div>
+            <div class="kpi-label">MRR maand 12</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-val" id="kpi-cum-12" style="color:var(--blue)">€0</div>
+            <div class="kpi-label">Cumulatief jaar 1</div>
+          </div>
+        </div>
+        <div class="g2" style="margin-bottom:12px">
+          <div class="kpi">
+            <div class="kpi-val" id="kpi-breakeven" style="color:var(--orange)">—</div>
+            <div class="kpi-label">Break-even maand</div>
+            <div class="kpi-sub">bij €175/mnd kosten</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-val" id="kpi-customers-12" style="color:var(--purple)">0</div>
+            <div class="kpi-label">Klanten na 12 mnd</div>
+          </div>
+        </div>
+        <div class="g2">
+          <div class="kpi">
+            <div class="kpi-val" id="kpi-mrr-24" style="color:var(--green)">€0</div>
+            <div class="kpi-label">MRR maand 24</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-val" id="kpi-cum-24" style="color:var(--blue)">€0</div>
+            <div class="kpi-label">Cumulatief jaar 2</div>
+          </div>
+        </div>
+
+        <!-- MRR CHART -->
+        <div class="card" style="margin-top:12px">
+          <div class="card-title">MRR Groei (mnd 1-24)</div>
+          <div class="chart" id="mrr-chart"></div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px">
+            <span style="font-size:10px;color:var(--dim)">Mnd 1</span>
+            <span style="font-size:10px;color:var(--dim)">Mnd 12</span>
+            <span style="font-size:10px;color:var(--dim)">Mnd 24</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MONTH TABLE -->
+    <div class="card">
+      <div class="card-title">📅 Maand-voor-maand prognose</div>
+      <div class="tbl-wrap">
+        <table>
+          <tr>
+            <th>Mnd</th><th>Fase</th><th>Nieuwe klanten</th><th>Totaal klanten</th>
+            <th>MRR</th><th>Cumulatief</th><th>Winst/verlies</th>
+          </tr>
+          <tbody id="month-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: SCENARIOS -->
+  <div class="panel" id="tab-scenarios">
+    <div class="g3">
+      <div class="card" style="border-color:rgba(255,69,58,.3)">
+        <div class="card-title" style="color:var(--red)">😰 Pessimistisch</div>
+        <div class="alert">Moeizame validatie, hoog churn, weinig tijd van Sem.</div>
+        <div class="row"><span class="row-label">Nieuwe klanten/mnd start</span><span class="row-val">1</span></div>
+        <div class="row"><span class="row-label">Groei per maand</span><span class="row-val">8%</span></div>
+        <div class="row"><span class="row-label">Churn (early)</span><span class="row-val">20%</span></div>
+        <div class="row"><span class="row-label">Churn (late)</span><span class="row-val">10%</span></div>
+        <div class="row"><span class="row-label">Mix praktijk</span><span class="row-val">5%</span></div>
+        <div style="margin-top:16px;padding:14px;background:rgba(255,69,58,.08);border-radius:10px">
+          <div class="row" style="border:none;padding:4px 0"><span class="row-label">MRR mnd 12</span><span class="row-val" style="color:var(--red)" id="sc-p-mrr12">—</span></div>
+          <div class="row" style="border:none;padding:4px 0"><span class="row-label">Klanten mnd 12</span><span class="row-val" style="color:var(--red)" id="sc-p-cust12">—</span></div>
+          <div class="row" style="border:none;padding:4px 0"><span class="row-label">Cumulatief jaar 1</span><span class="row-val" style="color:var(--red)" id="sc-p-cum12">—</span></div>
+          <div class="row" style="border:none;padding:4px 0"><span class="row-label">Break-even</span><span class="row-val" style="color:var(--red)" id="sc-p-be">—</span></div>
+          <div class="row" style="border:none;padding:4px 0"><span class="row-label">MRR mnd 24</span><span class="row-val" style="color:var(--red)" id="sc-p-mrr24">—</span></div>
+        </div>
+        <button onclick="applyScenario(1,8,20,10,5)" style="margin-top:12px;width:100%;padding:10px;background:rgba(255,69,58,.15);border:1px solid rgba(255,69,58,.3);border-radius:9px;color:var(--red);font-weight:700;cursor:pointer;font-family:inherit">Laad scenario</button>
+      </div>
+
+      <div class="card" style="border-color:rgba(0,201,181,.3)">
+        <div class="card-title" style="color:var(--primary)">✅ Realistisch</div>
+        <div class="alert">Part-time Sem, mond-tot-mond, fysionieuws.nl.</div>
+        <div class="row"><span class="row-label">Nieuwe klanten/mnd start</span><span class="row-val">3</span></div>
+        <div class="row"><span class="row-label">Groei per maand</span><span class="row-val">15%</span></div>
+        <div class="row"><span class="row-label">Churn (early)</span><span class="row-val">10%</span></div>
+        <div class="row"><span class="row-label">Churn (late)</span><span class="row-val">5%</span></div>
+        <div class="row"><span class="row-label">Mix praktijk</span><span class="row-val">10%</span></div>
+        <div style="margin-top:16px;padding:14px;background:rgba(0,201,181,.08);border-radius:10px">
+          <div class="row" style="border:none;padding:4px 0"><span class="row-label">MRR mnd 12</span><span class="row-val" style="color:var(--primary)" id="sc-r-mrr12">—</span></div>
+          <div class="row" style="border:none;padding:4px 0"><span class="row-label">Klanten mnd 12</span><span class="row-val" style="color:var(--primary)" id="sc-r-cust12">—</span></div>
+          <div class="row" style="border:none;padding:4px 0"><span class="row-label">Cumulatief jaar 1</span><span class="row-val" style="color:var(--primary)" id="sc-r-cum12">—</span></div>
+          <div class="row" style="border:none;padding:4px 0"><span class="row-label">Break-even</span><span class="row-val" style="color:var(--primary)" id="sc-r-be">—</span></div>
+          <div class="row" style="border:none;padding:4px 0"><span class="row-label">MRR mnd 24</span><span class="row-val" style="color:var(--primary)" id="sc-r-mrr24">—</span></div>
+        </div>
+        <button onclick="applyScenario(3,15,10,5,10)" style="margin-top:12px;width:100%;padding:10px;background:rgba(0,201,181,.15);border:1px solid rgba(0,201,181,.3);border-radius:9px;color:var(--primary);font-weight:700;cursor:pointer;font-family:inherit">Laad scenario</button>
+      </div>
+
+      <div class="card" style="border-color:rgba(255,159,10,.3)">
+        <div class="card-title" style="color:var(--orange)">🚀 Optimistisch</div>
+        <div class="alert">Viral moment, KNGF-aandacht, Sem fulltime na studie.</div>
+        <div class="row"><span class="row-label">Nieuwe klanten/mnd start</span><span class="row-val">6</span></div>
+        <div class="row"><span class="row-label">Groei per maand</span><span class="row-val">30%</span></div>
+        <div class="row"><span class="row-label">Churn (early)</span><span class="row-val">7%</span></div>
+        <div class="row"><span class="row-label">Churn (late)</span><span class="row-val">3%</span></div>
+        <div class="row"><span class="row-label">Mix praktijk</span><span class="row-val">20%</span></div>
+        <div style="margin-top:16px;padding:14px;background:rgba(255,159,10,.08);border-radius:10px">
+          <div class="row" style="border:none;padding:4px 0"><span class="row-label">MRR mnd 12</span><span class="row-val" style="color:var(--orange)" id="sc-o-mrr12">—</span></div>
+          <div class="row" style="border:none;padding:4px 0"><span class="row-label">Klanten mnd 12</span><span class="row-val" style="color:var(--orange)" id="sc-o-cust12">—</span></div>
+          <div class="row" style="border:none;padding:4px 0"><span class="row-label">Cumulatief jaar 1</span><span class="row-val" style="color:var(--orange)" id="sc-o-cum12">—</span></div>
+          <div class="row" style="border:none;padding:4px 0"><span class="row-label">Break-even</span><span class="row-val" style="color:var(--orange)" id="sc-o-be">—</span></div>
+          <div class="row" style="border:none;padding:4px 0"><span class="row-label">MRR mnd 24</span><span class="row-val" style="color:var(--orange)" id="sc-o-mrr24">—</span></div>
+        </div>
+        <button onclick="applyScenario(6,30,7,3,20)" style="margin-top:12px;width:100%;padding:10px;background:rgba(255,159,10,.15);border:1px solid rgba(255,159,10,.3);border-radius:9px;color:var(--orange);font-weight:700;cursor:pointer;font-family:inherit">Laad scenario</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: UNIT ECONOMICS -->
+  <div class="panel" id="tab-unit">
+    <div class="g2">
+      <div class="card">
+        <div class="card-title">💰 Revenue per klant</div>
+        <div class="row"><span class="row-label">Solo (€39/mnd)</span><span class="row-val" style="color:var(--primary)">€39/mnd</span></div>
+        <div class="row"><span class="row-label">Praktijk S (€119/mnd)</span><span class="row-val" style="color:var(--blue)">€119/mnd</span></div>
+        <div class="row"><span class="row-label">Praktijk M (€229/mnd)</span><span class="row-val" style="color:var(--purple)">€229/mnd</span></div>
+        <div class="row"><span class="row-label">Praktijk L (€349/mnd)</span><span class="row-val" style="color:var(--orange)">€349/mnd</span></div>
+        <div class="row"><span class="row-label">Gewogen gemiddelde (90/10/3%)</span><span class="row-val" style="color:var(--green)">~€47/mnd</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">💸 Kosten per klant per maand</div>
+        <div class="row"><span class="row-label">Whisper (10 sessies/mnd)</span><span class="row-val" style="color:var(--red)">~€0,50</span></div>
+        <div class="row"><span class="row-label">Claude Haiku (10 docs)</span><span class="row-val" style="color:var(--red)">~€0,30</span></div>
+        <div class="row"><span class="row-label">Supabase (pro-rata)</span><span class="row-val" style="color:var(--red)">~€0,25</span></div>
+        <div class="row"><span class="row-label">Vercel (pro-rata)</span><span class="row-val" style="color:var(--red)">~€0,10</span></div>
+        <div class="row"><span class="row-label"><strong>Totaal variabele kosten</strong></span><span class="row-val" style="color:var(--red)">~€1,15/klant</span></div>
+        <div class="row"><span class="row-label"><strong>Bruto marge</strong></span><span class="row-val" style="color:var(--green)"><strong>97%+</strong></span></div>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-title">📊 LTV Berekening</div>
+        <div class="row"><span class="row-label">Gem. MRR per klant</span><span class="row-val">€43</span></div>
+        <div class="row"><span class="row-label">Churn (steady state 5%/mnd)</span><span class="row-val">→ avg 20 mnd</span></div>
+        <div class="row"><span class="row-label">LTV (20 mnd × €43)</span><span class="row-val" style="color:var(--green)">€860</span></div>
+        <div class="row"><span class="row-label">LTV (churn 3% = 33 mnd)</span><span class="row-val" style="color:var(--green)">€1.419</span></div>
+        <div class="row"><span class="row-label">LTV (churn 10% = 10 mnd)</span><span class="row-val" style="color:var(--orange)">€430</span></div>
+        <div style="margin-top:12px;padding:10px;background:rgba(0,201,181,.08);border-radius:8px;font-size:12px;color:var(--muted)">
+          💡 Bij organische acquisitie (CAC ≈ €0) is <strong style="color:var(--text)">elke klant pure winst</strong> vanaf dag 1. LTV/CAC = oneindig.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🎯 Vergelijking vs Fysio AI</div>
+        <div class="row"><span class="row-label">Fysio AI — 40 sess/mnd</span><span class="row-val" style="color:var(--red)">€32-38/mnd variabel</span></div>
+        <div class="row"><span class="row-label">Spreekdossier Solo</span><span class="row-val" style="color:var(--green)">€39/mnd vast</span></div>
+        <div class="row"><span class="row-label">Fysio AI — 80 sess/mnd</span><span class="row-val" style="color:var(--red)">€64-76/mnd variabel</span></div>
+        <div class="row"><span class="row-label">Spreekdossier — 80 sess</span><span class="row-val" style="color:var(--green)">€39/mnd vast ✓</span></div>
+        <div class="row"><span class="row-label">Fysio AI — 160 sess/mnd</span><span class="row-val" style="color:var(--red)">€104-152/mnd</span></div>
+        <div class="row"><span class="row-label">Spreekdossier — 160 sess</span><span class="row-val" style="color:var(--green)">€39/mnd vast ✓✓</span></div>
+        <div style="margin-top:12px;padding:10px;background:rgba(52,199,89,.08);border-radius:8px;font-size:12px;color:var(--muted)">
+          <strong style="color:var(--green)">Conclusie:</strong> Spreekdossier wint bij >42 sessies/mnd. Drukke fysiotherapeuten zijn jullie beste klanten.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: MARKTPENETRATIE -->
+  <div class="panel" id="tab-markt">
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">🏪 Marktpenetratie Targets — 10.000-15.000 ZZP Fysiotherapeuten</div>
+      <div class="tbl-wrap">
+        <table>
+          <tr><th>Penetratie</th><th>Klanten</th><th>MRR</th><th>ARR</th><th>Tijdlijn (realistisch)</th><th>Noot</th></tr>
+          <tr><td>0,05%</td><td>7</td><td>€273</td><td>€3.276</td><td>Mnd 2-3</td><td>Break-even</td></tr>
+          <tr><td>0,1%</td><td>15</td><td>€585</td><td>€7.020</td><td>Mnd 4-5</td><td>€585/mnd MRR</td></tr>
+          <tr><td>0,5%</td><td>75</td><td>€2.925</td><td>€35.100</td><td>Mnd 10-11</td><td>Eerste serieuze inkomsten</td></tr>
+          <tr class="highlight"><td><strong>1%</strong></td><td><strong>150</strong></td><td><strong>€5.850</strong></td><td><strong>€70.200</strong></td><td><strong>Mnd 16-18</strong></td><td><strong>Validatie go/no-go</strong></td></tr>
+          <tr><td>2%</td><td>300</td><td>€11.700</td><td>€140.400</td><td>Jaar 2-3</td><td>Serieus bedrijf</td></tr>
+          <tr><td>5%</td><td>750</td><td>€29.250</td><td>€351.000</td><td>Jaar 3-4</td><td>Acquisitie-interessant</td></tr>
+          <tr><td>10%</td><td>1.500</td><td>€58.500</td><td>€702.000</td><td>Jaar 5+</td><td>Marktleider fysiotherapie NL</td></tr>
+          <tr class="yr2"><td>Totale markt</td><td>15.000</td><td>€585.000</td><td>€7.020.000</td><td>—</td><td>Theoretisch maximum fysiotherapie</td></tr>
+          <tr class="yr2"><td>+ Alle zorg NL</td><td>170.000+</td><td>€6.6M+</td><td>€79M+</td><td>—</td><td>Uitbreiding naar thuiszorg/GGZ</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-title">💡 Vergelijkingspunt: Nabla</div>
+        <div class="row"><span class="row-label">Gebruikers bij overname</span><span class="row-val">85.000</span></div>
+        <div class="row"><span class="row-label">Overnamebedrag</span><span class="row-val" style="color:var(--orange)">$85M</span></div>
+        <div class="row"><span class="row-label">Waarde per gebruiker</span><span class="row-val">$1.000</span></div>
+        <div class="row"><span class="row-label">Spreekdossier bij 750 klanten</span><span class="row-val" style="color:var(--green)">~€750K waarde</span></div>
+        <div class="row"><span class="row-label">Spreekdossier bij 5.000 klanten</span><span class="row-val" style="color:var(--green)">~€5M+ waarde</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🚀 Groeistrategie per fase</div>
+        <div class="row"><span class="row-label">Fase 1 (mnd 1-6)</span><span class="row-val">Persoonlijk outreach</span></div>
+        <div class="row"><span class="row-label">Fase 2 (mnd 7-12)</span><span class="row-val">fysionieuws.nl + LinkedIn</span></div>
+        <div class="row"><span class="row-label">Fase 3 (mnd 13-18)</span><span class="row-val">Content marketing + referral</span></div>
+        <div class="row"><span class="row-label">Fase 4 (mnd 19-24)</span><span class="row-val">Betaalde kanalen + KNGF</span></div>
+        <div class="row"><span class="row-label">Fase 5 (jaar 3+)</span><span class="row-val">EPD-integraties + partnerships</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: KOSTEN -->
+  <div class="panel" id="tab-kosten">
+    <div class="g2">
+      <div class="card">
+        <div class="card-title">💸 Huidige kosten (0-50 klanten)</div>
+        <div class="row"><span class="row-label">OpenAI Whisper (transcriptie)</span><span class="row-val" style="color:var(--red)">€0-40/mnd</span></div>
+        <div class="row"><span class="row-label">Anthropic Claude Haiku</span><span class="row-val" style="color:var(--red)">€0-20/mnd</span></div>
+        <div class="row"><span class="row-label">Vercel hosting</span><span class="row-val">€0 (free tier)</span></div>
+        <div class="row"><span class="row-label">Supabase database</span><span class="row-val">€0 (free tier)</span></div>
+        <div class="row"><span class="row-label">Domeinen (.nl + .com)</span><span class="row-val" style="color:var(--red)">~€5/mnd</span></div>
+        <div class="row"><span class="row-label">Stripe betalingen (2,9%)</span><span class="row-val" style="color:var(--red)">Variabel</span></div>
+        <div class="row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:8px"><span class="row-label"><strong>Totaal nu</strong></span><span class="row-val" style="color:var(--green)"><strong>€5-65/mnd</strong></span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">📈 Kosten bij schaal (100+ klanten)</div>
+        <div class="row"><span class="row-label">Whisper (100 klanten × 20 sess)</span><span class="row-val" style="color:var(--red)">~€60/mnd</span></div>
+        <div class="row"><span class="row-label">Claude Haiku (100 klanten × 20)</span><span class="row-val" style="color:var(--red)">~€30/mnd</span></div>
+        <div class="row"><span class="row-label">Vercel Pro</span><span class="row-val" style="color:var(--red)">€20/mnd</span></div>
+        <div class="row"><span class="row-label">Supabase Pro</span><span class="row-val" style="color:var(--red)">€25/mnd</span></div>
+        <div class="row"><span class="row-label">Stripe fees (100 × €43 × 2,9%)</span><span class="row-val" style="color:var(--red)">~€125/mnd</span></div>
+        <div class="row"><span class="row-label">Domein + overig</span><span class="row-val" style="color:var(--red)">€10/mnd</span></div>
+        <div class="row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:8px"><span class="row-label"><strong>Totaal bij 100 klanten</strong></span><span class="row-val" style="color:var(--orange)"><strong>~€270/mnd</strong></span></div>
+        <div class="row"><span class="row-label"><strong>Omzet bij 100 klanten</strong></span><span class="row-val" style="color:var(--green)"><strong>~€4.300/mnd</strong></span></div>
+        <div class="row"><span class="row-label"><strong>Netto marge</strong></span><span class="row-val" style="color:var(--green)"><strong>~94%</strong></span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🎯 Break-even analyse</div>
+      <div class="tbl-wrap">
+        <table>
+          <tr><th>Maandkosten</th><th>Break-even klanten (Solo €39)</th><th>Break-even MRR</th><th>Realistisch tijdlijn</th></tr>
+          <tr><td>€100/mnd</td><td>3 klanten</td><td>€117</td><td>Maand 2</td></tr>
+          <tr class="highlight"><td><strong>€175/mnd (huidig)</strong></td><td><strong>5 klanten</strong></td><td><strong>€195</strong></td><td><strong>Maand 3</strong></td></tr>
+          <tr><td>€300/mnd (bij 50 klanten)</td><td>8 klanten</td><td>€312</td><td>Maand 4</td></tr>
+          <tr><td>€500/mnd (bij 100 klanten)</td><td>13 klanten</td><td>€507</td><td>Maand 5</td></tr>
+        </table>
+      </div>
+      <div style="margin-top:12px;padding:12px;background:rgba(0,201,181,.08);border-radius:10px;font-size:13px;color:var(--muted)">
+        💡 <strong style="color:var(--text)">Spreekdossier heeft extreem lage vaste kosten.</strong> Break-even bij 5 klanten is uitzonderlijk laag voor een SaaS product. Elke klant daarna is vrijwel pure winst.
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:32px;font-size:12px;color:var(--dim)">
+    Spreekdossier Financieel Model · Sem van de Bovenkamp · <span id="model-date"></span>
+  </div>
+</div>
+
+
+  <!-- TAB: ROI & IRR -->
+  <div class="panel" id="tab-roi">
+    <div class="alert"><strong>Wat betekenen deze metrics?</strong> ROI = totaal rendement op investeerde tijd/geld. IRR = jaarlijks rendement als je het als investering ziet. NPV = huidige waarde van alle toekomstige cashflows. Payback = wanneer je initiële investering terugverdiend is.</div>
+
+    <div class="g2" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-title">⏱️ Tijdsinvestering als "kapitaal"</div>
+        <div class="alert" style="margin-bottom:12px">Sem investeert tijd ipv geld. We rekenen dit om naar euro's op basis van opportuniteitskosten (€25/uur student, €75/uur na studie).</div>
+        <div class="row"><span class="row-label">Opbouwtijd (mnd 1-6) — 10 uur/week</span><span class="row-val">240 uur</span></div>
+        <div class="row"><span class="row-label">Waarde @ €25/uur</span><span class="row-val" style="color:var(--red)">€6.000</span></div>
+        <div class="row"><span class="row-label">Overige kosten (API, tools mnd 1-6)</span><span class="row-val" style="color:var(--red)">~€600</span></div>
+        <div class="row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:8px">
+          <span class="row-label"><strong>Totale initiële investering</strong></span>
+          <span class="row-val" style="color:var(--orange)"><strong>~€6.600</strong></span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">💰 Return berekening</div>
+        <div class="row"><span class="row-label">Jaar 1 omzet (realistisch)</span><span class="row-val" style="color:var(--green)">€16.000</span></div>
+        <div class="row"><span class="row-label">Jaar 1 kosten (API + tools)</span><span class="row-val" style="color:var(--red)">€1.800</span></div>
+        <div class="row"><span class="row-label">Jaar 1 netto winst</span><span class="row-val" style="color:var(--green)">€14.200</span></div>
+        <div class="row"><span class="row-label">Jaar 2 omzet (realistisch)</span><span class="row-val" style="color:var(--green)">€65.000</span></div>
+        <div class="row"><span class="row-label">Jaar 2 netto winst</span><span class="row-val" style="color:var(--green)">€60.000</span></div>
+        <div class="row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:8px">
+          <span class="row-label"><strong>ROI jaar 1</strong></span>
+          <span class="row-val" style="color:var(--green)"><strong id="roi-y1">215%</strong></span>
+        </div>
+        <div class="row">
+          <span class="row-label"><strong>ROI jaar 2 (cumulatief)</strong></span>
+          <span class="row-val" style="color:var(--green)"><strong>1.124%</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="g3" style="margin-bottom:16px">
+      <div class="kpi">
+        <div class="kpi-val" style="color:var(--green)">~3 mnd</div>
+        <div class="kpi-label">Payback periode</div>
+        <div class="kpi-sub">Investering terugverdiend</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-val" style="color:var(--primary)">~340%</div>
+        <div class="kpi-label">IRR jaar 1</div>
+        <div class="kpi-sub">Jaarlijks rendement</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-val" style="color:var(--blue)">€68K</div>
+        <div class="kpi-label">NPV (2 jaar, 10%)</div>
+        <div class="kpi-sub">Contante waarde cashflows</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between">
+        <span>📐 Interactieve IRR berekening</span>
+        <button onclick="resetROI()" style="padding:5px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:var(--muted);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">↺ Reset naar standaard</button>
+      </div>
+      <div class="g2">
+        <div>
+          <div class="slider-group">
+            <div class="slider-row"><span class="slider-label">Initiële investering (uren × tarief)</span><span class="slider-val" id="v-invest">€6.600</span></div>
+            <input type="range" min="2000" max="20000" step="200" value="6600" id="s-invest" oninput="calcROI()">
+          </div>
+          <div class="slider-group">
+            <div class="slider-row"><span class="slider-label">Jaar 1 netto omzet</span><span class="slider-val" id="v-y1rev">€14.200</span></div>
+            <input type="range" min="3000" max="50000" step="500" value="14200" id="s-y1rev" oninput="calcROI()">
+          </div>
+          <div class="slider-group">
+            <div class="slider-row"><span class="slider-label">Jaar 2 netto omzet</span><span class="slider-val" id="v-y2rev">€60.000</span></div>
+            <input type="range" min="10000" max="200000" step="1000" value="60000" id="s-y2rev" oninput="calcROI()">
+          </div>
+          <div class="slider-group">
+            <div class="slider-row"><span class="slider-label">Discontovoet (NPV)</span><span class="slider-val" id="v-disc">10%</span></div>
+            <input type="range" min="5" max="30" step="1" value="10" id="s-disc" oninput="calcROI()">
+          </div>
+        </div>
+        <div>
+          <div class="card" style="background:rgba(0,201,181,.06);border-color:rgba(0,201,181,.2)">
+            <div class="row"><span class="row-label">ROI jaar 1</span><span class="row-val" style="color:var(--green)" id="r-roi1">—</span></div>
+            <div class="row"><span class="row-label">ROI jaar 2 (cum)</span><span class="row-val" style="color:var(--green)" id="r-roi2">—</span></div>
+            <div class="row">
+              <span class="row-label">
+                <span class="tooltip-wrap">
+                  Payback periode
+                  <span class="tip-icon" tabindex="0">?</span>
+                  <span class="tip-text">Hoe snel is de initiële tijdsinvestering terugverdiend? Berekend als investering ÷ maandelijks inkomen jaar 1.</span>
+                </span>
+              </span>
+              <span class="row-val" style="color:var(--primary)" id="r-payback">—</span>
+            </div>
+            <div class="row">
+              <span class="row-label">
+                <span class="tooltip-wrap">
+                  IRR (jaar 1)
+                  <span class="tip-icon" tabindex="0">?</span>
+                  <span class="tip-text">Internal Rate of Return: het jaarlijkse rendement op je investering. Als IRR > discontovoet, is het een goede investering.</span>
+                </span>
+              </span>
+              <span class="row-val" style="color:var(--orange)" id="r-irr">—</span>
+            </div>
+            <div class="row">
+              <span class="row-label">
+                <span class="tooltip-wrap">
+                  NPV (2 jaar)
+                  <span class="tip-icon" tabindex="0">?</span>
+                  <span class="tip-text">Net Present Value: de huidige waarde van alle toekomstige cashflows minus de investering. Positief = geld creërende investering.</span>
+                </span>
+              </span>
+              <span class="row-val" style="color:var(--blue)" id="r-npv">—</span>
+            </div>
+            <div style="margin-top:12px;padding:10px;background:rgba(52,199,89,.08);border-radius:8px;font-size:12px;color:var(--muted)" id="r-verdict">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📊 Vergelijking met alternatieve investeringen</div>
+      <table class="tbl">
+        <tr><th>Investering</th><th>Investering</th><th>Jaar 1 return</th><th>ROI jaar 1</th><th>Risico</th></tr>
+        <tr><td>Spreekdossier (realistisch)</td><td>€6.600 (tijd)</td><td>€14.200</td><td style="color:var(--green)"><strong>215%</strong></td><td><span class="badge b-orange">Middel</span></td></tr>
+        <tr><td>Spreekdossier (pessimistisch)</td><td>€6.600 (tijd)</td><td>€3.000</td><td style="color:var(--orange)">45%</td><td><span class="badge b-red">Hoog</span></td></tr>
+        <tr><td>Spreekdossier (optimistisch)</td><td>€6.600 (tijd)</td><td>€45.000</td><td style="color:var(--green)">582%</td><td><span class="badge b-orange">Middel</span></td></tr>
+        <tr><td>S&P 500 index</td><td>€6.600 cash</td><td>€726</td><td>11%</td><td><span class="badge b-green">Laag</span></td></tr>
+        <tr><td>LYMA tiny house (1 unit)</td><td>€79.000+</td><td>~€8.000 (huur)</td><td>~10%</td><td><span class="badge b-orange">Middel</span></td></tr>
+        <tr><td>Spaarrekening</td><td>€6.600 cash</td><td>€231</td><td>3,5%</td><td><span class="badge b-green">Geen</span></td></tr>
+      </table>
+      <div style="margin-top:12px;padding:12px;background:rgba(0,201,181,.06);border-radius:10px;font-size:13px;color:var(--muted)">
+        💡 <strong style="color:var(--text)">Conclusie:</strong> Een software-as-a-service business gebouwd met eigen tijd heeft een onrealistisch hoge theoretische ROI vergeleken met elke andere investeringscategorie — mits het product-market fit bereikt. Het risico is niet kapitaalverlies maar tijdverlies.
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: INVESTEERDER -->
+  <div class="panel" id="tab-investor">
+    <div class="alert"><strong>Voor wie is dit?</strong> Als Sem ooit externe financiering zoekt (angel, vrienden/familie, of een accelerator), zijn deze metrics de taal die investeerders spreken.</div>
+
+    <div class="g4" style="margin-bottom:16px">
+      <div class="kpi">
+        <div class="kpi-val" style="color:var(--green)">€70K</div>
+        <div class="kpi-label">ARR bij 1% markt</div>
+        <div class="kpi-sub">150 klanten × €39</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-val" style="color:var(--primary)">97%+</div>
+        <div class="kpi-label">Bruto marge</div>
+        <div class="kpi-sub">Software economics</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-val" style="color:var(--blue)">€860</div>
+        <div class="kpi-label">LTV per klant</div>
+        <div class="kpi-sub">5% churn, 20 mnd avg</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-val" style="color:var(--orange)">~€0</div>
+        <div class="kpi-label">CAC (nu)</div>
+        <div class="kpi-sub">Organische groei</div>
+      </div>
+    </div>
+
+    <div class="g2" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-title">💼 Seed Round Scenario (optioneel, jaar 2)</div>
+        <div class="alert" style="margin-bottom:12px">Spreekdossier heeft géén externe financiering nodig om te starten. Maar als de groei versnelling vereist in jaar 2, is dit het scenario.</div>
+        <div class="row"><span class="row-label">Gevraagd bedrag</span><span class="row-val">€50.000 - €150.000</span></div>
+        <div class="row"><span class="row-label">Verwaterings-%</span><span class="row-val">10-20%</span></div>
+        <div class="row"><span class="row-label">Gebruik van geld</span><span class="row-val">Marketing + 1 developer</span></div>
+        <div class="row"><span class="row-label">Verwachte ARR na investering</span><span class="row-val" style="color:var(--green)">€200-400K</span></div>
+        <div class="row"><span class="row-label">Pre-money valuation</span><span class="row-val">€500K - €1M</span></div>
+        <div class="row"><span class="row-label">Post-money valuation</span><span class="row-val">€550K - €1.15M</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">📈 Exit scenario's</div>
+        <div class="row"><span class="row-label">Acquisitie bij 5% markt (750 klanten)</span><span class="row-val" style="color:var(--green)">€500K - €1M</span></div>
+        <div class="row"><span class="row-label">Acquisitie bij 10% markt</span><span class="row-val" style="color:var(--green)">€1.5M - €3M</span></div>
+        <div class="row"><span class="row-label">Acquisitie door EPD-speler (Intramed)</span><span class="row-val" style="color:var(--orange)">Strategisch premium</span></div>
+        <div class="row"><span class="row-label">Uitbreiding NL → België/Duitsland</span><span class="row-val" style="color:var(--blue)">10x marktgrootte</span></div>
+        <div class="row"><span class="row-label">Uitbreiding naar thuiszorg + GGZ</span><span class="row-val" style="color:var(--blue)">170K+ ZZP'ers NL</span></div>
+        <div style="margin-top:12px;padding:10px;background:rgba(191,90,242,.08);border-radius:8px;font-size:12px;color:var(--muted)">
+          💡 Nabla werd voor $85M overgenomen bij 85.000 users (~$1.000/user). Bij 5.000 NL-gebruikers: <strong style="color:var(--text)">€5M theoretische waarde</strong>.
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">📊 SaaS Benchmark Metrics — Hoe scoort Spreekdossier?</div>
+      <table class="tbl">
+        <tr><th>Metric</th><th>Spreekdossier (nu/proj)</th><th>Benchmark goed SaaS</th><th>Status</th></tr>
+        <tr><td>Bruto marge</td><td>97%+</td><td>&gt;70%</td><td><span class="badge b-green">✓ Uitstekend</span></td></tr>
+        <tr><td>MoM groei (target)</td><td>15-30%</td><td>&gt;10%</td><td><span class="badge b-green">✓ Goed</span></td></tr>
+        <tr><td>Churn (target)</td><td>5%/mnd</td><td>&lt;5%/mnd</td><td><span class="badge b-orange">~ Grens</span></td></tr>
+        <tr><td>LTV/CAC ratio</td><td>∞ (organisch)</td><td>&gt;3x</td><td><span class="badge b-green">✓ Uitstekend</span></td></tr>
+        <tr><td>ARR bij 1% markt</td><td>€70K</td><td>—</td><td><span class="badge b-blue">Mijlpaal mnd 18</span></td></tr>
+        <tr><td>Payback periode</td><td>~3 mnd</td><td>&lt;12 mnd</td><td><span class="badge b-green">✓ Uitstekend</span></td></tr>
+        <tr><td>NRR (net revenue retention)</td><td>TBD</td><td>&gt;100%</td><td><span class="badge b-orange">Te meten na mnd 6</span></td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🗺️ Groeipad naar €1M ARR</div>
+      <table class="tbl">
+        <tr><th>Fase</th><th>ARR</th><th>Klanten</th><th>Wat moet lukken</th><th>Timing</th></tr>
+        <tr><td>Seed</td><td>€0 → €10K</td><td>0 → 20</td><td>Product-market fit, 10 betalers</td><td>Mnd 1-6</td></tr>
+        <tr class="highlight"><td><strong>Early traction</strong></td><td><strong>€10K → €70K</strong></td><td><strong>20 → 150</strong></td><td><strong>Mond-tot-mond, fysionieuws.nl</strong></td><td><strong>Mnd 7-18</strong></td></tr>
+        <tr><td>Growth</td><td>€70K → €250K</td><td>150 → 500</td><td>Betaalde kanalen, praktijkdeals</td><td>Mnd 19-30</td></tr>
+        <tr><td>Scale</td><td>€250K → €1M</td><td>500 → 2.000</td><td>EPD-integraties, uitbreiding BE/DE</td><td>Jaar 3-4</td></tr>
+        <tr class="yr2"><td>Exit/raise</td><td>€1M+ ARR</td><td>2.000+</td><td>Acquisitie of Series A</td><td>Jaar 4-5</td></tr>
+      </table>
+    </div>
+  </div>
+
+<script>
+document.getElementById('model-date').textContent = new Date().toLocaleDateString('nl-NL');('model-date').textContent = new Date().toLocaleDateString('nl-NL');
+
+function calcROI() {
+  const invest = +document.getElementById('s-invest').value;
+  const y1 = +document.getElementById('s-y1rev').value;
+  const y2 = +document.getElementById('s-y2rev').value;
+  const disc = +document.getElementById('s-disc').value / 100;
+
+  document.getElementById('v-invest').textContent = '€' + invest.toLocaleString('nl-NL');
+  document.getElementById('v-y1rev').textContent = '€' + y1.toLocaleString('nl-NL');
+  document.getElementById('v-y2rev').textContent = '€' + y2.toLocaleString('nl-NL');
+  document.getElementById('v-disc').textContent = (disc*100).toFixed(0) + '%';
+
+  const roi1 = ((y1 - invest) / invest * 100).toFixed(0);
+  const roi2 = ((y1 + y2 - invest) / invest * 100).toFixed(0);
+  
+  // Payback: approximate monthly
+  const monthlyY1 = y1 / 12;
+  const payback = monthlyY1 > 0 ? Math.ceil(invest / monthlyY1) : '—';
+
+  // IRR approximation (Newton-Raphson)
+  let irr = 0.5;
+  for (let i = 0; i < 50; i++) {
+    const npv = -invest + y1/(1+irr) + y2/Math.pow(1+irr,2);
+    const dnpv = -y1/Math.pow(1+irr,2) - 2*y2/Math.pow(1+irr,3);
+    irr = irr - npv/dnpv;
+    if (Math.abs(npv) < 0.01) break;
+  }
+  const irrPct = (irr * 100).toFixed(0);
+
+  // NPV
+  const npv = Math.round(-invest + y1/(1+disc) + y2/Math.pow(1+disc,2));
+
+  document.getElementById('r-roi1').textContent = roi1 + '%';
+  document.getElementById('r-roi2').textContent = roi2 + '%';
+  document.getElementById('r-payback').textContent = typeof payback === 'number' ? 'Mnd ' + payback : payback;
+  document.getElementById('r-irr').textContent = irrPct + '%/jaar';
+  document.getElementById('r-npv').textContent = '€' + npv.toLocaleString('nl-NL');
+
+  const verdict = npv > 0
+    ? `✅ NPV positief — investering creëert waarde. IRR ${irrPct}% >> discontovoet ${(disc*100).toFixed(0)}%. <strong style="color:var(--green)">Goede investering.</strong>`
+    : `⚠️ NPV negatief bij deze aannames. Pas scenario aan.`;
+  document.getElementById('r-verdict').innerHTML = verdict;
+}
+
+function showTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.getElementById('tab-' + id).classList.add('on');
+  btn.classList.add('on');
+}
+
+function fmt(n) {
+  if (n >= 1000000) return '€' + (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return '€' + (n/1000).toFixed(1) + 'K';
+  return '€' + Math.round(n);
+}
+
+function calcModel(newStart, growthPct, churnEarly, churnLate, mixS, mixM) {
+  const FIXED_COSTS = 175;
+  const PRICE_SOLO = 39, PRICE_S = 119, PRICE_M = 229;
+  const mixSolo = 1 - mixS/100 - mixM/100;
+  const avgPrice = mixSolo * PRICE_SOLO + (mixS/100) * PRICE_S + (mixM/100) * PRICE_M;
+
+  let customers = 0, cumulative = 0;
+  const months = [];
+  let beMonth = null;
+
+  for (let m = 1; m <= 24; m++) {
+    const churn = m <= 6 ? churnEarly/100 : churnLate/100;
+    const growth = Math.pow(1 + growthPct/100, m - 1);
+    const newCust = Math.round(newStart * growth);
+    customers = Math.round(customers * (1 - churn)) + newCust;
+    const mrr = customers * avgPrice;
+    const profit = mrr - FIXED_COSTS;
+    cumulative += mrr;
+    if (!beMonth && mrr >= FIXED_COSTS) beMonth = m;
+
+    let fase = m <= 3 ? 'Validatie' : m <= 6 ? 'Early' : m <= 12 ? 'Groei' : 'Scale';
+    months.push({ m, fase, newCust, customers, mrr, cumulative, profit });
+  }
+
+  return { months, beMonth, avgPrice };
+}
+
+function update() {
+  const newStart = +document.getElementById('s-new-start').value;
+  const growth = +document.getElementById('s-growth').value;
+  const churnE = +document.getElementById('s-churn-early').value;
+  const churnL = +document.getElementById('s-churn-late').value;
+  const mixS = +document.getElementById('s-mix-s').value;
+  const mixM = +document.getElementById('s-mix-m').value;
+
+  document.getElementById('v-new-start').textContent = newStart;
+  document.getElementById('v-growth').textContent = growth + '%';
+  document.getElementById('v-churn-early').textContent = churnE + '%';
+  document.getElementById('v-churn-late').textContent = churnL + '%';
+  document.getElementById('v-mix-s').textContent = mixS + '%';
+  document.getElementById('v-mix-m').textContent = mixM + '%';
+
+  const { months, beMonth } = calcModel(newStart, growth, churnE, churnL, mixS, mixM);
+  const m12 = months[11], m24 = months[23];
+
+  document.getElementById('kpi-mrr-12').textContent = fmt(m12.mrr);
+  document.getElementById('kpi-cum-12').textContent = fmt(m12.cumulative);
+  document.getElementById('kpi-breakeven').textContent = beMonth ? 'Mnd ' + beMonth : '—';
+  document.getElementById('kpi-customers-12').textContent = m12.customers;
+  document.getElementById('kpi-mrr-24').textContent = fmt(m24.mrr);
+  document.getElementById('kpi-cum-24').textContent = fmt(m24.cumulative);
+
+  // Table
+  const tbody = document.getElementById('month-table');
+  const faseColors = {Validatie:'b-purple', Early:'b-blue', Groei:'b-green', Scale:'b-orange'};
+  tbody.innerHTML = months.map(r => `
+    <tr${r.m === 12 ? ' class="highlight"' : r.m > 12 ? ' class="yr2"' : ''}>
+      <td>${r.m}</td>
+      <td><span class="badge ${faseColors[r.fase]}">${r.fase}</span></td>
+      <td>+${r.newCust}</td>
+      <td>${r.customers}</td>
+      <td style="color:var(--green);font-weight:700">${fmt(r.mrr)}</td>
+      <td>${fmt(r.cumulative)}</td>
+      <td style="color:${r.profit >= 0 ? 'var(--green)' : 'var(--red)'}">${r.profit >= 0 ? '+' : ''}${fmt(r.profit)}</td>
+    </tr>
+  `).join('');
+
+  // Chart
+  const maxMrr = Math.max(...months.map(m => m.mrr));
+  const chart = document.getElementById('mrr-chart');
+  chart.innerHTML = months.map(r => `
+    <div class="bar-wrap">
+      <div class="bar" style="height:${Math.max(2, r.mrr/maxMrr*100)}px;background:${r.m <= 12 ? 'var(--primary)' : 'var(--blue)'}"></div>
+    </div>
+  `).join('');
+
+  // Calc all scenarios
+  calcScenario(1, 8, 20, 10, 5, 'p');
+  calcScenario(3, 15, 10, 5, 10, 'r');
+  calcScenario(6, 30, 7, 3, 20, 'o');
+}
+
+function calcScenario(ns, gr, ce, cl, ms, prefix) {
+  const { months, beMonth } = calcModel(ns, gr, ce, cl, ms, 2);
+  const m12 = months[11], m24 = months[23];
+  document.getElementById('sc-' + prefix + '-mrr12').textContent = fmt(m12.mrr);
+  document.getElementById('sc-' + prefix + '-cust12').textContent = m12.customers + ' klanten';
+  document.getElementById('sc-' + prefix + '-cum12').textContent = fmt(m12.cumulative);
+  document.getElementById('sc-' + prefix + '-be').textContent = beMonth ? 'Mnd ' + beMonth : 'Geen';
+  document.getElementById('sc-' + prefix + '-mrr24').textContent = fmt(m24.mrr);
+}
+
+function applyScenario(ns, gr, ce, cl, ms) {
+  document.getElementById('s-new-start').value = ns;
+  document.getElementById('s-growth').value = gr;
+  document.getElementById('s-churn-early').value = ce;
+  document.getElementById('s-churn-late').value = cl;
+  document.getElementById('s-mix-s').value = ms;
+  document.getElementById('s-mix-m').value = 3;
+  showTab('model', document.querySelector('.tab'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.tab')[0].classList.add('on');
+  update();
+}
+
+function resetROI() {
+  document.getElementById('s-invest').value = 6600;
+  document.getElementById('s-y1rev').value = 14200;
+  document.getElementById('s-y2rev').value = 60000;
+  document.getElementById('s-disc').value = 10;
+  calcROI();
+}
+
+update();
+calcROI();
+</script>
+</body>
+</html>
