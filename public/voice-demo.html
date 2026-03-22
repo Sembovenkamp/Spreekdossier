@@ -1487,6 +1487,10 @@ function renderTranscript() {
   if (finalTranscript && !isRecording) {
     box.contentEditable = 'true';
   }
+
+  // Toon "memo toevoegen" knop altijd zodra er tekst is en niet aan het opnemen
+  const addBtn = document.getElementById('btn-add-memo');
+  if (addBtn) addBtn.style.display = (finalTranscript && !isRecording) ? 'flex' : 'none';
 }
 
 // Called when user manually edits the transcript box
