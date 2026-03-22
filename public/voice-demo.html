@@ -295,6 +295,29 @@
     .btn-modal-close:hover { border-color: rgba(255,255,255,0.25); color: var(--text); }
     .btn-verwijsbrief { display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--bg-card); color: var(--text); font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 100px; border: 1.5px solid var(--border); cursor: pointer; transition: all 0.2s; font-family: inherit; }
     .btn-verwijsbrief:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* PATIËNTBERICHT — aanpasbare template */
+    .pmsg-customize { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px; }
+    .pmsg-customize-toggle { background: none; border: none; color: var(--text-muted); font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; padding: 4px 0; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+    .pmsg-customize-toggle:hover { color: var(--primary); }
+    .pmsg-custom-fields { display: none; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+    .pmsg-custom-fields.open { display: flex; }
+    .pmsg-field-row { display: flex; flex-direction: column; gap: 4px; }
+    .pmsg-field-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .pmsg-field-input { background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--text); font-family: inherit; font-size: 13px; outline: none; transition: border-color 0.2s; }
+    .pmsg-field-input:focus { border-color: var(--primary); }
+    .pmsg-field-input::placeholder { color: var(--text-light); }
+    .btn-pmsg-apply { background: var(--primary); color: #090912; font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: 100px; border: none; cursor: pointer; font-family: inherit; transition: all 0.2s; margin-top: 4px; }
+    .btn-pmsg-apply:hover { background: #00e5cf; }
+
+    /* PRINT STYLES — verwijsbrief */
+    @media print {
+      body > *:not(#print-frame) { display: none !important; }
+      #print-frame { display: block !important; position: fixed; inset: 0; background: white; z-index: 9999; padding: 48px 64px; font-family: 'Times New Roman', serif; font-size: 13pt; color: #000; line-height: 1.7; }
+      #print-frame h2 { font-size: 16pt; margin-bottom: 8px; }
+      #print-frame .print-body { white-space: pre-wrap; }
+    }
+    #print-frame { display: none; }
     .modal-loading { text-align: center; padding: 24px; color: var(--text-muted); font-size: 14px; }
 
     /* STEP BADGES */
@@ -526,18 +549,74 @@
         <button class="btn-copy-patient" id="btn-copy-patient" onclick="copyPatientMsg()">📋 Kopieer bericht</button>
         <button class="btn-regen-patient" onclick="regenPatientMsg()">🔄 Opnieuw genereren</button>
       </div>
+
+      <!-- AANPASBARE TEMPLATE -->
+      <div class="pmsg-customize">
+        <button class="pmsg-customize-toggle" onclick="togglePmsgCustomize(this)">⚙️ Pas template aan <span id="pmsg-customize-chevron">▾</span></button>
+        <div class="pmsg-custom-fields" id="pmsg-custom-fields">
+          <div class="pmsg-field-row">
+            <label class="pmsg-field-label">Naam therapeut</label>
+            <input class="pmsg-field-input" id="pmsg-naam" placeholder="Bijv. Ingrid Bakker" />
+          </div>
+          <div class="pmsg-field-row">
+            <label class="pmsg-field-label">Praktijknaam</label>
+            <input class="pmsg-field-input" id="pmsg-praktijk" placeholder="Bijv. Fysiotherapie De Linde" />
+          </div>
+          <div class="pmsg-field-row">
+            <label class="pmsg-field-label">Telefoonnummer praktijk</label>
+            <input class="pmsg-field-input" id="pmsg-telefoon" placeholder="Bijv. 030-1234567" />
+          </div>
+          <div class="pmsg-field-row">
+            <label class="pmsg-field-label">Volgende afspraak (optioneel)</label>
+            <input class="pmsg-field-input" id="pmsg-afspraak" placeholder="Bijv. dinsdag 25 maart om 14:00" />
+          </div>
+          <button class="btn-pmsg-apply" onclick="applyPmsgTemplate()">✓ Verwerk in bericht</button>
+        </div>
+      </div>
     </div>
   </div>
 
 </main>
 
 <!-- VERWIJSBRIEF MODAL -->
+<!-- PRINT FRAME — verborgen, alleen zichtbaar bij afdrukken -->
+<div id="print-frame">
+  <h2>📄 Verwijsbrief — Spreekdossier</h2>
+  <div class="print-body" id="print-body"></div>
+</div>
+
 <div class="modal-overlay" id="modal-overlay" onclick="closeVerwijsbrief(event)">
   <div class="modal-box" onclick="event.stopPropagation()">
-    <div class="modal-title">📄 Verwijsbrief</div>
-    <div class="modal-text" id="modal-text"><div class="modal-loading">⏳ Brief wordt gegenereerd...</div></div>
-    <div class="modal-actions">
-      <button class="btn-modal-copy" id="btn-modal-copy" onclick="copyVerwijsbrief()">📋 Kopieer brief</button>
+    <div class="modal-title" style="display:flex; align-items:center; justify-content:space-between;">
+      <span>📄 Verwijsbrief</span>
+      <span style="font-size:12px; color:var(--text-muted); font-weight:500;">Print of kopieer naar e-mail</span>
+    </div>
+
+    <!-- Aanpasbare velden verwijsbrief -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+      <div>
+        <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:4px;">Naam therapeut</div>
+        <input id="vb-naam" placeholder="[naam therapeut]" style="width:100%; background:var(--bg); border:1.5px solid var(--border); border-radius:8px; padding:7px 10px; color:var(--text); font-family:inherit; font-size:13px; outline:none;" oninput="updateVerwijsbriefVelden()" />
+      </div>
+      <div>
+        <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:4px;">Praktijknaam</div>
+        <input id="vb-praktijk" placeholder="[praktijknaam]" style="width:100%; background:var(--bg); border:1.5px solid var(--border); border-radius:8px; padding:7px 10px; color:var(--text); font-family:inherit; font-size:13px; outline:none;" oninput="updateVerwijsbriefVelden()" />
+      </div>
+      <div>
+        <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:4px;">Patiëntnaam</div>
+        <input id="vb-patient" placeholder="[naam patiënt]" style="width:100%; background:var(--bg); border:1.5px solid var(--border); border-radius:8px; padding:7px 10px; color:var(--text); font-family:inherit; font-size:13px; outline:none;" oninput="updateVerwijsbriefVelden()" />
+      </div>
+      <div>
+        <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:4px;">AGB-code</div>
+        <input id="vb-agb" placeholder="[AGB-code]" style="width:100%; background:var(--bg); border:1.5px solid var(--border); border-radius:8px; padding:7px 10px; color:var(--text); font-family:inherit; font-size:13px; outline:none;" oninput="updateVerwijsbriefVelden()" />
+      </div>
+    </div>
+
+    <div class="modal-text" id="modal-text" contenteditable="true" spellcheck="true"><div class="modal-loading">⏳ Brief wordt gegenereerd...</div></div>
+    <div class="modal-actions" style="flex-wrap:wrap; gap:8px;">
+      <button class="btn-modal-copy" id="btn-modal-copy" onclick="copyVerwijsbrief()">📋 Kopieer</button>
+      <button class="btn-modal-copy" style="background:var(--bg-card2); color:var(--text); border:1.5px solid var(--border);" onclick="printVerwijsbrief()">🖨️ Print / PDF</button>
+      <button class="btn-modal-copy" style="background:var(--bg-card2); color:var(--text); border:1.5px solid var(--border);" onclick="emailVerwijsbrief()">📧 E-mail</button>
       <button class="btn-modal-close" onclick="document.getElementById('modal-overlay').classList.remove('visible')">✕ Sluiten</button>
     </div>
   </div>
@@ -550,6 +629,61 @@
 </footer>
 
 <script>
+// ===== TOEGANGSBEVEILIGING =====
+// Toegang alleen via ?key=spreekdossier2026 of spreekdossier.nl/voice-demo.html?key=...
+(function() {
+  const VALID_KEYS = ['spreekdossier2026', 'demo2026', 'fysio2026'];
+  const params = new URLSearchParams(window.location.search);
+  const key = params.get('key');
+  const stored = sessionStorage.getItem('sd_access');
+
+  if (VALID_KEYS.includes(key)) {
+    sessionStorage.setItem('sd_access', '1');
+    // Verwijder key uit URL (neater)
+    const url = new URL(window.location);
+    url.searchParams.delete('key');
+    window.history.replaceState({}, '', url);
+    return; // toegang verleend
+  }
+
+  if (stored === '1') return; // al ingelogd in deze sessie
+
+  // Geen geldig token — toon toegangspagina
+  document.body.innerHTML = `
+    <div style="min-height:100vh; display:flex; align-items:center; justify-content:center; background:#090912; font-family:Inter,sans-serif; padding:24px;">
+      <div style="background:#0f0f1a; border:1.5px solid rgba(0,201,181,0.25); border-radius:20px; padding:48px 40px; max-width:400px; width:100%; text-align:center;">
+        <div style="width:52px;height:52px;background:linear-gradient(135deg,#00C9B5,#FF8C61);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 20px;">🎙</div>
+        <h1 style="color:#f0f0ff;font-size:22px;font-weight:800;margin-bottom:8px;">Spreekdossier Demo</h1>
+        <p style="color:rgba(240,240,255,0.55);font-size:14px;margin-bottom:28px;line-height:1.6;">Voer je toegangscode in om de demo te starten.</p>
+        <input id="access-input" type="password" placeholder="Toegangscode" autofocus
+          style="width:100%;background:rgba(0,0,0,0.3);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:13px 16px;color:#f0f0ff;font-family:inherit;font-size:15px;outline:none;margin-bottom:12px;box-sizing:border-box;"
+          onkeydown="if(event.key==='Enter')checkAccess()" />
+        <button onclick="checkAccess()"
+          style="width:100%;background:#00C9B5;color:#090912;font-weight:700;font-size:15px;padding:14px;border-radius:100px;border:none;cursor:pointer;font-family:inherit;">
+          Toegang aanvragen →
+        </button>
+        <p id="access-err" style="color:#ef4444;font-size:13px;margin-top:12px;min-height:18px;"></p>
+        <p style="color:rgba(240,240,255,0.3);font-size:12px;margin-top:20px;">Toegangscode ontvangen via Spreekdossier? Voer hem hierboven in.</p>
+      </div>
+    </div>
+  `;
+
+  window.checkAccess = function() {
+    const val = document.getElementById('access-input').value.trim();
+    if (VALID_KEYS.includes(val)) {
+      sessionStorage.setItem('sd_access', '1');
+      window.location.reload();
+    } else {
+      document.getElementById('access-err').textContent = '⚠️ Ongeldige toegangscode. Probeer opnieuw.';
+      document.getElementById('access-input').style.borderColor = '#ef4444';
+      setTimeout(() => {
+        document.getElementById('access-err').textContent = '';
+        document.getElementById('access-input').style.borderColor = '';
+      }, 3000);
+    }
+  };
+})();
+
 // ===== TEMPLATE DEFINITIES =====
 const TEMPLATES = {
   intake: {
@@ -1658,23 +1792,39 @@ async function openVerwijsbrief() {
   }
 
   try {
+    // Gebruik nieuwe type-param API
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        memo,
-        template: { brief: 'Verwijsbrief volledige tekst' },
-        templateName: 'Verwijsbrief',
-        mode: 'verwijsbrief'
-      })
+      body: JSON.stringify({ memo, type: 'verwijsbrief' })
     });
     const data = await res.json();
-    verwijsbriefText = data.output?.brief || buildFallbackVerwijsbrief(memo);
+    verwijsbriefText = data.output || data.result || buildFallbackVerwijsbrief(memo);
   } catch(e) {
     verwijsbriefText = buildFallbackVerwijsbrief(memo);
   }
 
+  // Verwerk ingevulde velden direct
+  verwijsbriefText = applyVerwijsbriefVelden(verwijsbriefText);
   textEl.textContent = verwijsbriefText;
+}
+
+function applyVerwijsbriefVelden(tekst) {
+  const naam = document.getElementById('vb-naam')?.value.trim();
+  const praktijk = document.getElementById('vb-praktijk')?.value.trim();
+  const patient = document.getElementById('vb-patient')?.value.trim();
+  const agb = document.getElementById('vb-agb')?.value.trim();
+  if (naam) tekst = tekst.replace(/\[naam therapeut\]/gi, naam);
+  if (praktijk) tekst = tekst.replace(/\[praktijknaam\]/gi, praktijk);
+  if (patient) tekst = tekst.replace(/\[naam patiënt\]/gi, patient).replace(/\[naam patient\]/gi, patient);
+  if (agb) tekst = tekst.replace(/\[AGB-code\]/gi, agb);
+  return tekst;
+}
+
+function updateVerwijsbriefVelden() {
+  const textEl = document.getElementById('modal-text');
+  if (!verwijsbriefText) return;
+  textEl.textContent = applyVerwijsbriefVelden(verwijsbriefText);
 }
 
 function closeVerwijsbrief(event) {
@@ -1685,8 +1835,9 @@ function closeVerwijsbrief(event) {
 }
 
 function copyVerwijsbrief() {
-  if (!verwijsbriefText) return;
-  navigator.clipboard.writeText(verwijsbriefText).then(() => {
+  const tekst = document.getElementById('modal-text')?.textContent || verwijsbriefText;
+  if (!tekst || tekst.includes('wordt gegenereerd')) return;
+  navigator.clipboard.writeText(tekst).then(() => {
     const btn = document.getElementById('btn-modal-copy');
     const orig = btn.textContent;
     btn.textContent = '✓ Gekopieerd!';
@@ -1694,6 +1845,58 @@ function copyVerwijsbrief() {
     setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
     showToast('✓ Verwijsbrief gekopieerd');
   });
+}
+
+function printVerwijsbrief() {
+  const tekst = document.getElementById('modal-text')?.textContent || verwijsbriefText;
+  if (!tekst || tekst.includes('wordt gegenereerd')) return;
+  const printBody = document.getElementById('print-body');
+  if (printBody) printBody.textContent = tekst;
+  window.print();
+}
+
+function emailVerwijsbrief() {
+  const tekst = document.getElementById('modal-text')?.textContent || verwijsbriefText;
+  if (!tekst || tekst.includes('wordt gegenereerd')) return;
+  const onderwerp = encodeURIComponent('Verwijsbrief — Spreekdossier');
+  const body = encodeURIComponent(tekst);
+  window.location.href = `mailto:?subject=${onderwerp}&body=${body}`;
+}
+
+// ===== PATIËNTBERICHT TEMPLATE AANPASSEN =====
+function togglePmsgCustomize(btn) {
+  const fields = document.getElementById('pmsg-custom-fields');
+  const chevron = document.getElementById('pmsg-customize-chevron');
+  const open = fields.classList.toggle('open');
+  if (chevron) chevron.textContent = open ? '▴' : '▾';
+}
+
+function applyPmsgTemplate() {
+  const naam = document.getElementById('pmsg-naam')?.value.trim();
+  const praktijk = document.getElementById('pmsg-praktijk')?.value.trim();
+  const telefoon = document.getElementById('pmsg-telefoon')?.value.trim();
+  const afspraak = document.getElementById('pmsg-afspraak')?.value.trim();
+
+  const textarea = document.getElementById('patient-msg-text');
+  if (!textarea || !textarea.value) return;
+
+  let tekst = textarea.value;
+  if (naam) tekst = tekst.replace(/\[naam therapeut\]|\[uw fysiotherapeut\]|Uw fysiotherapeut/gi, naam);
+  if (praktijk) tekst = tekst.replace(/\[naam praktijk\]|\[praktijknaam\]/gi, praktijk);
+  if (telefoon) tekst = tekst.replace(/\[telefoonnummer\]/gi, telefoon);
+  if (afspraak) {
+    // Vervang bestaande afspraakreferentie of voeg toe
+    tekst = tekst.replace(/zoals gepland\.|Uw volgende afspraak is zoals gepland\./gi, `Uw volgende afspraak is ${afspraak}.`);
+    if (!tekst.includes(afspraak)) tekst += `\n\n📅 Volgende afspraak: ${afspraak}`;
+  }
+
+  textarea.value = tekst;
+  // Sla op in patientMessages voor de actieve tab
+  patientMessages[currentChannel] = tekst;
+  showToast('✓ Template bijgewerkt');
+  // Sluit het aanpas-panel
+  document.getElementById('pmsg-custom-fields').classList.remove('open');
+  document.getElementById('pmsg-customize-chevron').textContent = '▾';
 }
 
 function buildFallbackVerwijsbrief(memo) {
