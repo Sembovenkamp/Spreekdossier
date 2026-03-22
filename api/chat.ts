@@ -65,22 +65,21 @@ Vulregels:
 
   // Patientbericht: genereer 3 varianten met VASTE headers (exact deze tekst, geen variaties)
   if (type === 'patientbericht') {
-    return `Genereer drie patiëntberichten op basis van de behandelmemo hieronder.
+    return `Genereer drie patiëntberichten op basis van de behandelmemo. Verwerk ALTIJD de concrete details uit de memo: welke oefeningen, hoe vaak per dag, wanneer de volgende afspraak is, en wat de patiënt moet vermijden. Geen generieke tekst — altijd specifiek op basis van de memo.
 
-Gebruik EXACT deze drie headers op een eigen regel, precies zo gespeld:
+Gebruik EXACT deze drie headers op een eigen regel:
 WHATSAPP:
 EMAIL:
 SMS:
 
-Formaat:
 WHATSAPP:
-[informeel bericht, emoji's toegestaan, max 5 zinnen, eindigt met één concrete vervolgstap]
+[Informeel, emoji's toegestaan. Noem specifieke oefeningen + frequentie + volgende afspraak. Max 6 zinnen.]
 
 EMAIL:
-[formeel bericht, begin met "Onderwerp: ...", volledige zinnen, max 5 zinnen]
+[Formeel. Begin met "Onderwerp: Uw behandelinstructies". Noem specifieke oefeningen + frequentie + volgende afspraak. Max 6 zinnen.]
 
 SMS:
-[zeer kort, max 3 zinnen, geen emoji's, geen opmaak]
+[Ultra kort. Alleen de essentie: oefening + frequentie + afspraak. Max 2 zinnen, geen emoji's.]
 
 BEHANDELMEMO:
 ${memo}`;

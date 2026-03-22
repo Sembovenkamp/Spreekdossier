@@ -242,6 +242,7 @@
 
     /* PATIËNTBERICHT */
     .patient-msg-block { background: linear-gradient(135deg, rgba(0,201,181,0.06), rgba(255,140,97,0.04)); border: 1.5px solid rgba(0,201,181,0.25); border-radius: var(--radius); padding: 22px; margin-top: 4px; }
+    .patient-msg-block.pmsg-visible { display: block !important; }
     .patient-msg-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
     .patient-msg-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
     .patient-msg-sub { font-size: 12px; color: var(--text-muted); }
@@ -548,7 +549,7 @@
 
   </div>
 
-  <!-- PATIËNTBERICHT SECTIE — buiten output-container zodat flex niet interfereert -->
+  <!-- PATIËNTBERICHT SECTIE -->
   <div class="step-badge" id="step-badge-4" style="display:none; margin: 20px 0 14px;"><span class="step-num">4</span> Stuur patiëntbericht</div>
   <div class="patient-msg-block" id="patient-msg-block" style="display:none">
     <div class="patient-msg-header">
@@ -1640,37 +1641,37 @@ async function generateDocument() {
   document.getElementById('loading-overlay').classList.remove('visible');
   document.getElementById('output-container').classList.add('visible');
   document.getElementById('btn-generate').disabled = false;
-  renderGemist();
-  renderActiepunten();
-  renderVergeetNiet();
+  try { renderGemist(); } catch(e) { console.warn('renderGemist fout:', e); }
+  try { renderActiepunten(); } catch(e) { console.warn('renderActiepunten fout:', e); }
+  try { renderVergeetNiet(); } catch(e) { console.warn('renderVergeetNiet fout:', e); }
   const genSec = ((Date.now() - genStartTime) / 1000).toFixed(1);
   document.getElementById('output-badge').textContent = `✓ Gegenereerd · ${genSec}s`;
   document.getElementById('output-container').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-  // Toon patiëntbericht sectie altijd — vul met fallback, vervang met AI op achtergrond
-  const memoForMsg = savedMemo || getMemoText();
-  const block = document.getElementById('patient-msg-block');
-  const textarea = document.getElementById('patient-msg-text');
-  const badge = document.getElementById('patient-msg-badge');
-  const stepBadge4 = document.getElementById('step-badge-4');
+  // Patiëntbericht — altijd tonen
+  try {
+    patientMessages = { whatsapp: '', email: '', sms: '' };
+    const memoForMsg = savedMemo || getMemoText();
+    const block = document.getElementById('patient-msg-block');
+    const textarea = document.getElementById('patient-msg-text');
+    const badge = document.getElementById('patient-msg-badge');
+    const stepBadge4 = document.getElementById('step-badge-4');
 
-  // Reset patientMessages voor nieuwe generatie
-  patientMessages = { whatsapp: '', email: '', sms: '' };
+    block.style.display = 'block';
+    block.style.removeProperty('display'); // verwijder inline, gebruik class
+    block.classList.add('pmsg-visible');
+    if (stepBadge4) { stepBadge4.style.display = 'inline-flex'; }
 
-  // Altijd tonen — vul met fallback als er memo is, anders generieke tekst
-  block.style.display = 'block';
-  if (stepBadge4) stepBadge4.style.display = 'inline-flex';
-
-  if (memoForMsg && memoForMsg.length >= 5) {
-    const fallbackWa = buildFallbackPatientMsg('whatsapp', memoForMsg);
-    textarea.value = fallbackWa;
-    textarea.style.opacity = '1';
-    badge.textContent = '⏳ AI versie wordt geladen...';
-    generatePatientMessage(memoForMsg);
-  } else {
-    textarea.value = 'Spreek eerst een memo in om automatisch een patiëntbericht te genereren.';
-    badge.textContent = '— Geen memo beschikbaar';
-  }
+    if (memoForMsg && memoForMsg.length >= 5) {
+      const fallbackWa = buildFallbackPatientMsg('whatsapp', memoForMsg);
+      textarea.value = fallbackWa;
+      badge.textContent = '⏳ AI versie wordt geladen...';
+      generatePatientMessage(memoForMsg);
+    } else {
+      textarea.value = 'Spreek een memo in voor een automatisch patiëntbericht.';
+      badge.textContent = '—';
+    }
+  } catch(e) { console.error('Patiëntbericht tonen mislukt:', e); }
 }
 
 // ===== PATIËNTBERICHT =====
