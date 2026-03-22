@@ -223,6 +223,16 @@
     .btn-new { display: flex; align-items: center; gap: 8px; background: white; color: var(--text); font-size: 14px; font-weight: 600; padding: 14px 22px; border-radius: 100px; border: 1.5px solid var(--border); cursor: pointer; transition: all 0.2s; font-family: inherit; }
     .btn-new:hover { border-color: var(--primary); color: var(--primary); }
 
+    /* VERGEET NIET */
+    .vergeet-niet { background: #fffbf0; border: 1.5px solid #fde68a; border-radius: var(--radius); padding: 18px 20px; display: none; animation: slideUp 0.4s ease both; }
+    .vergeet-niet.visible { display: block; }
+    .vergeet-niet-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: #92400e; margin-bottom: 12px; }
+    .vergeet-niet-list { display: flex; flex-direction: column; gap: 10px; }
+    .vergeet-niet-item { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #78350f; line-height: 1.4; }
+    .vergeet-niet-item input[type="checkbox"] { width: 17px; height: 17px; accent-color: #d97706; flex-shrink: 0; cursor: pointer; }
+    .vergeet-niet-item label { cursor: pointer; }
+    .vergeet-niet-item input:checked + label { text-decoration: line-through; opacity: 0.5; }
+
     .mic-notice { background: #fffbeb; border: 1.5px solid #fde68a; border-radius: var(--radius-sm); padding: 12px 16px; font-size: 13px; color: #92400e; line-height: 1.5; margin-top: 12px; display: none; }
     .mic-notice.visible { display: block; }
 
@@ -389,6 +399,13 @@
       <div class="output-badge">✓ Gegenereerd · 15s</div>
     </div>
     <div id="output-blocks"></div>
+
+    <!-- VERGEET NIET -->
+    <div class="vergeet-niet" id="vergeet-niet">
+      <div class="vergeet-niet-title">📋 Vergeet niet</div>
+      <div class="vergeet-niet-list" id="vergeet-niet-list"></div>
+    </div>
+
     <div class="output-actions">
       <button class="btn-copy-all" id="btn-copy-all" onclick="copyAll()">📄 Kopieer volledige documentatie</button>
       <button class="btn-new" onclick="resetToStart()">🎙️ Nieuwe opname</button>
@@ -1174,14 +1191,15 @@ async function generateDocument() {
 
     const elapsed = ((Date.now() - genStartTime) / 1000).toFixed(1);
     renderOutput(tpl, elapsed);
+    renderVergeetNiet();
     saveToHistory(tpl, memo, outputData);
 
   } catch (err) {
     clearInterval(stepInterval);
     console.error('Generate error:', err);
-    // Fallback to static output
     outputData = tpl.output;
     renderOutput(tpl, null, true);
+    renderVergeetNiet();
     showToast('⚠️ Verbinding mislukt — voorbeeldoutput getoond');
   }
 
@@ -1331,6 +1349,8 @@ function resetToStart() {
   memoStack = [];
   renderMemoStack();
   document.getElementById('btn-add-memo').style.display = 'none';
+  const vnBlock = document.getElementById('vergeet-niet');
+  if (vnBlock) vnBlock.classList.remove('visible');
   clearInterval(recTimerInterval);
   recTimerInterval = null;
   document.getElementById('rec-timer').textContent = '';
@@ -1458,6 +1478,62 @@ function copyPatientMsg() {
     ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
     doCopy();
   });
+}
+
+// ===== VERGEET NIET =====
+const VERGEET_NIET_ITEMS = {
+  intake: [
+    'Informed consent bevestigd en vastgelegd',
+    'ICD-10 code vermeld in documentatie',
+    'Verwijzer vermeld met AGB-code',
+    'Behandeldoelen SMART geformuleerd'
+  ],
+  soep: [
+    'Thuisoefeningen meegegeven aan patiënt',
+    'Volgende afspraak gepland en bevestigd',
+    'Rode vlaggen gecheckt',
+    'NRS pijnscore begin én einde sessie genoteerd'
+  ],
+  behandelplan: [
+    'Behandelplan besproken met patiënt',
+    'Evaluatiemoment ingepland (sessie 6)',
+    'Verwijzer op de hoogte gesteld'
+  ],
+  evaluatie: [
+    'Voortgang t.o.v. doelen gedocumenteerd',
+    'Bijstelling behandelplan indien nodig verwerkt',
+    'Patiënt geïnformeerd over evaluatieuitkomst'
+  ],
+  afsluiting: [
+    'Terugkoppelingsbrief naar verwijzer verstuurd',
+    'Ontslagadvies aan patiënt meegegeven',
+    'Terugvalcriteria besproken met patiënt',
+    'Eindmeting vastgelegd ter vergelijking'
+  ],
+  administratie: [
+    'Prestatiecode correct en volledig ingevuld',
+    'Verzekeringsinformatie compleet gecontroleerd',
+    'AGB-code verwijzer correct vermeld',
+    'Sessieduur correct geregistreerd'
+  ]
+};
+
+function renderVergeetNiet() {
+  const block = document.getElementById('vergeet-niet');
+  const list = document.getElementById('vergeet-niet-list');
+  if (!block || !list) return;
+
+  const items = VERGEET_NIET_ITEMS[currentTemplate] || [];
+  if (items.length === 0) { block.classList.remove('visible'); return; }
+
+  list.innerHTML = items.map((item, i) => `
+    <div class="vergeet-niet-item">
+      <input type="checkbox" id="vn-${i}" />
+      <label for="vn-${i}">${item}</label>
+    </div>
+  `).join('');
+
+  block.classList.add('visible');
 }
 
 // ===== TOAST =====
