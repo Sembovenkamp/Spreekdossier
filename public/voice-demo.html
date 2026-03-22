@@ -589,6 +589,7 @@
       <button class="epd-btn" onclick="selectEPD('fysiomanager', this)">Fysiomanager</button>
       <button class="epd-btn" onclick="selectEPD('spotonmedics', this)">SpotOnMedics</button>
     </div>
+    <div id="epd-hint" style="font-size:12px;color:var(--primary);margin:-8px 0 8px;min-height:18px;"></div>
     <div class="output-actions">
       <button class="btn-copy-all" id="btn-copy-all" onclick="copyAll()">📋 Kopieer complete documentatie</button>
       <button class="btn-verwijsbrief" id="btn-verwijsbrief" onclick="openVerwijsbrief()">📄 Verwijsbrief</button>
@@ -2260,14 +2261,55 @@ function dismissGemist(i) {
 }
 
 // ===== EPD SELECTOR =====
+// EPD-specifieke formatters
+const EPD_FORMATS = {
+  algemeen: {
+    label: 'Algemeen',
+    formatSection: (sectionLabel, text) => `${sectionLabel.toUpperCase()}\n${'-'.repeat(sectionLabel.length)}\n${text}`,
+    formatAll: (tplName, date, sections) =>
+      `${tplName.toUpperCase()}\nGegenereerd door Spreekdossier.nl · ${date}\n${'='.repeat(40)}\n\n` +
+      sections.map(s => `${s.label.toUpperCase()}\n${'-'.repeat(s.label.length)}\n${s.text}`).join('\n\n')
+  },
+  intramed: {
+    label: 'Intramed',
+    // Intramed: elke sectie direct plakbaar, labels als [Sectie], plain text
+    formatSection: (sectionLabel, text) => `[${sectionLabel}]\n${toPlainText(text)}`,
+    formatAll: (tplName, date, sections) =>
+      `[Spreekdossier · ${tplName} · ${date}]\n\n` +
+      sections.map(s => `[${s.label}]\n${toPlainText(s.text)}`).join('\n\n')
+  },
+  fysiomanager: {
+    label: 'Fysiomanager',
+    // Fysiomanager: tabs met labels, plain text zonder bullets
+    formatSection: (sectionLabel, text) => `${sectionLabel}:\n${toPlainText(text)}`,
+    formatAll: (tplName, date, sections) =>
+      sections.map(s => `${s.label}:\n${toPlainText(s.text)}`).join('\n\n---\n\n')
+  },
+  spotonmedics: {
+    label: 'SpotOnMedics',
+    // SpotOnMedics: SOEP-structuur, plain text
+    formatSection: (sectionLabel, text) => `${sectionLabel}: ${toPlainText(text).replace(/\n/g, ' ')}`,
+    formatAll: (tplName, date, sections) =>
+      sections.map(s => `${s.label}: ${toPlainText(s.text).replace(/\n+/g, ' ')}`).join('\n')
+  }
+};
+
 function selectEPD(epd, btn) {
   selectedEPD = epd;
   document.querySelectorAll('.epd-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  // Toon EPD-hint
+  const hint = document.getElementById('epd-hint');
+  const hints = {
+    algemeen: '',
+    intramed: '💡 Format klaar voor Intramed — plak direct in het notitieveld',
+    fysiomanager: '💡 Format klaar voor Fysiomanager — plak per tab',
+    spotonmedics: '💡 Format klaar voor SpotOnMedics — één regel per onderdeel'
+  };
+  if (hint) hint.textContent = hints[epd] || '';
 }
 
 function toPlainText(text) {
-  // Remove markdown, bullets, dashes — plain text for EPD paste
   return text
     .replace(/\*\*(.*?)\*\*/g, '$1')
     .replace(/\*(.*?)\*/g, '$1')
@@ -2281,8 +2323,8 @@ function copyBlock(key, btn) {
   const rawText = document.getElementById('output-' + key)?.textContent || '';
   const tpl = TEMPLATES[currentTemplate];
   const section = tpl.sections.find(s => s.key === key);
-  const text = selectedEPD !== 'algemeen' ? toPlainText(rawText) : rawText;
-  const full = selectedEPD !== 'algemeen' ? text : `${section ? section.label : key}:\n${text}`;
+  const fmt = EPD_FORMATS[selectedEPD] || EPD_FORMATS.algemeen;
+  const full = fmt.formatSection(section ? section.label : key, rawText);
 
   const doCopy = () => {
     const prev = btn.innerHTML;
@@ -2302,16 +2344,12 @@ function copyBlock(key, btn) {
 function copyAll() {
   const tpl = TEMPLATES[currentTemplate];
   const now = new Date().toLocaleDateString('nl-NL',{day:'2-digit',month:'2-digit',year:'numeric'});
-  let full = `${tpl.icon} ${tpl.name.toUpperCase()}\nGegenereerd door Spreekdossier.nl · ${now}\n${'='.repeat(40)}\n\n`;
-  tpl.sections.forEach(section => {
-    const rawText = document.getElementById('output-' + section.key)?.textContent || '';
-    const text = selectedEPD !== 'algemeen' ? toPlainText(rawText) : rawText;
-    if (selectedEPD !== 'algemeen') {
-      full += `${section.label}:\n${text}\n\n`;
-    } else {
-      full += `${section.label.toUpperCase()}\n${'-'.repeat(section.label.length)}\n${text}\n\n`;
-    }
-  });
+  const fmt = EPD_FORMATS[selectedEPD] || EPD_FORMATS.algemeen;
+  const sections = tpl.sections.map(section => ({
+    label: section.label,
+    text: document.getElementById('output-' + section.key)?.textContent || ''
+  })).filter(s => s.text.trim());
+  const full = fmt.formatAll(`${tpl.icon} ${tpl.name}`, now, sections);
 
   const btn = document.getElementById('btn-copy-all');
   const doCopy = () => {
