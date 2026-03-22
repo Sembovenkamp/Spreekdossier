@@ -546,49 +546,50 @@
       <div class="vergeet-niet-list" id="vergeet-niet-list"></div>
     </div>
 
-    <!-- PATIËNTBERICHT SECTIE -->
-    <div class="step-badge" id="step-badge-4" style="display:none; margin-bottom: 14px;"><span class="step-num">4</span> Stuur patiëntbericht</div>
-    <div class="patient-msg-block" id="patient-msg-block" style="display:none">
-      <div class="patient-msg-header">
-        <div>
-          <div class="patient-msg-title">📱 Patiëntbericht</div>
-          <div class="patient-msg-sub">Klaar om te versturen via WhatsApp of e-mail</div>
-        </div>
-        <div class="patient-msg-badge" id="patient-msg-badge">✓ Gegenereerd</div>
-      </div>
-      <div class="patient-msg-channels">
-        <button class="patient-ch active" id="ch-whatsapp" onclick="switchChannel('whatsapp')" type="button">💬 WhatsApp</button>
-        <button class="patient-ch" id="ch-email" onclick="switchChannel('email')" type="button">📧 E-mail</button>
-        <button class="patient-ch" id="ch-sms" onclick="switchChannel('sms')" type="button">📱 SMS</button>
-      </div>
-      <textarea class="patient-msg-text" id="patient-msg-text" rows="10" spellcheck="true"></textarea>
-      <div class="patient-msg-actions">
-        <button class="btn-copy-patient" id="btn-copy-patient" onclick="copyPatientMsg()">📋 Kopieer bericht</button>
-        <button class="btn-regen-patient" onclick="regenPatientMsg()">🔄 Opnieuw genereren</button>
-      </div>
+  </div>
 
-      <!-- AANPASBARE TEMPLATE -->
-      <div class="pmsg-customize">
-        <button class="pmsg-customize-toggle" onclick="togglePmsgCustomize(this)">⚙️ Pas template aan <span id="pmsg-customize-chevron">▾</span></button>
-        <div class="pmsg-custom-fields" id="pmsg-custom-fields">
-          <div class="pmsg-field-row">
-            <label class="pmsg-field-label">Naam therapeut</label>
-            <input class="pmsg-field-input" id="pmsg-naam" placeholder="Bijv. Ingrid Bakker" />
-          </div>
-          <div class="pmsg-field-row">
-            <label class="pmsg-field-label">Praktijknaam</label>
-            <input class="pmsg-field-input" id="pmsg-praktijk" placeholder="Bijv. Fysiotherapie De Linde" />
-          </div>
-          <div class="pmsg-field-row">
-            <label class="pmsg-field-label">Telefoonnummer praktijk</label>
-            <input class="pmsg-field-input" id="pmsg-telefoon" placeholder="Bijv. 030-1234567" />
-          </div>
-          <div class="pmsg-field-row">
-            <label class="pmsg-field-label">Volgende afspraak (optioneel)</label>
-            <input class="pmsg-field-input" id="pmsg-afspraak" placeholder="Bijv. dinsdag 25 maart om 14:00" />
-          </div>
-          <button class="btn-pmsg-apply" onclick="applyPmsgTemplate()">✓ Verwerk in bericht</button>
+  <!-- PATIËNTBERICHT SECTIE — buiten output-container zodat flex niet interfereert -->
+  <div class="step-badge" id="step-badge-4" style="display:none; margin: 20px 0 14px;"><span class="step-num">4</span> Stuur patiëntbericht</div>
+  <div class="patient-msg-block" id="patient-msg-block" style="display:none">
+    <div class="patient-msg-header">
+      <div>
+        <div class="patient-msg-title">📱 Patiëntbericht</div>
+        <div class="patient-msg-sub">Klaar om te versturen via WhatsApp of e-mail</div>
+      </div>
+      <div class="patient-msg-badge" id="patient-msg-badge">⏳ Laden...</div>
+    </div>
+    <div class="patient-msg-channels">
+      <button class="patient-ch active" id="ch-whatsapp" onclick="switchChannel('whatsapp')" type="button">💬 WhatsApp</button>
+      <button class="patient-ch" id="ch-email" onclick="switchChannel('email')" type="button">📧 E-mail</button>
+      <button class="patient-ch" id="ch-sms" onclick="switchChannel('sms')" type="button">📱 SMS</button>
+    </div>
+    <textarea class="patient-msg-text" id="patient-msg-text" rows="10" spellcheck="true"></textarea>
+    <div class="patient-msg-actions">
+      <button class="btn-copy-patient" id="btn-copy-patient" onclick="copyPatientMsg()">📋 Kopieer bericht</button>
+      <button class="btn-regen-patient" onclick="regenPatientMsg()">🔄 Opnieuw genereren</button>
+    </div>
+
+    <!-- AANPASBARE TEMPLATE -->
+    <div class="pmsg-customize">
+      <button class="pmsg-customize-toggle" onclick="togglePmsgCustomize(this)">⚙️ Pas template aan <span id="pmsg-customize-chevron">▾</span></button>
+      <div class="pmsg-custom-fields" id="pmsg-custom-fields">
+        <div class="pmsg-field-row">
+          <label class="pmsg-field-label">Naam therapeut</label>
+          <input class="pmsg-field-input" id="pmsg-naam" placeholder="Bijv. Ingrid Bakker" />
         </div>
+        <div class="pmsg-field-row">
+          <label class="pmsg-field-label">Praktijknaam</label>
+          <input class="pmsg-field-input" id="pmsg-praktijk" placeholder="Bijv. Fysiotherapie De Linde" />
+        </div>
+        <div class="pmsg-field-row">
+          <label class="pmsg-field-label">Telefoonnummer praktijk</label>
+          <input class="pmsg-field-input" id="pmsg-telefoon" placeholder="Bijv. 030-1234567" />
+        </div>
+        <div class="pmsg-field-row">
+          <label class="pmsg-field-label">Volgende afspraak (optioneel)</label>
+          <input class="pmsg-field-input" id="pmsg-afspraak" placeholder="Bijv. dinsdag 25 maart om 14:00" />
+        </div>
+        <button class="btn-pmsg-apply" onclick="applyPmsgTemplate()">✓ Verwerk in bericht</button>
       </div>
     </div>
   </div>
