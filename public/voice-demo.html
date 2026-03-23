@@ -607,6 +607,7 @@
     <div class="output-actions">
       <button class="btn-copy-all" id="btn-copy-all" onclick="copyAll()">📋 Kopieer complete documentatie</button>
       <button class="btn-verwijsbrief" id="btn-verwijsbrief" onclick="openVerwijsbrief()">📄 Verwijsbrief</button>
+      <button class="btn-new" onclick="downloadTxt()">⬇️ .txt</button>
       <button class="btn-new" onclick="downloadPDF()" title="Opslaan als PDF">📄 Download PDF</button>
       <button class="btn-new" onclick="printOutput()" title="Afdrukken / opslaan als PDF">🖨️ Print</button>
       <button class="btn-new" onclick="resetToStart()">🔄 Opnieuw beginnen</button>
@@ -1119,11 +1120,10 @@ let savedMemo = ''; // Persistent memo for patient message + verwijsbrief
 let memoStack = []; // Meerdere memo's — worden gecombineerd bij genereren
 let verwijsbriefText = '';
 // Persistent session ID for this browser session
-const SESSION_ID = (() => {
-  let s = sessionStorage.getItem('sd_sid');
-  if (!s) { s = Math.random().toString(36).slice(2) + Date.now().toString(36); sessionStorage.setItem('sd_sid', s); }
-  return s;
-})();
+const SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+  const r = Math.random() * 16 | 0;
+  return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+}));
 let isRecording = false;
 let finalTranscript = '';
 let interimTranscript = '';
@@ -2197,36 +2197,56 @@ function toggleBlock(key) {
   if (icon) icon.style.transform = isCollapsed ? '' : 'rotate(-90deg)';
 }
 
+function typewriterText(el, text, speed, callback) {
+  if (speed === undefined) speed = 8;
+  var i = 0;
+  el.textContent = '';
+  function tick() {
+    if (i < text.length) {
+      el.textContent += text[i++];
+      setTimeout(tick, speed);
+    } else if (callback) callback();
+  }
+  tick();
+}
+
 function renderOutput(tpl) {
-  document.getElementById('output-title').textContent = `${tpl.icon} ${tpl.name}`;
+  document.getElementById('output-title').textContent = tpl.icon + ' ' + tpl.name;
   const now = new Date().toLocaleTimeString('nl-NL', {hour:'2-digit', minute:'2-digit'});
-  document.getElementById('output-template-label').textContent = `Template: ${tpl.name} · ${tpl.sections.length} secties · ${now}`;
+  document.getElementById('output-template-label').textContent = 'Template: ' + tpl.name + ' · ' + tpl.sections.length + ' secties · ' + now;
 
   const blocksEl = document.getElementById('output-blocks');
   blocksEl.innerHTML = '';
 
-  tpl.sections.forEach((section, idx) => {
+  tpl.sections.forEach(function(section, idx) {
     const text = (tpl.output && tpl.output[section.key]) || outputData?.[section.key] || '[Niet vermeld in memo]';
     const delay = idx * 0.06;
-    const blockHtml = `
-      <div class="output-block" id="block-wrap-${section.key}" style="animation-delay:${delay}s">
-        <div class="block-header" onclick="toggleBlock('${section.key}')" style="cursor:pointer;">
-          <div class="block-title">
-            <div class="block-badge ${section.badgeClass}">${section.badge}</div>
-            <div>
-              <div class="block-name">${section.label}</div>
-              <div class="block-desc">${section.desc}</div>
-            </div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <button class="btn-copy-block" onclick="event.stopPropagation();copyBlock('${section.key}', this)">📋 Kopieer</button>
-            <span class="block-toggle-icon" id="toggle-${section.key}" style="color:var(--text-muted);font-size:12px;transition:transform 0.2s;">▾</span>
-          </div>
-        </div>
-        <div class="block-text" id="output-${section.key}" style="transition:max-height 0.3s ease,opacity 0.2s;">${escapeHtml(text)}</div>
-      </div>
-    `;
+    const blockHtml = '<div class="output-block" id="block-wrap-' + section.key + '" style="animation-delay:' + delay + 's">' +
+      '<div class="block-header" onclick="toggleBlock(\'' + section.key + '\')" style="cursor:pointer;">' +
+        '<div class="block-title">' +
+          '<div class="block-badge ' + section.badgeClass + '">' + section.badge + '</div>' +
+          '<div>' +
+            '<div class="block-name">' + section.label + '</div>' +
+            '<div class="block-desc">' + section.desc + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:8px;">' +
+          '<button class="btn-copy-block" onclick="event.stopPropagation();copyBlock(\'' + section.key + '\', this)">📋 Kopieer</button>' +
+          '<span class="block-toggle-icon" id="toggle-' + section.key + '" style="color:var(--text-muted);font-size:12px;transition:transform 0.2s;">▾</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="block-text" id="output-' + section.key + '" style="transition:max-height 0.3s ease,opacity 0.2s;"></div>' +
+    '</div>';
     blocksEl.insertAdjacentHTML('beforeend', blockHtml);
+    // Typewriter effect: max 500 chars animated, rest direct
+    const el = document.getElementById('output-' + section.key);
+    if (el) {
+      if (text.length <= 500) {
+        setTimeout(function() { typewriterText(el, text, 8); }, idx * 120);
+      } else {
+        el.textContent = text;
+      }
+    }
   });
 }
 
@@ -2416,6 +2436,23 @@ function retryTranscription() {
   finalTranscript = '';
 }
 
+// ===== TXT DOWNLOAD =====
+function downloadTxt() {
+  const tpl = TEMPLATES[currentTemplate];
+  let content = tpl.name + '\n' + new Date().toLocaleDateString('nl-NL') + '\n\n';
+  tpl.sections.forEach(function(s) {
+    const text = document.getElementById('output-' + s.key) ? document.getElementById('output-' + s.key).textContent : '';
+    content += s.label.toUpperCase() + '\n' + '-'.repeat(40) + '\n' + text + '\n\n';
+  });
+  const blob = new Blob([content], {type: 'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'spreekdossier-' + currentTemplate + '.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 // ===== PDF DOWNLOAD =====
 function downloadPDF() {
   const tpl = TEMPLATES[currentTemplate];
@@ -2550,6 +2587,36 @@ document.addEventListener('keydown', function(e) {
     if (btn && !btn.disabled) { btn.click(); }
   }
 });
+
+// ===== SWIPE GESTURES — tab switching =====
+(function() {
+  var touchStartX = 0;
+  var el = document.getElementById('patient-msg-text');
+  if (!el) return;
+  el.addEventListener('touchstart', function(e) {
+    touchStartX = e.touches[0].clientX;
+  });
+  el.addEventListener('touchend', function(e) {
+    var diff = touchStartX - e.changedTouches[0].clientX;
+    var channels = ['whatsapp', 'email', 'sms'];
+    if (Math.abs(diff) > 50) {
+      var cur = channels.indexOf(currentChannel);
+      var next = diff > 0 ? Math.min(cur + 1, 2) : Math.max(cur - 1, 0);
+      switchChannel(channels[next]);
+    }
+  });
+})();
+
+// ===== COOKIE BANNER =====
+(function() {
+  if (!localStorage.getItem('cookie-accepted')) {
+    var banner = document.createElement('div');
+    banner.id = 'cookie-banner-demo';
+    banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#0f0f1a;border-top:1px solid rgba(0,201,181,0.2);padding:14px 24px;z-index:9998;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;';
+    banner.innerHTML = '<p style="margin:0;font-size:13px;color:rgba(255,255,255,0.5);">Spreekdossier gebruikt functionele cookies. Geen tracking.</p><button onclick="localStorage.setItem(\'cookie-accepted\',\'1\');this.parentElement.remove();" style="background:var(--primary);color:#090912;font-weight:700;font-size:13px;padding:8px 20px;border:none;border-radius:100px;cursor:pointer;white-space:nowrap;">Begrepen</button>';
+    document.body.appendChild(banner);
+  }
+})();
 </script>
 </body>
 </html>
