@@ -1,5 +1,8 @@
 # Spreekdossier — AI-rapportageassistent
 
+[![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?logo=vercel)](https://spreekdossier-site.vercel.app)
+[![Status](https://img.shields.io/badge/Status-Live%20Beta-00C9B5)](https://spreekdossier-site.vercel.app/voice-demo.html)
+
 > **Minder typen. Meer behandelen.**
 
 Marketingpagina + live SOEP-demo voor Spreekdossier, gebouwd met een Node.js proxy server zodat de Anthropic API key veilig op de server blijft.
