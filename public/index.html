@@ -94,6 +94,82 @@
     #hero::after { content: ''; position: absolute; bottom: -100px; left: -150px; width: 500px; height: 500px; background: radial-gradient(circle, rgba(255,140,97,0.06) 0%, transparent 65%); pointer-events: none; }
     .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 64px 64px; pointer-events: none; mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%); }
     .hero-content { text-align: center; max-width: 820px; margin: 0 auto; position: relative; z-index: 1; }
+    /* ===== HERO LAYOUT WITH DEMO CARD ===== */
+    .hero-inner { display: grid; grid-template-columns: 1fr 420px; gap: 48px; align-items: center; max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+    @media (max-width: 1024px) { .hero-inner { grid-template-columns: 1fr; } .hero-demo-side { display: none; } }
+
+    /* ===== LIVE DEMO CARD ===== */
+    .hero-demo-card { background: var(--bg-card); border: 1px solid var(--border-glow); border-radius: var(--radius); overflow: hidden; box-shadow: 0 0 60px rgba(0,201,181,0.12), var(--shadow-lg); }
+    .demo-card-header { background: var(--bg-card2); border-bottom: 1px solid var(--border); padding: 12px 16px; display: flex; align-items: center; gap: 8px; }
+    .demo-card-dots { display: flex; gap: 5px; }
+    .demo-card-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .demo-card-title { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-left: 8px; }
+    .demo-card-body { padding: 20px; }
+    .demo-status-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; background: rgba(0,201,181,0.07); border: 1px solid var(--border-glow); border-radius: 10px; padding: 12px 14px; }
+    .demo-status-icon { font-size: 20px; flex-shrink: 0; }
+    .demo-status-label { font-size: 13px; font-weight: 700; color: var(--primary); }
+    .demo-status-sub { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+    .demo-progress-wrap { margin-bottom: 16px; }
+    .demo-progress-track { height: 6px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; margin-top: 4px; }
+    .demo-progress-bar { height: 100%; border-radius: 100px; background: linear-gradient(90deg, var(--primary), #00e5cf); transition: width 0.1s linear; }
+    .demo-progress-label { font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; }
+    .demo-divider { height: 1px; background: var(--border); margin: 14px 0; }
+    .demo-output-title { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary); margin-bottom: 10px; }
+    .demo-soep-line { font-size: 13px; line-height: 1.7; color: var(--text-muted); min-height: 1.4em; }
+    .demo-soep-line strong { color: var(--text); font-weight: 700; }
+    .demo-cursor { display: inline-block; width: 2px; height: 13px; background: var(--primary); vertical-align: text-bottom; animation: blink 0.8s step-end infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* ===== WORKFLOW FLOW ===== */
+    .workflow-flow { display: flex; align-items: center; justify-content: center; gap: 0; margin: 48px auto 0; max-width: 680px; flex-wrap: wrap; gap: 4px; }
+    .wf-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; text-align: center; min-width: 140px; flex: 1; transition: all 0.4s; position: relative; }
+    .wf-card.active { border-color: var(--primary); background: rgba(0,201,181,0.07); box-shadow: 0 0 20px rgba(0,201,181,0.2); transform: translateY(-3px); }
+    .wf-card-icon { font-size: 28px; margin-bottom: 8px; display: block; }
+    .wf-card-label { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .wf-card-time { font-size: 11px; color: var(--primary); font-weight: 600; }
+    .wf-arrow { color: var(--primary); font-size: 22px; opacity: 0.4; padding: 0 4px; align-self: center; flex-shrink: 0; transition: opacity 0.4s; }
+    .wf-arrow.active { opacity: 1; }
+    @media (max-width: 600px) { .workflow-flow { flex-direction: column; } .wf-arrow { transform: rotate(90deg); } }
+
+    /* ===== STATS COUNTER ===== */
+    .stats-counter-section { padding: 64px 24px; border-bottom: 1px solid var(--border); background: var(--bg-card); }
+    .stats-counter-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; text-align: center; }
+    @media (max-width: 768px) { .stats-counter-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 400px) { .stats-counter-grid { grid-template-columns: 1fr; } }
+    .stats-counter-item { padding: 28px 16px; background: var(--bg-card2); border-radius: var(--radius); border: 1px solid var(--border); transition: all 0.3s; }
+    .stats-counter-item:hover { border-color: var(--border-glow); transform: translateY(-3px); box-shadow: 0 0 20px rgba(0,201,181,0.08); }
+    .stat-counter-num { font-size: clamp(36px, 5vw, 52px); font-weight: 900; color: var(--primary); letter-spacing: -0.03em; line-height: 1; margin-bottom: 8px; display: block; }
+    .stat-counter-label { font-size: 13px; color: var(--text-muted); font-weight: 500; line-height: 1.4; }
+
+    /* ===== BAR CHART ===== */
+    .bar-chart-section { padding: 80px 24px; background: var(--bg); border-bottom: 1px solid var(--border); }
+    .bar-chart-inner { max-width: 700px; margin: 0 auto; }
+    .bar-chart-row { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+    .bar-label { font-size: 13px; font-weight: 600; color: var(--text-muted); min-width: 150px; text-align: right; flex-shrink: 0; }
+    @media (max-width: 560px) { .bar-label { min-width: 100px; font-size: 11px; } }
+    .bar-track { flex: 1; height: 36px; background: rgba(255,255,255,0.04); border-radius: 8px; overflow: hidden; position: relative; }
+    .bar-fill { height: 100%; border-radius: 8px; width: 0; transition: width 1.5s cubic-bezier(0.16,1,0.3,1); display: flex; align-items: center; padding: 0 12px; }
+    .bar-fill.bar-red { background: linear-gradient(90deg, #ff4444, #ff6b6b); }
+    .bar-fill.bar-orange { background: linear-gradient(90deg, #ff8c00, #ffb347); }
+    .bar-fill.bar-green { background: linear-gradient(90deg, var(--primary), #00e5cf); }
+    .bar-time { font-size: 12px; font-weight: 700; color: white; white-space: nowrap; }
+    .bar-duration { font-size: 13px; font-weight: 700; min-width: 60px; flex-shrink: 0; }
+    .bar-duration.red { color: #ff6b6b; }
+    .bar-duration.orange { color: #ffb347; }
+    .bar-duration.green { color: var(--primary); }
+
+    /* ===== DONUT CHART ===== */
+    .donut-section { padding: 80px 24px; background: var(--bg-card); border-bottom: 1px solid var(--border); }
+    .donut-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+    @media (max-width: 768px) { .donut-inner { grid-template-columns: 1fr; gap: 40px; } }
+    .donut-chart-wrap { position: relative; display: flex; justify-content: center; align-items: center; }
+    .donut-label-center { position: absolute; text-align: center; }
+    .donut-label-big { font-size: 28px; font-weight: 900; color: var(--text); display: block; }
+    .donut-label-sub { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+    .donut-legend { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+    .donut-legend-item { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text-muted); }
+    .donut-legend-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+
     .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,201,181,0.1); color: var(--primary); font-size: 13px; font-weight: 600; padding: 6px 16px; border-radius: 100px; margin-bottom: 28px; border: 1px solid rgba(0,201,181,0.25); }
     .hero-countdown { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.04); color: var(--text-muted); font-size: 12px; padding: 5px 14px; border-radius: 100px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.08); }
     .hero-countdown .countdown-icon { color: var(--primary); }
@@ -288,30 +364,187 @@
 
   <!-- HERO -->
   <section id="hero">
-    <div class="container">
-      <div class="hero-content">
-        <div class="hero-badge"><span>⚡</span> Compleet administratieplatform &nbsp;·&nbsp; Meer dan een AI-scribe &nbsp;·&nbsp; €X/mnd &nbsp;·&nbsp; Werkt met elk EPD</div>
-        <div class="hero-countdown" id="hero-countdown">
-          <span class="countdown-icon">⚡</span> Nog <span id="countdown-spots">47</span> plekken beschikbaar voor vroege toegang
-          <a href="/waitlist.html" style="color:var(--primary);text-decoration:underline;margin-left:6px;">Claim jouw plek →</a>
+    <div class="hero-grid"></div>
+    <div style="max-width:1200px;margin:0 auto;padding:0 24px;position:relative;z-index:1;">
+      <div class="hero-inner">
+        <!-- LEFT: text content -->
+        <div class="hero-content" style="max-width:none;margin:0;text-align:left;">
+          <div class="hero-badge" style="margin-bottom:20px;"><span>⚡</span> Compleet administratieplatform &nbsp;·&nbsp; Meer dan een AI-scribe &nbsp;·&nbsp; €X/mnd &nbsp;·&nbsp; Werkt met elk EPD</div>
+          <div class="hero-countdown" id="hero-countdown" style="margin-bottom:16px;">
+            <span class="countdown-icon">⚡</span> Nog <span id="countdown-spots">47</span> plekken beschikbaar voor vroege toegang
+            <a href="/waitlist.html" style="color:var(--primary);text-decoration:underline;margin-left:6px;">Claim jouw plek →</a>
+          </div>
+          <h1 style="text-align:left;">Stop met typen.<br />Spreek in.<br /><span class="highlight">Dossier klaar.</span></h1>
+          <p class="hero-sub" style="text-align:left;margin-left:0;">
+            Spreek in na je behandeling — Spreekdossier schrijft de volledige documentatie. <strong>SOEP-notitie, behandelplan, patiëntbericht, verwijsbrief</strong> — het complete administratieplatform voor fysiotherapeuten. <strong>€X/mnd. Werkt met elk EPD.</strong>
+          </p>
+          <div class="hero-buttons" style="justify-content:flex-start;">
+            <a href="voice-demo.html" class="btn-primary">🎙️ Probeer gratis — geen account nodig</a>
+            <a href="#how" class="btn-secondary">▶ Hoe het werkt</a>
+            <a href="https://wa.me/?text=Spreekdossier%20-%20AI%20documentatie%20voor%20fysiotherapeuten%3A%20https%3A%2F%2Fspreekdossier.nl%3Futm_source%3Dwhatsapp%26utm_medium%3Dshare" target="_blank" class="btn-share-wa">📲 Deel via WhatsApp</a>
+          </div>
+          <div class="hero-stats" style="justify-content:flex-start;margin-top:32px;">
+            <div class="stat-item"><div class="stat-dot">⏱</div>Van memo naar dossier in <strong>15 sec</strong></div>
+            <div class="stat-divider"></div>
+            <div class="stat-item"><div class="stat-dot">👥</div><span id="stat-users">…</span> demo's gestart</div>
+            <div class="stat-divider"></div>
+            <div class="stat-item"><div class="stat-dot">📋</div>6 WGBO-templates</div>
+            <div class="stat-divider"></div>
+            <div class="stat-item"><div class="stat-dot">🔒</div>AVG-proof · EU-servers</div>
+          </div>
         </div>
-        <h1>Stop met typen.<br />Spreek in.<br /><span class="highlight">Dossier klaar.</span></h1>
-        <p class="hero-sub">
-          Spreek in na je behandeling — Spreekdossier schrijft de volledige documentatie. <strong>SOEP-notitie, behandelplan, patiëntbericht, verwijsbrief</strong> — het complete administratieplatform voor fysiotherapeuten. <strong>€X/mnd. Werkt met elk EPD.</strong>
-        </p>
-        <div class="hero-buttons">
-          <a href="voice-demo.html" class="btn-primary">🎙️ Probeer gratis — geen account nodig</a>
-          <a href="#how" class="btn-secondary">▶ Hoe het werkt</a>
-          <a href="https://wa.me/?text=Spreekdossier%20-%20AI%20documentatie%20voor%20fysiotherapeuten%3A%20https%3A%2F%2Fspreekdossier.nl%3Futm_source%3Dwhatsapp%26utm_medium%3Dshare" target="_blank" class="btn-share-wa">📲 Deel via WhatsApp</a>
+
+        <!-- RIGHT: Live demo preview card (Visual 5) -->
+        <div class="hero-demo-side">
+          <div class="hero-demo-card" id="live-demo-card">
+            <div class="demo-card-header">
+              <div class="demo-card-dots">
+                <div class="demo-card-dot" style="background:#ff5f57;"></div>
+                <div class="demo-card-dot" style="background:#ffbd2e;"></div>
+                <div class="demo-card-dot" style="background:#28ca41;"></div>
+              </div>
+              <div class="demo-card-title">Spreekdossier — Live Preview</div>
+            </div>
+            <div class="demo-card-body">
+              <!-- Status row -->
+              <div class="demo-status-row">
+                <div class="demo-status-icon" id="demo-icon">🎙️</div>
+                <div>
+                  <div class="demo-status-label" id="demo-status-label">Opname actief...</div>
+                  <div class="demo-status-sub" id="demo-status-sub">Spreek na je behandeling</div>
+                </div>
+              </div>
+              <!-- Progress bar -->
+              <div class="demo-progress-wrap">
+                <div class="demo-progress-label">
+                  <span id="demo-phase-label">Opname</span>
+                  <span id="demo-timer-label">0 sec</span>
+                </div>
+                <div class="demo-progress-track">
+                  <div class="demo-progress-bar" id="demo-progress-bar" style="width:0%;"></div>
+                </div>
+              </div>
+              <!-- Divider + output -->
+              <div class="demo-divider"></div>
+              <div class="demo-output-title">✨ SOEP Notitie</div>
+              <div class="demo-soep-line" id="demo-s-line"><strong>S:</strong> <span id="demo-s-text"></span></div>
+              <div class="demo-soep-line" id="demo-o-line" style="margin-top:4px;"><strong>O:</strong> <span id="demo-o-text"></span></div>
+              <div class="demo-soep-line" id="demo-e-line" style="margin-top:4px;"><strong>E:</strong> <span id="demo-e-text"></span></div>
+              <div class="demo-soep-line" id="demo-p-line" style="margin-top:4px;"><strong>P:</strong> <span id="demo-p-text"></span></div>
+            </div>
+          </div>
         </div>
-        <div class="hero-stats">
-          <div class="stat-item"><div class="stat-dot">⏱</div>Van memo naar dossier in <strong>15 sec</strong></div>
-          <div class="stat-divider"></div>
-          <div class="stat-item"><div class="stat-dot">👥</div><span id="stat-users">…</span> demo's gestart</div>
-          <div class="stat-divider"></div>
-          <div class="stat-item"><div class="stat-dot">📋</div>6 WGBO-templates</div>
-          <div class="stat-divider"></div>
-          <div class="stat-item"><div class="stat-dot">🔒</div>AVG-proof · EU-servers</div>
+      </div>
+
+      <!-- VISUAL 3: Workflow flow animatie (below hero content) -->
+      <div class="workflow-flow" id="workflow-flow">
+        <div class="wf-card" id="wf-1">
+          <span class="wf-card-icon">🎙️</span>
+          <div class="wf-card-label">Spreek in</div>
+          <div class="wf-card-time">~2 sec</div>
+        </div>
+        <div class="wf-arrow" id="wf-arr-1">→</div>
+        <div class="wf-card" id="wf-2">
+          <span class="wf-card-icon">✨</span>
+          <div class="wf-card-label">AI verwerkt</div>
+          <div class="wf-card-time">~8 sec</div>
+        </div>
+        <div class="wf-arrow" id="wf-arr-2">→</div>
+        <div class="wf-card" id="wf-3">
+          <span class="wf-card-icon">📋</span>
+          <div class="wf-card-label">SOEP klaar</div>
+          <div class="wf-card-time">direct kopiëren</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISUAL 1: Animated Stats Counter -->
+  <section class="stats-counter-section" id="stats-section">
+    <div class="stats-counter-grid">
+      <div class="stats-counter-item fade-in">
+        <span class="stat-counter-num" data-target="25000" data-suffix="" id="sc-1">0</span>
+        <div class="stat-counter-label">ZZP-fysiotherapeuten<br/>in Nederland</div>
+      </div>
+      <div class="stats-counter-item fade-in fade-in-delay-1">
+        <span class="stat-counter-num" data-target="45" data-suffix=" min" id="sc-2">0</span>
+        <div class="stat-counter-label">administratie per dag<br/>gemiddeld</div>
+      </div>
+      <div class="stats-counter-item fade-in fade-in-delay-2">
+        <span class="stat-counter-num" data-target="18" data-suffix=" sec" id="sc-3">0</span>
+        <div class="stat-counter-label">met Spreekdossier</div>
+      </div>
+      <div class="stats-counter-item fade-in fade-in-delay-3">
+        <span class="stat-counter-num" data-target="6" data-suffix="" id="sc-4">0</span>
+        <div class="stat-counter-label">gespecialiseerde<br/>templates</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISUAL 2: Tijdsbesparing bar chart -->
+  <section class="bar-chart-section" id="bar-chart-section">
+    <div class="bar-chart-inner">
+      <div class="section-header fade-in" style="margin-bottom:40px;">
+        <p class="section-label">Tijdsbesparing</p>
+        <h2>Hoeveel tijd bespaar je?</h2>
+        <p class="section-body" style="margin:0 auto;text-align:center;">Vergelijk de tijdsinvestering per SOEP-notitie.</p>
+      </div>
+      <div class="bar-chart-row fade-in">
+        <div class="bar-label">Handmatig typen</div>
+        <div class="bar-track">
+          <div class="bar-fill bar-red" data-width="100" id="bar-1"><span class="bar-time">~45 min</span></div>
+        </div>
+        <div class="bar-duration red">45 min</div>
+      </div>
+      <div class="bar-chart-row fade-in fade-in-delay-1">
+        <div class="bar-label">Andere AI tools</div>
+        <div class="bar-track">
+          <div class="bar-fill bar-orange" data-width="56" id="bar-2"><span class="bar-time">~25 min</span></div>
+        </div>
+        <div class="bar-duration orange">25 min</div>
+      </div>
+      <div class="bar-chart-row fade-in fade-in-delay-2">
+        <div class="bar-label">Spreekdossier</div>
+        <div class="bar-track">
+          <div class="bar-fill bar-green" data-width="7" id="bar-3" style="min-width:80px;"><span class="bar-time">18 sec</span></div>
+        </div>
+        <div class="bar-duration green">18 sec</div>
+      </div>
+      <p class="fade-in" style="text-align:center;margin-top:28px;font-size:13px;color:var(--text-muted);">
+        Dat is <strong style="color:var(--primary);">150× sneller</strong> dan handmatig typen.
+      </p>
+    </div>
+  </section>
+
+  <!-- VISUAL 4: Donut ring chart -->
+  <section class="donut-section" id="donut-section">
+    <div class="donut-inner container">
+      <div class="fade-in">
+        <p class="section-label">Tijdsverdeling</p>
+        <h2>Uw tijd als fysiotherapeut</h2>
+        <p class="section-body">Gemiddeld gaat <strong>25% van uw werkdag</strong> op aan administratie — ruim 45 minuten. Dat is tijd die u niet besteedt aan uw patiënten.</p>
+        <p class="section-body" style="color:var(--primary);font-weight:600;">Spreekdossier brengt dit terug naar &lt;5 minuten.</p>
+        <div class="donut-legend">
+          <div class="donut-legend-item"><div class="donut-legend-dot" style="background:var(--primary);"></div>75% — Behandelen patiënten</div>
+          <div class="donut-legend-item"><div class="donut-legend-dot" style="background:#ff4444;"></div>25% — Administratie (45 min)</div>
+        </div>
+      </div>
+      <div class="donut-chart-wrap fade-in fade-in-delay-1">
+        <svg id="donut-svg" width="260" height="260" viewBox="0 0 260 260" style="transform:rotate(-90deg);">
+          <!-- background ring -->
+          <circle cx="130" cy="130" r="100" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="32"/>
+          <!-- red segment: 25% = 157.08 of 628.32 circumference -->
+          <circle id="donut-red" cx="130" cy="130" r="100" fill="none" stroke="#ff4444" stroke-width="32"
+            stroke-dasharray="628.32" stroke-dashoffset="628.32"
+            stroke-linecap="round" style="transition: stroke-dashoffset 1.5s cubic-bezier(0.16,1,0.3,1);"/>
+          <!-- green segment: 75% -->
+          <circle id="donut-green" cx="130" cy="130" r="100" fill="none" stroke="var(--primary)" stroke-width="32"
+            stroke-dasharray="628.32" stroke-dashoffset="628.32"
+            stroke-linecap="round" style="transition: stroke-dashoffset 1.5s cubic-bezier(0.16,1,0.3,1) 0.2s;"/>
+        </svg>
+        <div class="donut-label-center">
+          <span class="donut-label-big">45 min</span>
+          <span class="donut-label-sub">per dag</span>
         </div>
       </div>
     </div>
@@ -910,35 +1143,259 @@ function countUp(el, target, duration) {
   const start = performance.now();
   const fmt = n => n >= 1000 ? (n/1000).toFixed(1).replace('.0','') + 'k' : String(Math.round(n));
   function step(now) {
-    const p = Math.min((now - start) / duration, 1);
-    const ease = 1 - Math.pow(1 - p, 3);
+    var p = Math.min((now - start) / duration, 1);
+    var ease = 1 - Math.pow(1 - p, 3);
     el.textContent = fmt(target * ease);
     if (p < 1) requestAnimationFrame(step);
     else el.textContent = fmt(target);
   }
   requestAnimationFrame(step);
 }
-(async () => {
+(async function() {
   try {
-    const r = await fetch('/api/stats');
-    const { minutes, users } = await r.json();
-    countUp(document.getElementById('stat-minutes'), minutes || 0, 1200);
-    countUp(document.getElementById('stat-users'), users || 0, 1200);
-    // Social proof bar
-    const spEl = document.getElementById('sp-users');
+    var r = await fetch('/api/stats');
+    var data = await r.json();
+    var minutes = data.minutes; var users = data.users;
+    var smEl = document.getElementById('stat-minutes');
+    var suEl = document.getElementById('stat-users');
+    if (smEl) countUp(smEl, minutes || 0, 1200);
+    if (suEl) countUp(suEl, users || 0, 1200);
+    var spEl = document.getElementById('sp-users');
     if (spEl) countUp(spEl, users || 0, 1400);
   } catch(e) {
-    document.getElementById('stat-minutes').textContent = '0';
-    document.getElementById('stat-users').textContent = '0';
-    const spEl = document.getElementById('sp-users');
-    if (spEl) spEl.textContent = '0';
+    var smEl2 = document.getElementById('stat-minutes');
+    var suEl2 = document.getElementById('stat-users');
+    if (smEl2) smEl2.textContent = '0';
+    if (suEl2) suEl2.textContent = '0';
+    var spEl2 = document.getElementById('sp-users');
+    if (spEl2) spEl2.textContent = '0';
   }
 })();
 function toggleFaq(el) {
-  const isOpen = el.classList.contains('open');
-  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  var isOpen = el.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(function(i) { i.classList.remove('open'); });
   if (!isOpen) el.classList.add('open');
 }
+
+/* ===== VISUAL 1: Animated stats counters (IntersectionObserver) ===== */
+(function() {
+  var statsAnimated = false;
+  var statsSection = document.getElementById('stats-section');
+  if (!statsSection) return;
+  var counters = [
+    { id: 'sc-1', target: 25000, suffix: '' },
+    { id: 'sc-2', target: 45, suffix: ' min' },
+    { id: 'sc-3', target: 18, suffix: ' sec' },
+    { id: 'sc-4', target: 6, suffix: '' }
+  ];
+  function animateCounters() {
+    counters.forEach(function(c) {
+      var el = document.getElementById(c.id);
+      if (!el) return;
+      var start = performance.now();
+      var duration = 1500;
+      function step(now) {
+        var p = Math.min((now - start) / duration, 1);
+        var ease = 1 - Math.pow(1 - p, 3);
+        var val = Math.round(c.target * ease);
+        var fmt = val >= 1000 ? val.toLocaleString('nl-NL') : String(val);
+        el.textContent = fmt + c.suffix;
+        if (p < 1) requestAnimationFrame(step);
+        else el.textContent = (c.target >= 1000 ? c.target.toLocaleString('nl-NL') : String(c.target)) + c.suffix;
+      }
+      requestAnimationFrame(step);
+    });
+  }
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting && !statsAnimated) {
+          statsAnimated = true;
+          animateCounters();
+          obs.disconnect();
+        }
+      });
+    }, { threshold: 0.2 });
+    obs.observe(statsSection);
+  } else {
+    animateCounters();
+  }
+})();
+
+/* ===== VISUAL 2: Bar chart animation ===== */
+(function() {
+  var barSection = document.getElementById('bar-chart-section');
+  if (!barSection) return;
+  var bars = [
+    { id: 'bar-1', width: 100 },
+    { id: 'bar-2', width: 56 },
+    { id: 'bar-3', width: 7 }
+  ];
+  var animated = false;
+  function animateBars() {
+    bars.forEach(function(b) {
+      var el = document.getElementById(b.id);
+      if (el) el.style.width = b.width + '%';
+    });
+  }
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting && !animated) {
+          animated = true;
+          animateBars();
+          obs.disconnect();
+        }
+      });
+    }, { threshold: 0.2 });
+    obs.observe(barSection);
+  } else {
+    animateBars();
+  }
+})();
+
+/* ===== VISUAL 3: Workflow pulse animation ===== */
+(function() {
+  var steps = ['wf-1', 'wf-2', 'wf-3'];
+  var arrows = ['wf-arr-1', 'wf-arr-2'];
+  var current = 0;
+  function activateStep(idx) {
+    steps.forEach(function(id, i) {
+      var el = document.getElementById(id);
+      if (el) el.classList.toggle('active', i === idx);
+    });
+    arrows.forEach(function(id, i) {
+      var el = document.getElementById(id);
+      if (el) el.classList.toggle('active', i < idx);
+    });
+  }
+  function tick() {
+    activateStep(current);
+    current = (current + 1) % steps.length;
+  }
+  tick();
+  setInterval(tick, 2000);
+})();
+
+/* ===== VISUAL 4: Donut chart animation ===== */
+(function() {
+  var donutSection = document.getElementById('donut-section');
+  if (!donutSection) return;
+  var animated = false;
+  var circumference = 628.32;
+  function animateDonut() {
+    var greenEl = document.getElementById('donut-green');
+    var redEl = document.getElementById('donut-red');
+    if (!greenEl || !redEl) return;
+    var greenPct = 0.75;
+    var redPct = 0.25;
+    var greenDash = circumference * greenPct;
+    var redDash = circumference * redPct;
+    greenEl.style.strokeDashoffset = String(circumference - greenDash);
+    redEl.setAttribute('stroke-dasharray', String(redDash) + ' ' + String(circumference - redDash));
+    redEl.style.strokeDashoffset = '0';
+    redEl.setAttribute('transform', 'rotate(' + (greenPct * 360) + ' 130 130)');
+  }
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting && !animated) {
+          animated = true;
+          animateDonut();
+          obs.disconnect();
+        }
+      });
+    }, { threshold: 0.2 });
+    obs.observe(donutSection);
+  } else {
+    animateDonut();
+  }
+})();
+
+/* ===== VISUAL 5: Live demo card animation ===== */
+(function() {
+  var card = document.getElementById('live-demo-card');
+  if (!card) return;
+
+  var phases = [
+    { duration: 2500, icon: '🎙️', label: 'Opname actief...', sub: 'Patiënt De Vries — sessie 4', progress: 1, phase: 'Opname' },
+    { duration: 3000, icon: '✨', label: 'AI genereert SOEP...', sub: 'Verwerking...', progress: 1, phase: 'Verwerken' },
+    { duration: 2500, icon: '✅', label: 'Klaar — kopieer naar EPD', sub: 'SOEP notitie gereed', progress: 1, phase: 'Klaar' }
+  ];
+
+  var soepLines = [
+    { id: 'demo-s-text', text: 'Patiënt rapporteert pijn afname van 7 naar 4 (NRS).' },
+    { id: 'demo-o-text', text: 'ROM flexie 105°, extensie 15°. Spierspanning verminderd.' },
+    { id: 'demo-e-text', text: 'McKenzie effect positief. Progressie conform plan.' },
+    { id: 'demo-p-text', text: 'Thuisoefeningen continueren. Volgende sessie over 5 dagen.' }
+  ];
+
+  var progressBar = document.getElementById('demo-progress-bar');
+  var iconEl = document.getElementById('demo-icon');
+  var labelEl = document.getElementById('demo-status-label');
+  var subEl = document.getElementById('demo-status-sub');
+  var phaseLabel = document.getElementById('demo-phase-label');
+  var timerLabel = document.getElementById('demo-timer-label');
+
+  var totalDuration = phases.reduce(function(a, p) { return a + p.duration; }, 0);
+  var startTime = null;
+  var textsFilled = false;
+
+  function clearTexts() {
+    soepLines.forEach(function(l) {
+      var el = document.getElementById(l.id);
+      if (el) el.textContent = '';
+    });
+    textsFilled = false;
+  }
+
+  function typeText(lineIdx, charIdx) {
+    if (lineIdx >= soepLines.length) return;
+    var l = soepLines[lineIdx];
+    var el = document.getElementById(l.id);
+    if (!el) return;
+    if (charIdx <= l.text.length) {
+      el.textContent = l.text.slice(0, charIdx);
+      setTimeout(function() { typeText(lineIdx, charIdx + 1); }, 18);
+    } else {
+      setTimeout(function() { typeText(lineIdx + 1, 0); }, 80);
+    }
+  }
+
+  function runLoop(ts) {
+    if (!startTime) startTime = ts;
+    var elapsed = ts - startTime;
+    var cycleTime = elapsed % totalDuration;
+    var acc = 0;
+    var phaseIdx = 0;
+    for (var i = 0; i < phases.length; i++) {
+      if (cycleTime < acc + phases[i].duration) { phaseIdx = i; break; }
+      acc += phases[i].duration;
+    }
+    var phaseElapsed = cycleTime - acc;
+    var phasePct = phaseElapsed / phases[phaseIdx].duration;
+    var ph = phases[phaseIdx];
+
+    if (iconEl) iconEl.textContent = ph.icon;
+    if (labelEl) labelEl.textContent = ph.label;
+    if (subEl) subEl.textContent = ph.sub;
+    if (phaseLabel) phaseLabel.textContent = ph.phase;
+    var secTotal = Math.round(cycleTime / 1000);
+    if (timerLabel) timerLabel.textContent = secTotal + ' sec';
+    if (progressBar) progressBar.style.width = (phasePct * 100) + '%';
+
+    if (phaseIdx === 1 && phasePct > 0.3 && !textsFilled) {
+      textsFilled = true;
+      typeText(0, 0);
+    }
+    if (phaseIdx === 0 && phasePct < 0.1) {
+      clearTexts();
+    }
+
+    requestAnimationFrame(runLoop);
+  }
+  requestAnimationFrame(runLoop);
+})();
 </script>
 
 <!-- EXIT-INTENT POPUP -->
