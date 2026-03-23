@@ -1882,56 +1882,73 @@ function parsePatientBerichtSections(text, memo) {
 async function generatePatientMessage(memoInput) {
   const memo = memoInput || savedMemo || lastMemoUsed || getMemoText();
   if (!memo || memo.length < 5) return;
-  lastMemoUsed = memo; // sla op voor regenerate
-  savedMemo = memo; // zorg dat savedMemo altijd gevuld is
+  lastMemoUsed = memo;
+  savedMemo = memo;
 
   const block = document.getElementById('patient-msg-block');
   const textarea = document.getElementById('patient-msg-text');
   const badge = document.getElementById('patient-msg-badge');
   if (!block || !textarea || !badge) return;
 
-  // STAP 1: direct zichtbaar met fallback — altijd, ongeacht wat er daarna gebeurt
+  // Toon block in loading state — nog geen content
   block.style.display = 'block';
-  const dateNow = new Date().toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' });
-  const immediateFallback = `Hallo! 👋\n\nBedankt voor uw bezoek vandaag (${dateNow}).\n\nHieronder uw instructies voor thuis:\n\n🏋️ *Oefeningen*\nVoer de oefeningen dagelijks uit zoals besproken.\n\n📅 *Volgende afspraak*\nZoals gepland. Wilt u verzetten? Stuur ons een berichtje!\n\n💬 Vragen? Stel ze gerust!\n\nTot de volgende keer! 🙌\n_Uw fysiotherapeut_`;
+  textarea.value = '';
+  textarea.placeholder = 'Patiëntbericht wordt gegenereerd op basis van uw memo...';
+  textarea.style.opacity = '0.5';
+  badge.textContent = '⏳ Bericht genereren...';
 
-  textarea.value = immediateFallback;
-  textarea.style.opacity = '1';
-  badge.textContent = '⏳ Persoonlijk bericht laden...';
+  // Reset vorige berichten
+  patientMessages = { whatsapp: '', email: '', sms: '' };
 
-  // STAP 2: probeer AI versie op te halen
   try {
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ memo, mode: 'patient_message' })
+      body: JSON.stringify({ memo, type: 'patientbericht' })
     });
+
+    const ta = document.getElementById('patient-msg-text');
+    const bg = document.getElementById('patient-msg-badge');
 
     if (res.ok) {
       const result = await res.json();
-      const out = result.output;
-      if (out && typeof out === 'object' && out.whatsapp && out.whatsapp.length > 10) {
-        patientMessages.whatsapp = out.whatsapp;
-        patientMessages.email = out.email || '';
-        patientMessages.sms = out.sms || '';
-        // Haal textarea opnieuw op (kan stale zijn) en update
-        const ta = document.getElementById('patient-msg-text');
-        const bg = document.getElementById('patient-msg-badge');
-        if (ta) ta.value = patientMessages[currentChannel] || patientMessages.whatsapp;
-        if (bg) bg.textContent = '✓ Klaar om te versturen';
+      const text = typeof result.output === 'string' ? result.output : null;
+
+      if (text && text.length > 20) {
+        // Parse text met WHATSAPP: / EMAIL: / SMS: headers
+        const parsed = parsePatientBerichtSections(text, memo);
+        patientMessages.whatsapp = parsed.whatsapp;
+        patientMessages.email = parsed.email;
+        patientMessages.sms = parsed.sms;
       } else {
-        const bg = document.getElementById('patient-msg-badge');
-        if (bg) bg.textContent = '✓ Klaar om te versturen';
+        // AI gaf geen bruikbare tekst — gebruik fallback
+        patientMessages.whatsapp = buildFallbackPatientMsg('whatsapp', memo);
+        patientMessages.email = buildFallbackPatientMsg('email', memo);
+        patientMessages.sms = buildFallbackPatientMsg('sms', memo);
       }
     } else {
-      const bg = document.getElementById('patient-msg-badge');
-      if (bg) bg.textContent = '✓ Klaar om te versturen';
+      // API fout — gebruik fallback
+      console.warn('Patiëntbericht API fout:', res.status);
+      patientMessages.whatsapp = buildFallbackPatientMsg('whatsapp', memo);
+      patientMessages.email = buildFallbackPatientMsg('email', memo);
+      patientMessages.sms = buildFallbackPatientMsg('sms', memo);
     }
   } catch(e) {
-    console.warn('Patiëntbericht API fout:', e.message);
-    const bg = document.getElementById('patient-msg-badge');
-    if (bg) bg.textContent = '✓ Klaar om te versturen';
+    console.warn('Patiëntbericht netwerk fout:', e.message);
+    patientMessages.whatsapp = buildFallbackPatientMsg('whatsapp', memo);
+    patientMessages.email = buildFallbackPatientMsg('email', memo);
+    patientMessages.sms = buildFallbackPatientMsg('sms', memo);
   }
+
+  // Update textarea met correct kanaal
+  const ta = document.getElementById('patient-msg-text');
+  const bg = document.getElementById('patient-msg-badge');
+  if (ta) {
+    ta.value = patientMessages[currentChannel] || patientMessages.whatsapp;
+    ta.style.opacity = '1';
+    ta.placeholder = '';
+  }
+  if (bg) bg.textContent = '✓ Klaar om te versturen';
 
   // Scroll naar patiëntbericht
   const finalBlock = document.getElementById('patient-msg-block');

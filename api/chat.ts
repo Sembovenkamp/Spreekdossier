@@ -22,7 +22,7 @@ type DocumentType =
 // Max tokens per type — smaller docs = faster & cheaper
 const MAX_TOKENS: Record<DocumentType, number> = {
   soep: 400,
-  patientbericht: 600,
+  patientbericht: 1200,
   verwijsbrief: 500,
   behandelplan: 500,
   tussenevaluatie: 400,
