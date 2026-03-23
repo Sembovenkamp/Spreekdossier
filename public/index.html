@@ -95,6 +95,9 @@
     .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 64px 64px; pointer-events: none; mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%); }
     .hero-content { text-align: center; max-width: 820px; margin: 0 auto; position: relative; z-index: 1; }
     .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,201,181,0.1); color: var(--primary); font-size: 13px; font-weight: 600; padding: 6px 16px; border-radius: 100px; margin-bottom: 28px; border: 1px solid rgba(0,201,181,0.25); }
+    .hero-countdown { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.04); color: var(--text-muted); font-size: 12px; padding: 5px 14px; border-radius: 100px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.08); }
+    .hero-countdown .countdown-icon { color: var(--primary); }
+    .hero-countdown #countdown-spots { color: var(--primary); font-weight: 700; }
     h1 { font-size: clamp(38px, 6.5vw, 68px); font-weight: 900; line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 24px; color: var(--text); }
     h1 .highlight { background: linear-gradient(135deg, var(--primary), #00e5cf); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .hero-sub { font-size: clamp(16px, 2.5vw, 19px); color: var(--text-muted); max-width: 620px; margin: 0 auto 40px; line-height: 1.65; }
@@ -103,6 +106,8 @@
     .btn-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--primary); color: #090912; font-weight: 700; font-size: 16px; padding: 16px 32px; border-radius: 100px; text-decoration: none; transition: all 0.25s; border: none; cursor: pointer; box-shadow: 0 0 24px rgba(0,201,181,0.35); }
     .btn-primary:hover { background: #00e5cf; transform: translateY(-2px); box-shadow: 0 0 36px rgba(0,201,181,0.5); }
     .btn-secondary { display: inline-flex; align-items: center; gap: 8px; background: transparent; color: var(--text); font-weight: 600; font-size: 15px; padding: 14px 28px; border-radius: 100px; text-decoration: none; transition: all 0.25s; border: 1.5px solid var(--border); cursor: pointer; }
+    .btn-share-wa { display: inline-flex; align-items: center; gap: 8px; background: rgba(37,211,102,0.12); color: #25d366; font-weight: 600; font-size: 14px; padding: 10px 20px; border-radius: 100px; text-decoration: none; transition: all 0.25s; border: 1px solid rgba(37,211,102,0.25); cursor: pointer; }
+    .btn-share-wa:hover { background: rgba(37,211,102,0.2); transform: translateY(-1px); }
     .btn-secondary:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-1px); }
     .hero-stats { display: flex; align-items: center; justify-content: center; gap: 36px; flex-wrap: wrap; }
     .stat-item { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-muted); font-weight: 500; }
@@ -286,6 +291,10 @@
     <div class="container">
       <div class="hero-content">
         <div class="hero-badge"><span>⚡</span> Compleet administratieplatform &nbsp;·&nbsp; Meer dan een AI-scribe &nbsp;·&nbsp; €X/mnd &nbsp;·&nbsp; Werkt met elk EPD</div>
+        <div class="hero-countdown" id="hero-countdown">
+          <span class="countdown-icon">⚡</span> Nog <span id="countdown-spots">47</span> plekken beschikbaar voor vroege toegang
+          <a href="/waitlist.html" style="color:var(--primary);text-decoration:underline;margin-left:6px;">Claim jouw plek →</a>
+        </div>
         <h1>Stop met typen.<br />Spreek in.<br /><span class="highlight">Dossier klaar.</span></h1>
         <p class="hero-sub">
           Spreek in na je behandeling — Spreekdossier schrijft de volledige documentatie. <strong>SOEP-notitie, behandelplan, patiëntbericht, verwijsbrief</strong> — het complete administratieplatform voor fysiotherapeuten. <strong>€X/mnd. Werkt met elk EPD.</strong>
@@ -293,6 +302,7 @@
         <div class="hero-buttons">
           <a href="voice-demo.html" class="btn-primary">🎙️ Probeer gratis — geen account nodig</a>
           <a href="#how" class="btn-secondary">▶ Hoe het werkt</a>
+          <a href="https://wa.me/?text=Spreekdossier%20-%20AI%20documentatie%20voor%20fysiotherapeuten%3A%20https%3A%2F%2Fspreekdossier.nl%3Futm_source%3Dwhatsapp%26utm_medium%3Dshare" target="_blank" class="btn-share-wa">📲 Deel via WhatsApp</a>
         </div>
         <div class="hero-stats">
           <div class="stat-item"><div class="stat-dot">⏱</div>Van memo naar dossier in <strong>15 sec</strong></div>
@@ -643,6 +653,26 @@
           <div class="faq-q">Wat maakt Spreekdossier uniek?<span class="faq-chevron">▾</span></div>
           <div class="faq-a">Spreekdossier is het enige Nederlandse platform dat het <strong>volledige behandeltraject</strong> dekt: intake, SOEP-notitie, behandelplan, tussenevaluatie, ontslagbrief, patiëntbericht en verwijsbrief. Alles voor <strong>€X/mnd</strong>, ongeacht hoeveel patiënten je behandelt. Werkt met elk EPD: Intramed, Fysiomanager, SpotOnMedics.</div>
         </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">Is Spreekdossier compatibel met mijn EPD (Intramed, Fysiomanager, SpotOnMedics)?<span class="faq-chevron">▾</span></div>
+          <div class="faq-a">Spreekdossier werkt naast elk EPD als losse tool. U kopieert de gegenereerde tekst in uw bestaande systeem. <strong>EPD-integratie (automatisch inplakken) staat op de roadmap.</strong></div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">Voldoet Spreekdossier aan NEN 7510?<span class="faq-chevron">▾</span></div>
+          <div class="faq-a">NEN 7510 is primair van toepassing op opslag van patiëntgegevens. <strong>Spreekdossier slaat geen patiëntdata op</strong>, waardoor de norm minder van toepassing is. Wij raden aan geen BSN of naam in uw memo te vermelden.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">Hoe lang duurt de gratis proefperiode?<span class="faq-chevron">▾</span></div>
+          <div class="faq-a">Vroege gebruikers krijgen <strong>3 maanden gratis toegang</strong>. Daarna €X per maand, op te zeggen wanneer u wilt. Geen creditcard nodig voor de proefperiode.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">Kan ik Spreekdossier ook gebruiken voor groepspraktijken?<span class="faq-chevron">▾</span></div>
+          <div class="faq-a">Momenteel is Spreekdossier geoptimaliseerd voor individuele therapeuten. <strong>Groepspraktijkfunctionaliteit</strong> (meerdere accounts, gedeelde templates) staat op de roadmap voor Q3 2026.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">Wat als de AI een fout maakt in mijn notitie?<span class="faq-chevron">▾</span></div>
+          <div class="faq-a">De output is altijd een concept dat u controleert en aanpast voor opslag. <strong>Spreekdossier is een werkhulp, geen automatische registratie.</strong> U blijft altijd verantwoordelijk voor de inhoud.</div>
+        </div>
       </div>
     </div>
   </section>
@@ -693,6 +723,8 @@
       <ul class="footer-links">
         <li><a href="privacy.html">Privacy & AVG</a></li>
         <li><a href="waitlist.html">Vroege toegang</a></li>
+        <li><a href="blog.html">Blog & Kennisbank</a></li>
+        <li><a href="vergelijk.html">Vergelijk tools</a></li>
         <li><a href="#">Algemene voorwaarden</a></li>
         <li><a href="#">Verwerkersovereenkomst</a></li>
         <li><a href="mailto:info@spreekdossier.nl">Contact</a></li>
@@ -776,6 +808,89 @@ function toggleFaq(el) {
   document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
   if (!isOpen) el.classList.add('open');
 }
+</script>
+
+<!-- EXIT-INTENT POPUP -->
+<div id="exit-popup" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:var(--bg-card); border:1.5px solid var(--primary); border-radius:16px; padding:40px 36px; max-width:440px; width:90%; position:relative; box-shadow:0 0 40px rgba(0,201,181,0.2);">
+    <button onclick="closeExitPopup()" style="position:absolute;top:14px;right:18px;background:none;border:none;color:var(--text-muted);font-size:22px;cursor:pointer;line-height:1;">×</button>
+    <p style="color:var(--primary);font-size:12px;font-weight:700;letter-spacing:.08em;margin:0 0 12px;">WACHT!</p>
+    <h3 style="margin:0 0 10px;font-size:22px;">Schrijf je gratis in voor vroege toegang</h3>
+    <p style="color:var(--text-muted);font-size:14px;margin:0 0 24px;">Geen creditcard. 3 maanden gratis. Annuleer wanneer je wilt.</p>
+    <form id="exit-form" onsubmit="submitExitForm(event)">
+      <input type="text" id="exit-name" placeholder="Voornaam" required style="width:100%;padding:12px 16px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;margin-bottom:10px;box-sizing:border-box;" />
+      <input type="email" id="exit-email" placeholder="E-mailadres" required style="width:100%;padding:12px 16px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;margin-bottom:16px;box-sizing:border-box;" />
+      <button type="submit" style="width:100%;padding:14px;background:var(--primary);color:#090912;font-weight:700;font-size:15px;border:none;border-radius:100px;cursor:pointer;">✦ Claim mijn gratis plek</button>
+      <div id="exit-msg" style="margin-top:10px;font-size:13px;text-align:center;"></div>
+    </form>
+  </div>
+</div>
+
+<!-- COOKIE BANNER -->
+<div id="cookie-banner" style="display:none; position:fixed; bottom:0; left:0; right:0; background:#0f0f1a; border-top:1px solid var(--border); padding:14px 24px; z-index:9998; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+  <p style="margin:0; font-size:13px; color:var(--text-muted);">Spreekdossier gebruikt functionele cookies. Geen tracking.</p>
+  <button onclick="acceptCookies()" style="background:var(--primary);color:#090912;font-weight:700;font-size:13px;padding:8px 20px;border:none;border-radius:100px;cursor:pointer;white-space:nowrap;">Begrepen</button>
+</div>
+
+<style>
+  #exit-popup.open { display:flex !important; }
+  #cookie-banner { display:flex; }
+</style>
+
+<script>
+  // Cookie banner
+  (function() {
+    if (!localStorage.getItem('cookie-accepted')) {
+      document.getElementById('cookie-banner').style.display = 'flex';
+    } else {
+      document.getElementById('cookie-banner').style.display = 'none';
+    }
+  })();
+  function acceptCookies() {
+    localStorage.setItem('cookie-accepted', '1');
+    document.getElementById('cookie-banner').style.display = 'none';
+  }
+
+  // Exit-intent popup
+  (function() {
+    if (sessionStorage.getItem('exit-popup-shown')) return;
+    let shown = false;
+    document.addEventListener('mouseleave', function(e) {
+      if (e.clientY <= 10 && !shown) {
+        shown = true;
+        sessionStorage.setItem('exit-popup-shown', '1');
+        document.getElementById('exit-popup').classList.add('open');
+      }
+    });
+  })();
+  function closeExitPopup() {
+    document.getElementById('exit-popup').classList.remove('open');
+  }
+  document.getElementById('exit-popup').addEventListener('click', function(e) {
+    if (e.target === this) closeExitPopup();
+  });
+  async function submitExitForm(e) {
+    e.preventDefault();
+    const name = document.getElementById('exit-name').value.trim();
+    const email = document.getElementById('exit-email').value.trim();
+    const msg = document.getElementById('exit-msg');
+    try {
+      const res = await fetch('https://formspree.io/f/xpwqknvd', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ name, email, source: 'exit-intent' })
+      });
+      if (res.ok) {
+        msg.textContent = '🎉 Ingeschreven! We laten het je weten bij launch.';
+        msg.style.color = 'var(--primary)';
+        document.getElementById('exit-form').reset();
+        setTimeout(closeExitPopup, 2500);
+      } else throw new Error();
+    } catch(err) {
+      msg.textContent = 'Iets ging mis. Probeer het later opnieuw.';
+      msg.style.color = '#ff6b6b';
+    }
+  }
 </script>
 </body>
 </html>
