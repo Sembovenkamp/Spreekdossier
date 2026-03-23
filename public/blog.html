@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hoe werkt AVG-proof AI documentatie voor fysiotherapeuten? | Spreekdossier Blog</title>
+  <meta name="description" content="Ontdek hoe AI-documentatie werkt voor fysiotherapeuten: van spraak naar SOEP-notitie in 30 seconden. AVG-proof, Nederlands, geen dataverlies." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://spreekdossier.nl/blog.html" />
+  <meta property="og:title" content="Hoe werkt AVG-proof AI documentatie voor fysiotherapeuten?" />
+  <meta property="og:description" content="Van 45 minuten papierwerk per dag naar 30 seconden per notitie. Hoe AI fysiotherapeuten helpt zonder hun data op te slaan." />
+  <meta property="og:url" content="https://spreekdossier.nl/blog.html" />
+  <meta property="og:type" content="article" />
+  <style>
+    :root {
+      --primary: #00C9B5;
+      --accent: #FF8C61;
+      --bg: #090912;
+      --bg-card: #0f0f1a;
+      --text: #f0f0f8;
+      --text-muted: rgba(240,240,248,0.55);
+      --border: rgba(255,255,255,0.08);
+      --radius: 16px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* NAV */
+    nav { background: rgba(9,9,18,0.95); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px); }
+    .nav-brand { font-weight: 800; font-size: 18px; color: white; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .nav-links { display: flex; gap: 24px; list-style: none; }
+    .nav-links a { color: rgba(255,255,255,0.65); font-size: 14px; text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover { color: white; }
+
+    /* LAYOUT */
+    .blog-container { max-width: 760px; margin: 0 auto; padding: 60px 24px 80px; }
+    .blog-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+    .blog-tag { background: rgba(0,201,181,0.12); color: var(--primary); font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 100px; border: 1px solid rgba(0,201,181,0.2); }
+    .blog-date { color: var(--text-muted); font-size: 13px; }
+    .blog-readtime { color: var(--text-muted); font-size: 13px; }
+
+    h1 { font-size: clamp(28px, 5vw, 42px); font-weight: 800; line-height: 1.2; margin-bottom: 20px; letter-spacing: -0.02em; }
+    .blog-intro { font-size: 18px; color: rgba(240,240,248,0.8); line-height: 1.75; margin-bottom: 40px; border-left: 3px solid var(--primary); padding-left: 20px; }
+
+    /* TOC */
+    .toc { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 28px; margin-bottom: 48px; }
+    .toc h3 { font-size: 14px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px; }
+    .toc ol { padding-left: 20px; }
+    .toc li { margin-bottom: 8px; }
+    .toc a { color: rgba(240,240,248,0.75); font-size: 14px; text-decoration: none; transition: color 0.2s; }
+    .toc a:hover { color: var(--primary); text-decoration: none; }
+
+    /* SECTIONS */
+    .blog-section { margin-bottom: 52px; }
+    .blog-section h2 { font-size: 26px; font-weight: 700; margin-bottom: 16px; padding-top: 8px; }
+    .blog-section h3 { font-size: 18px; font-weight: 600; margin: 24px 0 10px; color: rgba(240,240,248,0.9); }
+    .blog-section p { color: rgba(240,240,248,0.8); margin-bottom: 16px; font-size: 16px; }
+    .blog-section ul, .blog-section ol { padding-left: 24px; margin-bottom: 16px; }
+    .blog-section li { color: rgba(240,240,248,0.8); margin-bottom: 8px; font-size: 16px; }
+    .blog-section strong { color: var(--text); }
+
+    /* CALLOUT */
+    .callout { background: rgba(0,201,181,0.07); border: 1px solid rgba(0,201,181,0.2); border-radius: 12px; padding: 20px 24px; margin: 24px 0; }
+    .callout p { margin: 0; color: rgba(240,240,248,0.85); }
+
+    /* STAT BOX */
+    .stat-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin: 24px 0; }
+    .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-align: center; }
+    .stat-num { font-size: 32px; font-weight: 800; color: var(--primary); }
+    .stat-label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+    /* TABLE */
+    .blog-table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 14px; }
+    .blog-table th { background: rgba(0,201,181,0.1); color: var(--primary); padding: 12px 16px; text-align: left; font-weight: 700; border: 1px solid var(--border); }
+    .blog-table td { padding: 12px 16px; border: 1px solid var(--border); color: rgba(240,240,248,0.8); }
+    .blog-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+    .check { color: var(--primary); font-weight: 700; }
+    .cross { color: #ff6b6b; }
+
+    /* FAQ */
+    .faq-item { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 10px; }
+    .faq-q { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; cursor: pointer; font-size: 15px; font-weight: 600; background: var(--bg-card); gap: 16px; }
+    .faq-q:hover { background: rgba(0,201,181,0.04); }
+    .faq-chevron { color: var(--text-muted); font-size: 16px; transition: transform 0.25s; flex-shrink: 0; }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+    .faq-a { display: none; padding: 14px 20px 18px; font-size: 14px; color: var(--text-muted); background: var(--bg-card); border-top: 1px solid var(--border); line-height: 1.75; }
+    .faq-item.open .faq-a { display: block; }
+
+    /* CTA */
+    .blog-cta { background: linear-gradient(135deg, rgba(0,201,181,0.1), rgba(255,140,97,0.06)); border: 1.5px solid rgba(0,201,181,0.25); border-radius: var(--radius); padding: 40px; text-align: center; margin-top: 60px; }
+    .blog-cta h2 { font-size: 26px; font-weight: 700; margin-bottom: 12px; }
+    .blog-cta p { color: var(--text-muted); margin-bottom: 24px; font-size: 15px; }
+    .btn-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--primary); color: #090912; font-weight: 700; font-size: 15px; padding: 14px 28px; border-radius: 100px; text-decoration: none; transition: all 0.25s; }
+    .btn-primary:hover { background: #00e5cf; transform: translateY(-2px); text-decoration: none; }
+
+    /* FOOTER */
+    footer { background: #050509; border-top: 1px solid var(--border); padding: 32px 24px; text-align: center; color: rgba(255,255,255,0.3); font-size: 13px; }
+    footer a { color: rgba(255,255,255,0.4); text-decoration: none; margin: 0 8px; }
+    footer a:hover { color: white; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+    Spreekdossier
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="voice-demo.html">Demo</a></li>
+    <li><a href="vergelijk.html">Vergelijking</a></li>
+    <li><a href="waitlist.html">Vroege toegang</a></li>
+  </ul>
+</nav>
+
+<div class="blog-container">
+  <div class="blog-meta">
+    <span class="blog-tag">Kennisbank</span>
+    <span class="blog-date">2026</span>
+    <span class="blog-readtime">· 8 min leestijd</span>
+  </div>
+
+  <h1>Hoe werkt AVG-proof AI documentatie voor fysiotherapeuten?</h1>
+
+  <p class="blog-intro">Van 45 minuten papierwerk per dag naar 30 seconden per notitie. In dit artikel leggen we uit hoe spraak-naar-SOEP technologie werkt, wat het betekent voor uw privacy, en waarom Spreekdossier anders is dan andere tools.</p>
+
+  <div class="toc">
+    <h3>Inhoudsopgave</h3>
+    <ol>
+      <li><a href="#probleem">Het probleem: 45 minuten per dag aan papierwerk</a></li>
+      <li><a href="#hoe-werkt">Hoe AI documentatie werkt (spraak → tekst → SOEP)</a></li>
+      <li><a href="#avg">AVG compliance: wat slaan we op? (niets)</a></li>
+      <li><a href="#vergelijk">Hoe verschilt dit van Fysio AI en andere tools?</a></li>
+      <li><a href="#praktijk">Praktijkvoorbeeld: een behandelsessie in 30 seconden</a></li>
+      <li><a href="#faq">Veelgestelde vragen</a></li>
+      <li><a href="#cta">Probeer Spreekdossier gratis</a></li>
+    </ol>
+  </div>
+
+  <!-- SECTIE 1 -->
+  <div class="blog-section" id="probleem">
+    <h2>1. Het probleem: 45 minuten per dag aan papierwerk</h2>
+    <p>Fysiotherapeuten zijn wettelijk verplicht een dossier bij te houden voor iedere patiënt. Elke sessie, elke evaluatie, elk intakegesprek moet gedocumenteerd worden. In de praktijk betekent dit dat een aanzienlijk deel van de werkdag niet aan behandelen wordt besteed, maar aan schrijven.</p>
+
+    <div class="stat-box">
+      <div class="stat-card">
+        <div class="stat-num">31%</div>
+        <div class="stat-label">van werkweek naar administratie (NZa 2026)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">25.000</div>
+        <div class="stat-label">ZZP-fysiotherapeuten in Nederland</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">1 op 5</div>
+        <div class="stat-label">fysiotherapeuten raakt arbeidsongeschikt door werkstress</div>
+      </div>
+    </div>
+
+    <p>De administratielast is een van de meest genoemde oorzaken van werkstress en burn-out in de fysiotherapie. Het ministerie van VWS streeft niet voor niets naar 50% minder administratielast in de zorg in 2030 (Regeerakkoord VWS 2024).</p>
+
+    <p>Het probleem is structureel: WGBO verplicht fysiotherapeuten tot nauwkeurige verslaglegging, maar biedt geen hulpmiddelen om dat efficiënt te doen. Het gevolg? Fysiotherapeuten typen 's avonds thuis hun dossiers in, na een volle behandeldag.</p>
+
+    <div class="callout">
+      <p><strong>De rekensom:</strong> Bij 10 patiënten per dag en 4 minuten documentatie per patiënt verliest u 40 minuten per dag. In een werkmaand van 20 dagen is dat bijna <strong>14 uur</strong> — meer dan anderhalve volledige werkdag.</p>
+    </div>
+  </div>
+
+  <!-- SECTIE 2 -->
+  <div class="blog-section" id="hoe-werkt">
+    <h2>2. Hoe AI documentatie werkt (spraak → tekst → SOEP)</h2>
+    <p>De technologie achter Spreekdossier bestaat uit twee stappen: <strong>spraakherkenning</strong> en <strong>AI-generatie</strong>.</p>
+
+    <h3>Stap 1: Spraak naar tekst</h3>
+    <p>Na (of direct na) een behandeling spreekt u een korte memo in — 30 tot 60 seconden. U beschrijft wat u observeerde, welke behandeling u gaf en wat de volgende stap is. Geen jargon nodig; spreek zoals u normaal zou rapporteren aan een collega.</p>
+    <p>Spreekdossier gebruikt <strong>Whisper</strong> van OpenAI voor transcriptie — momenteel de meest nauwkeurige beschikbare spraakherkenning, specifiek goed in medische terminologie. Rotatorcuff, lumbosacraal, Maitland, McKenzie, NRS: allemaal herkend.</p>
+
+    <h3>Stap 2: Tekst naar gestructureerde documentatie</h3>
+    <p>De getranscribeerde tekst wordt vervolgens door een taalmodel (GPT-4o) verwerkt tot gestructureerde documentatie. Afhankelijk van het template dat u kiest, genereert Spreekdossier:</p>
+    <ul>
+      <li><strong>SOEP-notitie</strong> — Subjectief, Objectief, Evaluatie, Plan</li>
+      <li><strong>Behandelplan</strong> — Doelen, behandelfrequentie, verwachte duur</li>
+      <li><strong>Patiëntbericht</strong> — Toegankelijke samenvatting voor de patiënt (WhatsApp/e-mail)</li>
+      <li><strong>Verwijsbrief</strong> — Formele brief naar huisarts of specialist</li>
+      <li><strong>Tussenevaluatie</strong> — Voortgangsrapportage</li>
+      <li><strong>Ontslagbrief</strong> — Afsluiting van het behandeltraject</li>
+    </ul>
+
+    <p>De output wordt direct in uw browser getoond en nooit opgeslagen op onze servers. U controleert, past aan waar nodig, en kopieert de tekst naar uw EPD.</p>
+
+    <div class="callout">
+      <p><strong>Tip:</strong> U hoeft geen perfecte memo in te spreken. De AI vult aan op basis van context en markeert wat ontbreekt als <em>[Niet vermeld in memo]</em>. U kunt het transcript altijd bewerken voor u genereert.</p>
+    </div>
+  </div>
+
+  <!-- SECTIE 3 -->
+  <div class="blog-section" id="avg">
+    <h2>3. AVG compliance: wat slaan we op? (niets)</h2>
+    <p>De Autoriteit Persoonsgegevens heeft herhaaldelijk gewaarschuwd voor AI-tools die patiëntdata verwerken zonder expliciete toestemming en transparantie. Terechte zorg: zorgdata is bijzondere categorie-data onder de AVG, en als fysiotherapeut bent u zelf <strong>verwerkingsverantwoordelijke</strong>.</p>
+
+    <h3>Onze aanpak: privacy by design</h3>
+    <p>Spreekdossier is gebouwd met het principe dat we zo min mogelijk data verwerken, zo kort mogelijk:</p>
+
+    <ul>
+      <li>🎙️ <strong>Audio</strong>: verwerkt, direct daarna verwijderd — nooit opgeslagen</li>
+      <li>📝 <strong>Transcript + output</strong>: alleen in uw browser, nooit op onze servers</li>
+      <li>🌍 <strong>Verwerking</strong>: uitsluitend op EU-servers (Frankfurt/Amsterdam)</li>
+      <li>🚫 <strong>AI-training</strong>: uw data wordt nooit gebruikt om modellen te trainen (contractueel vastgelegd met OpenAI)</li>
+      <li>📋 <strong>Verwerkersovereenkomst</strong>: beschikbaar op aanvraag</li>
+    </ul>
+
+    <h3>Uw verantwoordelijkheid als therapeut</h3>
+    <p>Wij raden aan om <strong>geen naam, BSN of geboortedatum</strong> in uw memo te vermelden. Gebruik "patiënt" of een initiaal. Spreekdossier analyseert het medisch-functionele verhaal — niet de identiteitsgegevens.</p>
+
+    <div class="callout">
+      <p><strong>NEN 7510</strong>: Omdat Spreekdossier geen patiëntdata opslaat, is de NEN 7510-norm minder direct van toepassing dan bij EPD-systemen. U draagt zelf zorg voor het bewaren van de uiteindelijke documentatie in uw gecertificeerde EPD.</p>
+    </div>
+  </div>
+
+  <!-- SECTIE 4 -->
+  <div class="blog-section" id="vergelijk">
+    <h2>4. Hoe verschilt dit van Fysio AI en andere tools?</h2>
+    <p>Er zijn inmiddels meerdere AI-tools voor zorgprofessionals. Hoe positioneert Spreekdossier zich?</p>
+
+    <table class="blog-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Spreekdossier</th>
+          <th>Fysio AI</th>
+          <th>Generieke AI (ChatGPT)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>SOEP-notitie</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td>Handmatig prompt</td>
+        </tr>
+        <tr>
+          <td>Patiëntbericht</td>
+          <td class="check">✓</td>
+          <td class="cross">✗</td>
+          <td>Handmatig prompt</td>
+        </tr>
+        <tr>
+          <td>Verwijsbrief</td>
+          <td class="check">✓</td>
+          <td class="cross">✗</td>
+          <td>Handmatig prompt</td>
+        </tr>
+        <tr>
+          <td>Behandelplan</td>
+          <td class="check">✓</td>
+          <td class="cross">✗</td>
+          <td>Handmatig prompt</td>
+        </tr>
+        <tr>
+          <td>Ontslagbrief</td>
+          <td class="check">✓</td>
+          <td class="cross">✗</td>
+          <td>Handmatig prompt</td>
+        </tr>
+        <tr>
+          <td>AVG-proof (geen opslag)</td>
+          <td class="check">✓</td>
+          <td>?</td>
+          <td class="cross">✗ (data naar VS)</td>
+        </tr>
+        <tr>
+          <td>Flat-rate prijs</td>
+          <td class="check">✓ €X/mnd</td>
+          <td>€130–190/mnd</td>
+          <td>Variabel</td>
+        </tr>
+        <tr>
+          <td>Specifiek voor NL fysiotherapie</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="cross">✗</td>
+        </tr>
+        <tr>
+          <td>Gratis proefperiode</td>
+          <td class="check">✓ 3 maanden</td>
+          <td>?</td>
+          <td>Beperkt gratis tier</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>Het kernverschil: Spreekdossier dekt het <strong>volledige behandeltraject</strong> in één tool, voor één vaste prijs. Concurrenten focussen vaak op één document type of rekenen per gebruik.</p>
+  </div>
+
+  <!-- SECTIE 5 -->
+  <div class="blog-section" id="praktijk">
+    <h2>5. Praktijkvoorbeeld: een behandelsessie in 30 seconden gedocumenteerd</h2>
+    <p>Stel: u behandelt mevrouw de Vries, 52 jaar, met lage rugpijn en uitstraling naar het linkerbeen. U geeft een McKenzie-behandeling met mobilisatie L4-L5.</p>
+
+    <h3>Wat u inspreekt (30 seconden):</h3>
+    <div class="callout">
+      <p><em>"Patiënt 52 jaar, rugklachten laag met uitstraling naar linkerbeen, NRS 7/10. Vandaag McKenzie behandeling, mobilisatie L4-L5. Patiënt ervaart verlichting na behandeling, NRS daalt naar 4/10. Thuisoefeningen: extensie in buiklig 3x10 per dag. Volgende afspraak woensdag."</em></p>
+    </div>
+
+    <h3>Wat Spreekdossier genereert:</h3>
+    <p><strong>SOEP-notitie:</strong></p>
+    <ul>
+      <li><strong>S</strong>: Patiënt rapporteert lage rugpijn met uitstraling naar het linkerbeen. NRS 7/10 bij aanvang.</li>
+      <li><strong>O</strong>: Mobilisatie L4-L5 uitgevoerd volgens McKenzie-principe. Patiënt tolereert behandeling goed.</li>
+      <li><strong>E</strong>: Directe pijnreductie na behandeling. NRS gedaald van 7 naar 4/10. Positieve respons op extensiemobilisatie suggereert centralisatiepatroon.</li>
+      <li><strong>P</strong>: Continueren McKenzie-aanpak. Thuisoefeningen: extensie in buiklig 3×10 per dag. Herevaluatie volgende sessie. Volgende afspraak: woensdag.</li>
+    </ul>
+
+    <p>Aanvullend genereert Spreekdossier een toegankelijk patiëntbericht voor WhatsApp:</p>
+    <div class="callout">
+      <p><em>"Goedemorgen! Na de behandeling van vandaag hebt u extensieoefeningen meekrijgen: 3 sets van 10 herhalingen per dag, liggend op uw buik. Mocht u vragen hebben, bel of app gerust. Tot woensdag!"</em></p>
+    </div>
+
+    <p>Totale tijdsinvestering: <strong>onder de 60 seconden</strong>. Inclusief review en kopiëren naar EPD: 90 seconden.</p>
+  </div>
+
+  <!-- SECTIE 6 -->
+  <div class="blog-section" id="faq">
+    <h2>6. Veelgestelde vragen</h2>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Werkt Spreekdossier ook op mijn telefoon?<span class="faq-chevron">▾</span></div>
+      <div class="faq-a">Ja. Spreekdossier werkt volledig in de browser — op iPhone, Android, laptop en desktop. Chrome en Safari worden aanbevolen voor de beste spraakherkenning. Geen app-download nodig.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Moet ik per notitie betalen?<span class="faq-chevron">▾</span></div>
+      <div class="faq-a">Nee. Spreekdossier werkt met een flat-rate abonnement: één maandelijks bedrag, onbeperkt gebruik. Of u nu 5 of 50 patiënten per dag behandelt, de prijs blijft gelijk.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Kan ik de output aanpassen?<span class="faq-chevron">▾</span></div>
+      <div class="faq-a">Absoluut. De gegenereerde tekst is altijd een bewerkbaar concept. U kopieert het naar uw EPD en past het direct aan. Spreekdossier is een startpunt, geen eindpunt.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Wat als de AI termen verkeerd begrijpt?<span class="faq-chevron">▾</span></div>
+      <div class="faq-a">U kunt het transcript altijd corrigeren vóór u genereert. De AI is geoptimaliseerd voor fysiotherapeutische terminologie maar maakt soms fouten — net zoals een collega die snel dicteert. Controle blijft noodzakelijk.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Is er een bewerkersovereenkomst beschikbaar?<span class="faq-chevron">▾</span></div>
+      <div class="faq-a">Ja. Een bewerkersovereenkomst (DPA) is beschikbaar op aanvraag via <a href="mailto:info@spreekdossier.nl">info@spreekdossier.nl</a>. Dit is vereist voor AVG-compliance als u patiëntgegevens in uw memo vermeldt.</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="blog-cta" id="cta">
+    <p style="color:var(--primary);font-size:12px;font-weight:700;letter-spacing:.08em;margin-bottom:12px;">KLAAR OM TE STARTEN?</p>
+    <h2>Probeer Spreekdossier gratis</h2>
+    <p>Geen creditcard. 3 maanden gratis voor vroege gebruikers. Werkt direct in uw browser.</p>
+    <a href="voice-demo.html" class="btn-primary">🎙️ Open de gratis demo →</a>
+    <br /><br />
+    <a href="waitlist.html" style="color:var(--text-muted);font-size:14px;">Of schrijf u in voor vroege toegang →</a>
+  </div>
+</div>
+
+<footer>
+  <div>
+    <a href="index.html">Home</a>
+    <a href="privacy.html">Privacy & AVG</a>
+    <a href="vergelijk.html">Vergelijk tools</a>
+    <a href="waitlist.html">Vroege toegang</a>
+    <a href="mailto:info@spreekdossier.nl">Contact</a>
+  </div>
+  <p style="margin-top:16px;">© 2026 Spreekdossier · spreekdossier.nl</p>
+</footer>
+
+<script>
+function toggleFaq(el) {
+  const isOpen = el.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!isOpen) el.classList.add('open');
+}
+</script>
+</body>
+</html>
