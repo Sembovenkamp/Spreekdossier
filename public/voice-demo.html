@@ -1803,38 +1803,11 @@ async function generateDocument() {
 
   document.getElementById('output-container').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-  // Patiëntbericht — altijd tonen (v3)
-  setTimeout(function() {
-    try {
-      var pmBlock = document.getElementById('patient-msg-block');
-      var pmTextarea = document.getElementById('patient-msg-text');
-      var pmBadge = document.getElementById('patient-msg-badge');
-      var pmStep4 = document.getElementById('step-badge-4');
-
-      if (pmBlock) { pmBlock.style.display = 'block'; }
-      if (pmStep4) { pmStep4.style.display = 'block'; }
-
-      var d = new Date();
-      var dagen = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
-      var maanden = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
-      var datumTekst = dagen[d.getDay()] + ' ' + d.getDate() + ' ' + maanden[d.getMonth()];
-      var fallbackTekst = 'Hallo! Bedankt voor uw bezoek vandaag (' + datumTekst + ').\n\nHieronder uw instructies voor thuis:\n\nOefeningen: Voer de oefeningen dagelijks uit zoals besproken.\n\nVolgende afspraak: Zoals gepland. Wilt u verzetten? Stuur ons een berichtje!\n\nVragen? Stel ze gerust!\n\nMet vriendelijke groet,\nUw fysiotherapeut';
-
-      if (pmTextarea) {
-        pmTextarea.value = fallbackTekst;
-      }
-      if (pmBadge) {
-        pmBadge.textContent = 'AI versie laden...';
-      }
-
-      var memoVoorBericht = savedMemo || getMemoText();
-      if (memoVoorBericht && memoVoorBericht.length >= 5) {
-        generatePatientMessage(memoVoorBericht);
-      }
-    } catch(e) {
-      console.error('Patiëntbericht fout:', e);
-    }
-  }, 100);
+  // Patiëntbericht — genereer direct op basis van memo
+  var memoVoorBericht = savedMemo || getMemoText();
+  if (memoVoorBericht && memoVoorBericht.length >= 5) {
+    generatePatientMessage(memoVoorBericht);
+  }
 }
 
 // ===== PATIËNTBERICHT =====
