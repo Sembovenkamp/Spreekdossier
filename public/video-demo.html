@@ -7,7 +7,7 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
+html, body {
   background: #000;
   display: flex;
   align-items: center;
@@ -15,6 +15,9 @@ body {
   min-height: 100vh;
   font-family: -apple-system, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
   overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  overscroll-behavior: none;
 }
 
 /* ── Outer 16:9 wrapper ── */
@@ -120,6 +123,7 @@ body {
 
 /* Scrollable content area */
 .app-scroll {
+  pointer-events: none;
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
@@ -1407,6 +1411,11 @@ async function runSequence(){
 /* ── Boot ── */
 resetUI();
 setTimeout(function(){ runSequence(); }, 300);
+
+/* ── Blokkeer alle scroll/swipe input ── */
+document.addEventListener('wheel', function(e){ e.preventDefault(); }, { passive: false });
+document.addEventListener('touchmove', function(e){ e.preventDefault(); }, { passive: false });
+document.addEventListener('scroll', function(e){ e.preventDefault(); }, { passive: false });
 
 })();
 </script>
