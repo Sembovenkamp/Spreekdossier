@@ -1861,11 +1861,13 @@ async function generatePatientMessage(memoInput) {
   const badge = document.getElementById('patient-msg-badge');
   if (!block || !textarea || !badge) return;
 
-  // Loading state
-  textarea.value = '';
-  textarea.placeholder = 'Patiëntbericht wordt gegenereerd op basis van uw memo...';
+  // Loading state — zet tekst in het veld zelf zodat het zichtbaar is
+  textarea.value = '⏳ Patiëntbericht wordt gegenereerd op basis van uw memo...\n\nEven geduld, dit duurt ~5 seconden.';
   textarea.style.opacity = '0.5';
-  badge.textContent = '⏳ Bericht genereren...';
+  textarea.style.color = 'rgba(255,255,255,0.4)';
+  badge.textContent = '⏳ Genereren...';
+  const subEl = document.querySelector('.patient-msg-sub');
+  if (subEl) subEl.textContent = 'AI schrijft bericht op basis van uw sessie...';
 
   // Reset vorige berichten
   patientMessages = { whatsapp: '', email: '', sms: '' };
@@ -1916,9 +1918,12 @@ async function generatePatientMessage(memoInput) {
   if (ta) {
     ta.value = patientMessages[currentChannel] || patientMessages.whatsapp;
     ta.style.opacity = '1';
+    ta.style.color = '';
     ta.placeholder = '';
   }
   if (bg) bg.textContent = '✓ Klaar om te versturen';
+  const subElDone = document.querySelector('.patient-msg-sub');
+  if (subElDone) subElDone.textContent = 'Klaar om te versturen via WhatsApp of e-mail';
 
   // Scroll naar patiëntbericht
   const finalBlock = document.getElementById('patient-msg-block');
