@@ -181,12 +181,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Build prompt — passes template/templateName for "alle" JSON mode
   const userPrompt = buildUserPrompt(docType, memo, template, templateName);
 
+  // ── Model selectie: patientbericht gebruikt haiku (sneller, voldoende kwaliteit) ──
+  const modelForType = docType === 'patientbericht' ? FALLBACK_MODEL : PRIMARY_MODEL;
+
   // ── Call primary model, fall back to Sonnet on API error ──────────────────
   let response: Response;
-  let usedModel = PRIMARY_MODEL;
+  let usedModel = modelForType;
 
   try {
-    response = await callAnthropic(ANTHROPIC_API_KEY, PRIMARY_MODEL, maxTokens, userPrompt);
+    response = await callAnthropic(ANTHROPIC_API_KEY, modelForType, maxTokens, userPrompt);
 
     // If primary model returns a non-OK status, retry with fallback
     if (!response.ok) {
