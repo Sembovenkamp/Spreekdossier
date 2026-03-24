@@ -1245,8 +1245,8 @@ async function runSequence(){
 
   var WA_MESSAGE = 'Hoi Jan! 👋 Super dat de pijn al minder is geworden. Doe thuis de rugstrekkers 3x per dag (10x) en de cat-cow stretch elke ochtend. Geen zwaar tillen deze week. Volgende afspraak: donderdag 14:00. Vragen? Stuur gerust een appje! 💪';
 
-  /* 0-3s: Idle UI — viewer orients */
-  await delay(3000);
+  /* 0-0.8s: Direct starten */
+  await delay(800);
 
   /* Show cursor, position it off to the side first */
   showCursor();

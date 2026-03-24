@@ -588,14 +588,25 @@
         <h2>Van gesproken memo naar volledig dossier</h2>
         <p class="section-body">Spreek in na je behandeling. In 15 seconden staat alles klaar.</p>
       </div>
-      <div style="max-width: 860px; margin: 0 auto; border-radius: 16px; overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08);">
-        <iframe src="video-demo.html" style="width:100%; aspect-ratio:16/9; border:none; display:block;" loading="lazy" title="Spreekdossier demo"></iframe>
+      <div style="max-width: 860px; margin: 0 auto; position: relative;">
+        <!-- Pulserende glow border -->
+        <div style="position:absolute; inset:-2px; border-radius:18px; background: linear-gradient(135deg, rgba(0,201,181,0.5), rgba(99,102,241,0.3), rgba(0,201,181,0.5)); background-size: 200% 200%; animation: demoBorderPulse 3s ease-in-out infinite; z-index:0;"></div>
+        <div style="position:relative; border-radius:16px; overflow:hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.6); z-index:1;">
+          <iframe src="video-demo.html" style="width:100%; aspect-ratio:16/9; border:none; display:block;" loading="lazy" title="Spreekdossier demo"></iframe>
+        </div>
       </div>
-      <div style="text-align:center; margin-top: 28px;">
+      <div style="text-align:center; margin-top: 28px; display:flex; align-items:center; justify-content:center; gap: 16px; flex-wrap:wrap;">
         <a href="voice-demo.html?key=fysio2026" style="display:inline-flex; align-items:center; gap:8px; background: var(--primary); color: white; font-weight: 700; font-size: 15px; padding: 14px 28px; border-radius: 100px; text-decoration: none; transition: all 0.2s;">🎙️ Probeer het zelf — gratis →</a>
+        <span style="font-size:13px; color:var(--text-muted);">Geen registratie nodig · Direct starten</span>
       </div>
     </div>
   </section>
+  <style>
+  @keyframes demoBorderPulse {
+    0%, 100% { opacity: 0.4; background-position: 0% 50%; }
+    50% { opacity: 0.9; background-position: 100% 50%; }
+  }
+  </style>
 
   <!-- HOW IT WORKS -->
   <section id="how">
