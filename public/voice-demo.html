@@ -1863,8 +1863,10 @@ async function generatePatientMessage(memoInput) {
   const badge = document.getElementById('patient-msg-badge');
   if (!block || !textarea || !badge) return;
 
-  // Toon block in loading state — nog geen content
+  // Toon block + stap-badge in loading state
   block.style.display = 'block';
+  const stepBadge4 = document.getElementById('step-badge-4');
+  if (stepBadge4) stepBadge4.style.display = 'block';
   textarea.value = '';
   textarea.placeholder = 'Patiëntbericht wordt gegenereerd op basis van uw memo...';
   textarea.style.opacity = '0.5';
