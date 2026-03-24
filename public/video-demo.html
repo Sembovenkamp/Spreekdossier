@@ -28,11 +28,31 @@ body {
   font-size: calc(min(960px, 100vw) / 96);
 }
 
+/* ── Animated cursor ── */
+.demo-cursor {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.92);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.7), 0 0 0 1.5px rgba(0,0,0,0.25);
+  pointer-events: none;
+  z-index: 100;
+  transform: translate(-50%, -50%) scale(1);
+  transition: left 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              top 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.15s ease;
+  display: none;
+}
+.demo-cursor.clicking {
+  transform: translate(-50%, -50%) scale(0.7);
+}
+
 /* ── Fake browser chrome ── */
 .titlebar {
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 3.2em;
+  height: 3.4em;
   background: #111120;
   display: flex;
   align-items: center;
@@ -47,15 +67,14 @@ body {
 .dot.y { background: #febc2e; }
 .dot.g { background: #28c840; }
 .urlbar {
-  flex: 1;
   margin-left: 1em;
   background: rgba(255,255,255,.07);
   border-radius: .5em;
-  height: 2em;
+  height: 2.1em;
   display: flex;
   align-items: center;
   padding: 0 1em;
-  font-size: .9em;
+  font-size: .95em;
   color: rgba(255,255,255,.4);
   letter-spacing: .02em;
 }
@@ -63,7 +82,7 @@ body {
 /* ── App area ── */
 .app {
   position: absolute;
-  top: 3.2em; left: 0; right: 0; bottom: 0;
+  top: 3.4em; left: 0; right: 0; bottom: 0;
   background: #070710;
   display: flex;
   flex-direction: column;
@@ -72,7 +91,7 @@ body {
 
 /* App header */
 .app-header {
-  padding: .9em 1.8em .75em;
+  padding: 1em 2em .85em;
   border-bottom: 1px solid rgba(255,255,255,.06);
   display: flex;
   align-items: center;
@@ -80,7 +99,7 @@ body {
   flex-shrink: 0;
 }
 .logo {
-  font-size: 1.4em;
+  font-size: 1.5em;
   font-weight: 700;
   color: #00C9B5;
   letter-spacing: -.02em;
@@ -91,12 +110,12 @@ body {
 .logo-icon { font-size: 1.1em; }
 .logo-dot { color: rgba(255,255,255,.45); font-weight: 400; }
 .header-badge {
-  font-size: .85em;
+  font-size: .88em;
   background: rgba(0,201,181,.1);
   color: #00C9B5;
   border: 1px solid rgba(0,201,181,.2);
   border-radius: 2em;
-  padding: .3em .9em;
+  padding: .3em .95em;
   white-space: nowrap;
 }
 
@@ -105,10 +124,10 @@ body {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 1.2em 1.8em 1.5em;
+  padding: 1.4em 2em 1.6em;
   display: flex;
   flex-direction: column;
-  gap: 1.1em;
+  gap: 1.3em;
   scrollbar-width: none;
 }
 .app-scroll::-webkit-scrollbar { display: none; }
@@ -117,44 +136,44 @@ body {
 .step-badge {
   display: flex;
   align-items: center;
-  gap: .6em;
-  margin-bottom: .5em;
+  gap: .7em;
+  margin-bottom: .65em;
 }
 .step-num {
-  width: 1.6em;
-  height: 1.6em;
+  width: 1.9em;
+  height: 1.9em;
   border-radius: 50%;
   background: rgba(0,201,181,.15);
   border: 1px solid rgba(0,201,181,.3);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: .8em;
+  font-size: .88em;
   font-weight: 700;
   color: #00C9B5;
   flex-shrink: 0;
 }
 .step-label {
-  font-size: .9em;
+  font-size: .98em;
   font-weight: 600;
-  color: rgba(255,255,255,.7);
+  color: rgba(255,255,255,.75);
 }
 
-/* ── Template selector (6 buttons) ── */
+/* ── Template selector ── */
 .tpl-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: .5em;
+  gap: .55em;
 }
 .tpl-btn {
   background: rgba(255,255,255,.04);
   border: 1px solid rgba(255,255,255,.08);
-  border-radius: .7em;
-  padding: .6em .4em;
+  border-radius: .75em;
+  padding: .7em .4em;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: .25em;
+  gap: .3em;
   cursor: pointer;
   transition: all .25s;
   text-align: center;
@@ -163,41 +182,36 @@ body {
   background: rgba(0,201,181,.1);
   border-color: rgba(0,201,181,.35);
 }
-.tpl-icon { font-size: 1.15em; }
+.tpl-icon { font-size: 1.2em; }
 .tpl-name {
-  font-size: .7em;
+  font-size: .78em;
   font-weight: 600;
   color: rgba(255,255,255,.65);
   line-height: 1.2;
 }
 .tpl-btn.active .tpl-name { color: #00C9B5; }
-.tpl-sub {
-  font-size: .6em;
-  color: rgba(255,255,255,.3);
-  line-height: 1.2;
-  display: none;
-}
 
 /* Template description */
 .tpl-desc {
-  font-size: .85em;
-  color: rgba(255,255,255,.45);
+  font-size: .88em;
+  color: rgba(255,255,255,.5);
   background: rgba(255,255,255,.03);
   border: 1px solid rgba(255,255,255,.06);
-  border-radius: .6em;
-  padding: .55em .9em;
+  border-radius: .65em;
+  padding: .6em 1em;
   transition: opacity .3s;
+  margin-top: .55em;
 }
 
 /* ── Recording section ── */
 .rec-section {
   background: rgba(255,255,255,.03);
   border: 1px solid rgba(255,255,255,.07);
-  border-radius: .9em;
-  padding: 1em 1.2em;
+  border-radius: 1em;
+  padding: 1.1em 1.4em;
   display: flex;
   flex-direction: column;
-  gap: .75em;
+  gap: .8em;
 }
 
 /* Status row */
@@ -210,12 +224,12 @@ body {
   display: flex;
   align-items: center;
   gap: .5em;
-  font-size: .85em;
+  font-size: .88em;
   color: rgba(255,255,255,.55);
 }
 .status-dot {
-  width: .7em;
-  height: .7em;
+  width: .72em;
+  height: .72em;
   border-radius: 50%;
   background: rgba(255,255,255,.25);
   transition: background .3s;
@@ -231,11 +245,11 @@ body {
   50% { opacity: .3; }
 }
 .avg-badge {
-  font-size: .72em;
+  font-size: .76em;
   background: rgba(0,201,181,.07);
   border: 1px solid rgba(0,201,181,.15);
   border-radius: 2em;
-  padding: .25em .7em;
+  padding: .28em .75em;
   color: rgba(0,201,181,.7);
 }
 
@@ -244,14 +258,14 @@ body {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  gap: .25em;
-  height: 2.2em;
+  gap: .28em;
+  height: 2.4em;
   opacity: .25;
   transition: opacity .4s;
 }
 .audiometer.active { opacity: 1; }
 .audio-bar {
-  width: .3em;
+  width: .32em;
   border-radius: .2em;
   background: #00C9B5;
   height: .4em;
@@ -261,7 +275,7 @@ body {
 /* Timer */
 .rec-timer {
   text-align: center;
-  font-size: 1em;
+  font-size: 1.05em;
   font-weight: 600;
   color: rgba(255,255,255,.35);
   font-variant-numeric: tabular-nums;
@@ -275,18 +289,18 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: .6em;
+  gap: .65em;
 }
 .mic-btn {
-  width: 4em;
-  height: 4em;
+  width: 4.2em;
+  height: 4.2em;
   border-radius: 50%;
   background: rgba(255,255,255,.07);
   border: 2px solid rgba(255,255,255,.14);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.6em;
+  font-size: 1.65em;
   cursor: pointer;
   transition: all .3s;
   position: relative;
@@ -309,7 +323,7 @@ body {
   100% { transform: scale(1.4); opacity: 0; }
 }
 .mic-hint {
-  font-size: .75em;
+  font-size: .78em;
   color: rgba(255,255,255,.25);
   text-align: center;
 }
@@ -318,11 +332,11 @@ body {
 .transcript-box {
   background: rgba(0,0,0,.25);
   border: 1px solid rgba(255,255,255,.08);
-  border-radius: .6em;
-  padding: .7em .9em;
-  min-height: 3.5em;
-  font-size: .82em;
-  line-height: 1.6;
+  border-radius: .65em;
+  padding: .75em 1em;
+  min-height: 3.8em;
+  font-size: .86em;
+  line-height: 1.65;
   color: rgba(255,255,255,.75);
   position: relative;
 }
@@ -351,9 +365,9 @@ body {
 }
 .ctrl-btn {
   flex: 1;
-  padding: .45em .7em;
-  border-radius: .5em;
-  font-size: .78em;
+  padding: .5em .7em;
+  border-radius: .55em;
+  font-size: .82em;
   font-weight: 500;
   border: 1px solid rgba(255,255,255,.08);
   background: rgba(255,255,255,.04);
@@ -368,12 +382,12 @@ body {
 /* ── Generate button ── */
 .gen-btn {
   width: 100%;
-  padding: .85em;
-  border-radius: .7em;
+  padding: .9em;
+  border-radius: .75em;
   background: rgba(0,201,181,.12);
   border: 1px solid rgba(0,201,181,.2);
   color: rgba(0,201,181,.4);
-  font-size: .95em;
+  font-size: 1em;
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -394,7 +408,7 @@ body {
 }
 @keyframes gen-pulse {
   0%, 100% { box-shadow: 0 0 1.5em rgba(0,201,181,.3); }
-  50% { box-shadow: 0 0 3em rgba(0,201,181,.65); }
+  50% { box-shadow: 0 0 3.5em rgba(0,201,181,.7); }
 }
 .gen-btn.clicked {
   transform: scale(.95);
@@ -404,12 +418,12 @@ body {
 .loading-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(7,7,16,.92);
+  background: rgba(7,7,16,.93);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.1em;
+  gap: 1.2em;
   opacity: 0;
   pointer-events: none;
   transition: opacity .35s;
@@ -417,7 +431,7 @@ body {
 }
 .loading-overlay.visible { opacity: 1; pointer-events: auto; }
 .loading-title {
-  font-size: 1.1em;
+  font-size: 1.15em;
   font-weight: 600;
   color: rgba(255,255,255,.85);
   margin-bottom: .3em;
@@ -425,25 +439,25 @@ body {
 .loading-steps-list {
   display: flex;
   flex-direction: column;
-  gap: .6em;
-  width: 16em;
+  gap: .7em;
+  width: 17em;
 }
 .load-step {
   display: flex;
   align-items: center;
-  gap: .7em;
-  font-size: .9em;
+  gap: .75em;
+  font-size: .95em;
   color: rgba(255,255,255,.3);
   transition: color .4s;
 }
 .load-step.done { color: rgba(255,255,255,.85); }
 .load-step.active { color: rgba(255,255,255,.75); }
 .load-icon {
-  width: 1.6em; height: 1.6em;
+  width: 1.7em; height: 1.7em;
   border-radius: 50%;
   border: 1.5px solid rgba(255,255,255,.12);
   display: flex; align-items: center; justify-content: center;
-  font-size: .75em;
+  font-size: .8em;
   flex-shrink: 0;
   transition: all .3s;
 }
@@ -451,13 +465,13 @@ body {
   background: #00C9B5;
   border-color: #00C9B5;
   color: #070710;
-  font-size: .8em;
+  font-size: .85em;
 }
 .load-step.active .load-icon {
   border-color: #00C9B5;
 }
 .load-spinner {
-  width: .75em; height: .75em;
+  width: .78em; height: .78em;
   border: 1.5px solid rgba(0,201,181,.25);
   border-top-color: #00C9B5;
   border-radius: 50%;
@@ -481,28 +495,28 @@ body {
   display: flex;
   align-items: center;
   gap: .7em;
-  margin-bottom: .7em;
+  margin-bottom: .8em;
   flex-wrap: wrap;
 }
 .output-title {
-  font-size: 1em;
+  font-size: 1.05em;
   font-weight: 600;
   color: rgba(255,255,255,.85);
 }
 .output-gen-badge {
-  font-size: .72em;
+  font-size: .76em;
   background: rgba(0,201,181,.1);
   border: 1px solid rgba(0,201,181,.2);
   border-radius: 2em;
-  padding: .25em .7em;
+  padding: .28em .75em;
   color: #00C9B5;
 }
 .output-time-badge {
-  font-size: .72em;
+  font-size: .76em;
   background: rgba(52,199,89,.1);
   border: 1px solid rgba(52,199,89,.2);
   border-radius: 2em;
-  padding: .25em .7em;
+  padding: .28em .75em;
   color: #34C759;
   opacity: 0;
   transform: scale(.8);
@@ -517,17 +531,17 @@ body {
 .soep-blocks {
   display: flex;
   flex-direction: column;
-  gap: .5em;
+  gap: .55em;
 }
 .soep-block {
   background: rgba(255,255,255,.035);
   border: 1px solid rgba(255,255,255,.07);
   border-left-width: 3px;
-  border-radius: .65em;
-  padding: .65em .9em;
+  border-radius: .7em;
+  padding: .7em 1em;
   display: flex;
   align-items: flex-start;
-  gap: .7em;
+  gap: .75em;
   opacity: 0;
   transform: translateX(-1em);
   transition: opacity .4s, transform .4s;
@@ -541,7 +555,7 @@ body {
 .soep-block.e { border-left-color: #BF5AF2; }
 .soep-block.p { border-left-color: #34C759; }
 .soep-letter {
-  font-size: .8em;
+  font-size: .85em;
   font-weight: 800;
   letter-spacing: .05em;
   min-width: 1.2em;
@@ -552,42 +566,46 @@ body {
 .soep-block.o .soep-letter { color: #007AFF; }
 .soep-block.e .soep-letter { color: #BF5AF2; }
 .soep-block.p .soep-letter { color: #34C759; }
-.soep-content {
-  flex: 1;
-}
+.soep-content { flex: 1; }
 .soep-head {
-  font-size: .78em;
+  font-size: .82em;
   font-weight: 600;
   color: rgba(255,255,255,.6);
   margin-bottom: .2em;
 }
 .soep-text {
-  font-size: .8em;
+  font-size: .84em;
   color: rgba(255,255,255,.72);
-  line-height: 1.5;
+  line-height: 1.55;
 }
 .soep-copy {
-  font-size: .68em;
+  font-size: .72em;
   color: rgba(255,255,255,.3);
-  padding: .25em .5em;
+  padding: .28em .55em;
   border: 1px solid rgba(255,255,255,.08);
   border-radius: .4em;
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
+  transition: background .2s, color .2s;
+}
+.soep-copy.highlight {
+  background: rgba(0,201,181,.15);
+  color: #00C9B5;
+  border-color: rgba(0,201,181,.3);
 }
 
 /* Output actions */
 .output-actions {
   display: flex;
   gap: .5em;
-  margin-top: .4em;
+  margin-top: .5em;
 }
 .out-btn {
   flex: 1;
-  padding: .6em;
-  border-radius: .55em;
-  font-size: .8em;
+  padding: .62em;
+  border-radius: .6em;
+  font-size: .82em;
   font-weight: 500;
   border: 1px solid rgba(255,255,255,.1);
   background: rgba(255,255,255,.05);
@@ -610,17 +628,18 @@ body {
 }
 .patient-tabs {
   display: flex;
-  gap: .4em;
-  margin-bottom: .6em;
+  gap: .45em;
+  margin-bottom: .65em;
 }
 .ptab {
-  font-size: .78em;
-  padding: .35em .75em;
+  font-size: .82em;
+  padding: .38em .82em;
   border-radius: 2em;
   border: 1px solid rgba(255,255,255,.08);
   color: rgba(255,255,255,.4);
   background: transparent;
   cursor: pointer;
+  transition: all .25s;
 }
 .ptab.active {
   background: rgba(37,211,102,.12);
@@ -630,11 +649,11 @@ body {
 .patient-msg-box {
   background: rgba(255,255,255,.03);
   border: 1px solid rgba(255,255,255,.07);
-  border-radius: .65em;
-  padding: .75em .9em;
-  font-size: .82em;
+  border-radius: .7em;
+  padding: .8em 1em;
+  font-size: .86em;
   color: rgba(255,255,255,.7);
-  line-height: 1.55;
+  line-height: 1.6;
 }
 
 /* ── Outro overlay ── */
@@ -646,22 +665,22 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: .9em;
+  gap: 1em;
   opacity: 0;
   pointer-events: none;
   transition: opacity .6s;
   z-index: 10;
 }
 .outro.visible { opacity: 1; pointer-events: auto; }
-.outro-logo { font-size: 2em; font-weight: 800; color: #00C9B5; }
-.outro-tagline { font-size: 1.1em; color: rgba(255,255,255,.55); }
+.outro-logo { font-size: 2.1em; font-weight: 800; color: #00C9B5; }
+.outro-tagline { font-size: 1.15em; color: rgba(255,255,255,.55); }
 .outro-cta {
-  margin-top: .4em;
-  padding: .75em 2em;
-  border-radius: .7em;
+  margin-top: .5em;
+  padding: .8em 2.2em;
+  border-radius: .75em;
   background: #00C9B5;
   color: #070710;
-  font-size: 1em;
+  font-size: 1.05em;
   font-weight: 700;
   border: none;
   cursor: pointer;
@@ -713,6 +732,9 @@ body {
     <div class="urlbar">🔒 app.spreekdossier.nl</div>
   </div>
 
+  <!-- Animated cursor -->
+  <div class="demo-cursor" id="demoCursor"></div>
+
   <!-- App -->
   <div class="app">
 
@@ -735,11 +757,11 @@ body {
           <div class="step-label">Kies je sjabloon</div>
         </div>
         <div class="tpl-grid">
-          <div class="tpl-btn" id="tpl0">
+          <div class="tpl-btn active" id="tpl0">
             <span class="tpl-icon">🏁</span>
             <span class="tpl-name">Intake</span>
           </div>
-          <div class="tpl-btn active" id="tpl1">
+          <div class="tpl-btn" id="tpl1">
             <span class="tpl-icon">🛠️</span>
             <span class="tpl-name">Behandeling</span>
           </div>
@@ -760,8 +782,8 @@ body {
             <span class="tpl-name">Administratie</span>
           </div>
         </div>
-        <div class="tpl-desc" id="tplDesc" style="margin-top:.5em">
-          Maak een professionele SOEP-notitie op basis van je behandelsessie
+        <div class="tpl-desc" id="tplDesc">
+          Eerste contact, anamnese en diagnose vastleggen
         </div>
       </div>
 
@@ -836,7 +858,7 @@ body {
               <div class="soep-head">Subjectief</div>
               <div class="soep-text">Patiënt meldt pijnafname van NRS 7 naar 4. Rugklachten links, 3 weken aanwezig.</div>
             </div>
-            <div class="soep-copy">📋 Kopieer</div>
+            <div class="soep-copy" id="copySBtn">📋 Kopieer</div>
           </div>
           <div class="soep-block o" id="soepO">
             <div class="soep-letter">O</div>
@@ -875,23 +897,23 @@ body {
           <div class="step-num">4</div>
           <div class="step-label">Stuur patiëntbericht</div>
         </div>
-        <div class="patient-tabs">
-          <div class="ptab active">💬 WhatsApp</div>
-          <div class="ptab">📧 E-mail</div>
-          <div class="ptab">📱 SMS</div>
+        <div class="patient-tabs" id="patientTabs">
+          <div class="ptab active" id="ptabWA">💬 WhatsApp</div>
+          <div class="ptab" id="ptabEmail">📧 E-mail</div>
+          <div class="ptab" id="ptabSMS">📱 SMS</div>
         </div>
         <div class="patient-msg-box" id="patientMsg">
           Hoi Jan! 👋 Fijn dat je er was. Rugstrekkers 3x per dag doen (10x). Pijn neemt goed af! Afspraak: donderdag 14:00. Vragen? Stuur gerust een berichtje 💪
         </div>
       </div>
 
-      <!-- Spacer for scroll breathing room -->
-      <div style="height:1em;flex-shrink:0"></div>
+      <!-- Spacer -->
+      <div style="height:1.2em;flex-shrink:0"></div>
 
     </div><!-- /app-scroll -->
   </div><!-- /app -->
 
-  <!-- Loading overlay (above app, below outro) -->
+  <!-- Loading overlay -->
   <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-title">🛠️ Behandelnotitie wordt aangemaakt...</div>
     <div class="loading-steps-list">
@@ -909,7 +931,7 @@ body {
     <button class="outro-cta" onclick="window.parent && (window.parent.location.href='https://spreekdossier.nl')">Gratis starten →</button>
   </div>
 
-  <!-- Play overlay -->
+  <!-- Play overlay (hidden by default — auto-starts) -->
   <div class="play-overlay hidden" id="playOverlay" onclick="startDemo()">
     <div class="play-btn-big">▶</div>
     <div class="play-label">Demo afspelen</div>
@@ -939,6 +961,43 @@ function typeText(target, text, msPC){
   });
 }
 
+/* ── Cursor ── */
+var cursor = el('demoCursor');
+
+function showCursor(){
+  cursor.style.display = 'block';
+}
+
+function moveCursor(xPct, yPct){
+  // xPct/yPct are percentages of the demo-wrapper
+  var wrapper = el('demoWrapper');
+  var w = wrapper.offsetWidth;
+  var h = wrapper.offsetHeight;
+  cursor.style.left = (xPct / 100 * w) + 'px';
+  cursor.style.top  = (yPct / 100 * h) + 'px';
+}
+
+function clickCursor(){
+  return new Promise(function(res){
+    cursor.classList.add('clicking');
+    setTimeout(function(){
+      cursor.classList.remove('clicking');
+      res();
+    }, 220);
+  });
+}
+
+// Get element centre as % of wrapper
+function elPct(elem){
+  var wrapper = el('demoWrapper');
+  var wr = wrapper.getBoundingClientRect();
+  var er = elem.getBoundingClientRect();
+  return {
+    x: ((er.left + er.width / 2 - wr.left) / wr.width) * 100,
+    y: ((er.top + er.height / 2 - wr.top) / wr.height) * 100
+  };
+}
+
 /* ── Audiometer ── */
 var audioInterval = null;
 var audioBars = [el('ab0'),el('ab1'),el('ab2'),el('ab3'),el('ab4'),el('ab5'),el('ab6'),el('ab7'),el('ab8')];
@@ -953,7 +1012,7 @@ function startAudiometer(){
       var base = barHeights[i];
       var h = base + Math.sin(t + i * 0.7) * 0.3 + Math.sin(t * 1.7 + i * 0.4) * 0.2;
       h = Math.max(0.08, Math.min(1, h));
-      b.style.height = (h * 2.2) + 'em';
+      b.style.height = (h * 2.4) + 'em';
     });
   }, 80);
 }
@@ -981,7 +1040,6 @@ function startTimer(){
 
 function stopTimer(){
   clearInterval(timerInterval);
-  el('recTimer').classList.remove('active');
 }
 
 /* ── Loading steps ── */
@@ -1002,6 +1060,9 @@ function setLoadStep(idx, state){
 
 /* ── Reset ── */
 function resetUI(){
+  // Cursor
+  cursor.style.display = 'none';
+  cursor.style.transition = 'none';
   // Mic
   el('micBtn').className = 'mic-btn';
   el('statusDot').className = 'status-dot';
@@ -1014,24 +1075,37 @@ function resetUI(){
   el('tPlaceholder').style.display = '';
   el('tText').textContent = '';
   el('tCursor').style.display = 'none';
+  // Templates
+  for(var i=0;i<6;i++){
+    var b = el('tpl'+i);
+    if(b) b.classList.remove('active');
+  }
+  el('tpl0').classList.add('active');
+  el('tplDesc').textContent = 'Eerste contact, anamnese en diagnose vastleggen';
   // Gen btn
   el('genBtn').className = 'gen-btn';
   // Loading overlay
   el('loadingOverlay').className = 'loading-overlay';
-  for(var i=0;i<4;i++) setLoadStep(i,'');
+  for(var j=0;j<4;j++) setLoadStep(j,'');
   // Output
   el('outputSection').className = 'output-section';
-  ['soepS','soepO','soepE','soepP'].forEach(function(id){ el(id).className = el(id).className.replace(' visible',''); });
+  ['soepS','soepO','soepE','soepP'].forEach(function(id){
+    el(id).classList.remove('visible');
+  });
   el('timeBadge').className = 'output-time-badge';
+  el('copySBtn').classList.remove('highlight');
   // Patient
   el('patientSection').className = 'patient-section';
+  el('ptabWA').className = 'ptab active';
+  el('ptabEmail').className = 'ptab';
+  el('ptabSMS').className = 'ptab';
   // Outro
   el('outro').className = 'outro';
   // Scroll to top
   el('appScroll').scrollTop = 0;
 }
 
-/* ── Template selection animation ── */
+/* ── Template selection ── */
 function selectTemplate(idx){
   for(var i=0;i<6;i++){
     var btn = el('tpl'+i);
@@ -1040,9 +1114,9 @@ function selectTemplate(idx){
   var target = el('tpl'+idx);
   if(target){
     target.classList.add('active');
-    // Brief click scale
-    target.style.transform = 'scale(0.93)';
-    setTimeout(function(){ target.style.transform = ''; target.style.transition = 'transform .2s'; }, 150);
+    target.style.transition = 'transform .15s';
+    target.style.transform = 'scale(0.92)';
+    setTimeout(function(){ target.style.transform = ''; }, 160);
   }
 }
 
@@ -1061,23 +1135,40 @@ function scrollTo(targetPx, duration){
   raf(step);
 }
 
-/* ── Main sequence ── */
+/* ── Main sequence (32s loop) ── */
 async function runSequence(){
 
   var TRANSCRIPT = 'Patiënt Jan de Vries, behandeling rugklachten links. Manuele therapie L4-L5 uitgevoerd. Pijn afgenomen van NRS 7 naar 4. Oefeningen meegegeven: 3x daags rugstrekkers 10 herhalingen. Volgende afspraak donderdag 14:00.';
 
-  // 0-1.5s: Idle — Intake selected (tpl0 active initially)
-  selectTemplate(0);
-  el('tplDesc').textContent = 'Eerste contact, anamnese en diagnose vastleggen';
-  await delay(1500);
+  /* 0-3s: Idle UI — viewer orients */
+  await delay(3000);
 
-  // 1.5-2.5s: Switch to Behandeling (tpl1)
+  /* Show cursor, position it off to the side first */
+  showCursor();
+  cursor.style.transition = 'none';
+  moveCursor(15, 30);
+  await delay(50);
+  cursor.style.transition = 'left 0.6s cubic-bezier(0.25,0.46,0.45,0.94), top 0.6s cubic-bezier(0.25,0.46,0.45,0.94), transform 0.15s ease';
+
+  /* 3-4s: Cursor moves to "Behandeling" (tpl1) → clicks */
+  var tpl1Pos = elPct(el('tpl1'));
+  moveCursor(tpl1Pos.x, tpl1Pos.y);
+  await delay(700);
+  await clickCursor();
   selectTemplate(1);
+
+  /* 4-5s: Template description updates */
   await delay(300);
   el('tplDesc').textContent = 'Maak een professionele SOEP-notitie op basis van je behandelsessie';
-  await delay(500);
+  await delay(700);
 
-  // 2.5-3s: Click mic → recording starts
+  /* 5-6s: Cursor moves to mic button */
+  var micPos = elPct(el('micBtn'));
+  moveCursor(micPos.x, micPos.y);
+  await delay(900);
+
+  /* 6-6.5s: Click mic → recording starts */
+  await clickCursor();
   el('micBtn').className = 'mic-btn recording';
   el('statusDot').className = 'status-dot recording';
   el('statusText').textContent = 'Opname bezig...';
@@ -1086,12 +1177,18 @@ async function runSequence(){
   startAudiometer();
   startTimer();
 
-  await delay(500);
+  /* Move cursor away from mic during recording */
+  await delay(400);
+  moveCursor(65, 72);
 
-  // 3-6s: Type transcript
-  await typeText(el('tText'), TRANSCRIPT, 26);
+  /* 6.5-11s: Recording — transcript types in slowly (~4.5s for the text) */
+  await typeText(el('tText'), TRANSCRIPT, 18);
 
-  // 6-6.5s: Stop recording
+  /* 11-12s: Cursor moves to mic button → stop */
+  var micPos2 = elPct(el('micBtn'));
+  moveCursor(micPos2.x, micPos2.y);
+  await delay(700);
+  await clickCursor();
   el('micBtn').className = 'mic-btn';
   el('statusDot').className = 'status-dot';
   el('statusText').textContent = '✓ Tekst klaar';
@@ -1099,58 +1196,87 @@ async function runSequence(){
   stopAudiometer();
   stopTimer();
 
-  await delay(600);
-
-  // 6.5-7s: Enable generate button, pulse, then click
+  /* 12-13s: Enable generate button + pulse; cursor moves to it */
+  await delay(400);
   el('genBtn').className = 'gen-btn active pulsing';
+  var genPos = elPct(el('genBtn'));
+  moveCursor(genPos.x, genPos.y);
   await delay(800);
+
+  /* 13-13.5s: Click generate */
+  await clickCursor();
   el('genBtn').className = 'gen-btn active clicked';
   await delay(180);
   el('genBtn').className = 'gen-btn active';
 
-  // 7-9s: Loading overlay
-  await delay(200);
+  /* Move cursor to center during loading */
+  moveCursor(50, 50);
+
+  /* 13.5-17s: Loading overlay — 4 steps ~1s each */
+  await delay(250);
   el('loadingOverlay').className = 'loading-overlay visible';
 
-  var steps = [350, 450, 500, 400];
+  var steps = [900, 950, 1000, 850];
   for(var s=0; s<4; s++){
     setLoadStep(s, 'active');
     await delay(steps[s]);
     setLoadStep(s, 'done');
-    await delay(130);
+    await delay(150);
   }
 
-  // Hide loading, show output
-  await delay(250);
+  /* Hide loading, show output */
+  await delay(200);
   el('loadingOverlay').className = 'loading-overlay';
 
-  // 9-14s: SOEP blocks appear with stagger
+  /* 17-24s: SOEP output slides in, blocks appear with ~2s spacing */
   el('outputSection').className = 'output-section visible';
-  scrollTo(300, 500);
+  scrollTo(280, 500);
 
   var soepIds = ['soepS','soepO','soepE','soepP'];
   for(var b=0; b<soepIds.length; b++){
-    await delay(350);
-    el(soepIds[b]).className = el(soepIds[b]).className + ' visible';
+    await delay(b === 0 ? 400 : 1800);
+    el(soepIds[b]).classList.add('visible');
   }
 
-  // Time badge pops in
-  await delay(800);
+  /* Time badge bounces in */
+  await delay(600);
   el('timeBadge').className = 'output-time-badge visible';
 
-  // 14-16s: Patient section fades in
-  await delay(1800);
+  /* 24-26s: Cursor moves to WhatsApp tab → click */
+  await delay(1200);
   el('patientSection').className = 'patient-section visible';
   scrollTo(700, 600);
+  await delay(700);
 
-  // 17.5-19s: Outro
-  await delay(2800);
+  var waPos = elPct(el('ptabWA'));
+  moveCursor(waPos.x, waPos.y);
+  await delay(800);
+  await clickCursor();
+  /* WhatsApp already active — just show the highlight */
+  el('ptabWA').style.transform = 'scale(0.93)';
+  setTimeout(function(){ el('ptabWA').style.transform = ''; }, 160);
+
+  /* 26-28s: Patient message already visible — cursor moves to Kopieer on S block */
+  await delay(1500);
+  var copyPos = elPct(el('copySBtn'));
+  moveCursor(copyPos.x, copyPos.y);
+  await delay(800);
+
+  /* 28-29s: Click "Kopieer" on SOEP S block */
+  await clickCursor();
+  el('copySBtn').classList.add('highlight');
+  await delay(600);
+  el('copySBtn').classList.remove('highlight');
+
+  /* 29-31s: Outro */
+  await delay(1000);
   el('outro').className = 'outro visible';
+  cursor.style.display = 'none';
 
-  // 19-20s: Reset & loop
+  /* 31-32s: Reset & loop */
   await delay(2200);
   resetUI();
-  await delay(400);
+  await delay(500);
   runSequence();
 }
 
