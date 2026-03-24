@@ -28,7 +28,7 @@ html, body {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 32px 80px rgba(0,0,0,.9);
-  font-size: calc(min(960px, 100vw) / 96);
+  font-size: calc(min(960px, 100vw) / 108);
 }
 
 /* ── Animated cursor (real mouse pointer SVG) ── */
@@ -750,6 +750,34 @@ html, body {
   z-index: 10;
 }
 .outro.visible { opacity: 1; pointer-events: auto; }
+
+/* ── Intro overlay ── */
+.intro-overlay {
+  position: absolute;
+  inset: 0;
+  background: #070710;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .6em;
+  z-index: 15;
+  opacity: 1;
+  transition: opacity .8s ease;
+}
+.intro-overlay.hidden { opacity: 0; pointer-events: none; }
+.intro-line {
+  font-size: 1.6em;
+  font-weight: 800;
+  color: rgba(255,255,255,.9);
+  text-align: center;
+  min-height: 1.4em;
+  letter-spacing: -.02em;
+}
+.intro-line-2 {
+  font-size: 1.5em;
+  color: #00C9B5;
+}
 .outro-logo { font-size: 2.1em; font-weight: 800; color: #00C9B5; }
 .outro-tagline { font-size: 1.15em; color: rgba(255,255,255,.55); }
 .outro-cta {
@@ -1025,6 +1053,12 @@ html, body {
     </div>
   </div>
 
+  <!-- Intro overlay -->
+  <div class="intro-overlay" id="introOverlay">
+    <div class="intro-line" id="introLine1"></div>
+    <div class="intro-line intro-line-2" id="introLine2"></div>
+  </div>
+
   <!-- Outro overlay -->
   <div class="outro" id="outro">
     <div class="outro-logo">🎙️ Jouw beurt.</div>
@@ -1208,6 +1242,7 @@ function resetUI(){
   el('verwijsbriefSection').className = 'verwijsbrief-section';
   // Outro
   el('outro').className = 'outro';
+  if(el('introOverlay')) { el('introOverlay').classList.remove('hidden'); el('introLine1').textContent=''; el('introLine2').textContent=''; }
   // Scroll to top
   el('appScroll').scrollTop = 0;
 }
@@ -1245,12 +1280,24 @@ function scrollTo(targetPx, duration){
 /* ── Main sequence (~40s loop) ── */
 async function runSequence(){
 
-  var TRANSCRIPT = 'Jan de Vries, 45 jaar. Rugklachten links, NRS 7→4. Manuele therapie L4-L5, mobilisatie. Beweeglijkheid verbeterd. Rugstrekkers 3x daags, cat-cow stretch. Zwaar tillen vermijden. Afspraak donderdag 14:00.';
+  var TRANSCRIPT = 'Jan de Vries, 45 jaar. Behandeling rugklachten links al drie weken. NRS 7 naar 4 na sessie. Manuele therapie L4-L5 uitgevoerd, mobilisatie en weefselbehandeling. Beweeglijkheid duidelijk verbeterd. Rugstrekkers 3x daags 10 herhalingen, cat-cow stretch elke ochtend. Zwaar tillen komende week vermijden. Afspraak donderdag 14:00.';
 
   var WA_MESSAGE = 'Hoi Jan! 👋 Super dat de pijn al minder is geworden. Doe thuis de rugstrekkers 3x per dag (10x) en de cat-cow stretch elke ochtend. Geen zwaar tillen deze week. Volgende afspraak: donderdag 14:00. Vragen? Stuur gerust een appje! 💪';
 
-  /* 0-0.8s: Direct starten */
-  await delay(800);
+  /* Intro overlay: typewriter "45 minuten per dag..." → fade out */
+  var intro = el('introOverlay');
+  var line1 = el('introLine1');
+  var line2 = el('introLine2');
+  intro.classList.remove('hidden');
+  line1.textContent = '';
+  line2.textContent = '';
+  await delay(300);
+  await typeText(line1, '45 minuten per dag aan papierwerk?', 38);
+  await delay(600);
+  await typeText(line2, 'Dat kan anders. ✓', 55);
+  await delay(900);
+  intro.classList.add('hidden');
+  await delay(900);
 
   /* Show cursor, position it off to the side first */
   showCursor();
