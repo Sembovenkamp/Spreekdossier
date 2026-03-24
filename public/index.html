@@ -480,75 +480,7 @@
     </div>
   </section>
 
-  <!-- VISUAL 2: Tijdsbesparing bar chart -->
-  <section class="bar-chart-section" id="bar-chart-section">
-    <div class="bar-chart-inner">
-      <div class="section-header fade-in" style="margin-bottom:40px;">
-        <p class="section-label">Tijdsbesparing</p>
-        <h2>Hoeveel tijd bespaar je?</h2>
-        <p class="section-body" style="margin:0 auto;text-align:center;">Vergelijk de tijdsinvestering per SOEP-notitie.</p>
-      </div>
-      <div class="bar-chart-row fade-in">
-        <div class="bar-label">Handmatig typen</div>
-        <div class="bar-track">
-          <div class="bar-fill bar-red" data-width="100" id="bar-1"><span class="bar-time">~45 min</span></div>
-        </div>
-        <div class="bar-duration red">45 min</div>
-      </div>
-      <div class="bar-chart-row fade-in fade-in-delay-1">
-        <div class="bar-label">Andere AI tools</div>
-        <div class="bar-track">
-          <div class="bar-fill bar-orange" data-width="56" id="bar-2"><span class="bar-time">~25 min</span></div>
-        </div>
-        <div class="bar-duration orange">25 min</div>
-      </div>
-      <div class="bar-chart-row fade-in fade-in-delay-2">
-        <div class="bar-label">Spreekdossier</div>
-        <div class="bar-track">
-          <div class="bar-fill bar-green" data-width="7" id="bar-3" style="min-width:80px;"><span class="bar-time">~2 min</span></div>
-        </div>
-        <div class="bar-duration green">~2 min</div>
-      </div>
-      <p class="fade-in" style="text-align:center;margin-top:28px;font-size:13px;color:var(--text-muted);">
-        Dat is <strong style="color:var(--primary);">~22× sneller</strong> dan handmatig typen.
-      </p>
-    </div>
-  </section>
-
-  <!-- VISUAL 4: Donut ring chart -->
-  <section class="donut-section" id="donut-section">
-    <div class="donut-inner container">
-      <div class="fade-in">
-        <p class="section-label">Tijdsverdeling</p>
-        <h2>Jouw tijd als fysiotherapeut</h2>
-        <p class="section-body">Gemiddeld gaat <strong>25% van jouw werkdag</strong> op aan administratie — ruim 45 minuten. Dat is tijd die je niet besteedt aan jouw patiënten.</p>
-        <p class="section-body" style="color:var(--primary);font-weight:600;">Spreekdossier brengt dit terug naar &lt;5 minuten.</p>
-        <div class="donut-legend">
-          <div class="donut-legend-item"><div class="donut-legend-dot" style="background:var(--primary);"></div>75% — Behandelen patiënten</div>
-          <div class="donut-legend-item"><div class="donut-legend-dot" style="background:#ff4444;"></div>25% — Administratie (45 min)</div>
-        </div>
-      </div>
-      <div class="donut-chart-wrap fade-in fade-in-delay-1">
-        <svg id="donut-svg" width="260" height="260" viewBox="0 0 260 260" style="transform:rotate(-90deg);">
-          <!-- background ring -->
-          <circle cx="130" cy="130" r="100" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="32"/>
-          <!-- red segment: 25% = 157.08 of 628.32 circumference -->
-          <circle id="donut-red" cx="130" cy="130" r="100" fill="none" stroke="#ff4444" stroke-width="32"
-            stroke-dasharray="628.32" stroke-dashoffset="628.32"
-            stroke-linecap="round" style="transition: stroke-dashoffset 1.5s cubic-bezier(0.16,1,0.3,1);"/>
-          <!-- green segment: 75% -->
-          <circle id="donut-green" cx="130" cy="130" r="100" fill="none" stroke="var(--primary)" stroke-width="32"
-            stroke-dasharray="628.32" stroke-dashoffset="628.32"
-            stroke-linecap="round" style="transition: stroke-dashoffset 1.5s cubic-bezier(0.16,1,0.3,1) 0.2s;"/>
-        </svg>
-        <div class="donut-label-center">
-          <span class="donut-label-big">45 min</span>
-          <span class="donut-label-sub">per dag</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
+  <!-- VIDEO DEMO (vergelijkingssecties verwijderd) -->
   <!-- PROBLEM -->
   <section id="problem">
     <div class="container">
