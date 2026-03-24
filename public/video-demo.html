@@ -5,536 +5,700 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Spreekdossier Demo</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  body {
-    background: #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    font-family: -apple-system, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
-    overflow: hidden;
-  }
+body {
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: -apple-system, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+  overflow: hidden;
+}
 
-  /* ── Outer wrapper: 16:9 ── */
-  .demo-wrapper {
-    position: relative;
-    width: min(900px, 100vw);
-    aspect-ratio: 16 / 9;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 32px 80px rgba(0,0,0,.85);
-  }
+/* ── Outer 16:9 wrapper ── */
+.demo-wrapper {
+  position: relative;
+  width: min(960px, 100vw);
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0,0,0,.9);
+  font-size: calc(min(960px, 100vw) / 96);
+}
 
-  /* ── Fake browser chrome ── */
-  .titlebar {
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 34px;
-    background: #1a1a2e;
-    display: flex;
-    align-items: center;
-    padding: 0 14px;
-    gap: 8px;
-    z-index: 20;
-    border-bottom: 1px solid rgba(255,255,255,.06);
-  }
-  .dot { width: 11px; height: 11px; border-radius: 50%; }
-  .dot.r { background: #ff5f57; }
-  .dot.y { background: #febc2e; }
-  .dot.g { background: #28c840; }
-  .urlbar {
-    flex: 1;
-    margin-left: 10px;
-    background: rgba(255,255,255,.07);
-    border-radius: 5px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    padding: 0 10px;
-    font-size: 10px;
-    color: rgba(255,255,255,.4);
-    letter-spacing: .3px;
-  }
+/* ── Fake browser chrome ── */
+.titlebar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3.2em;
+  background: #111120;
+  display: flex;
+  align-items: center;
+  padding: 0 1.4em;
+  gap: .8em;
+  z-index: 20;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  flex-shrink: 0;
+}
+.dot { width: 1.1em; height: 1.1em; border-radius: 50%; }
+.dot.r { background: #ff5f57; }
+.dot.y { background: #febc2e; }
+.dot.g { background: #28c840; }
+.urlbar {
+  flex: 1;
+  margin-left: 1em;
+  background: rgba(255,255,255,.07);
+  border-radius: .5em;
+  height: 2em;
+  display: flex;
+  align-items: center;
+  padding: 0 1em;
+  font-size: .9em;
+  color: rgba(255,255,255,.4);
+  letter-spacing: .02em;
+}
 
-  /* ── Main app area ── */
-  .app {
-    position: absolute;
-    top: 34px; left: 0; right: 0; bottom: 0;
-    background: #070710;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
+/* ── App area ── */
+.app {
+  position: absolute;
+  top: 3.2em; left: 0; right: 0; bottom: 0;
+  background: #070710;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
-  /* App header */
-  .app-header {
-    padding: 10px 20px 8px;
-    border-bottom: 1px solid rgba(255,255,255,.06);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
-  }
-  .logo {
-    font-size: 15px;
-    font-weight: 700;
-    color: #00C9B5;
-    letter-spacing: -.3px;
-  }
-  .logo span { color: rgba(255,255,255,.55); font-weight: 400; }
-  .badge {
-    font-size: 10px;
-    background: rgba(0,201,181,.12);
-    color: #00C9B5;
-    border: 1px solid rgba(0,201,181,.25);
-    border-radius: 20px;
-    padding: 3px 9px;
-  }
+/* App header */
+.app-header {
+  padding: .9em 1.8em .75em;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.logo {
+  font-size: 1.4em;
+  font-weight: 700;
+  color: #00C9B5;
+  letter-spacing: -.02em;
+  display: flex;
+  align-items: center;
+  gap: .4em;
+}
+.logo-icon { font-size: 1.1em; }
+.logo-dot { color: rgba(255,255,255,.45); font-weight: 400; }
+.header-badge {
+  font-size: .85em;
+  background: rgba(0,201,181,.1);
+  color: #00C9B5;
+  border: 1px solid rgba(0,201,181,.2);
+  border-radius: 2em;
+  padding: .3em .9em;
+  white-space: nowrap;
+}
 
-  /* Main content grid */
-  .content {
-    flex: 1;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    overflow: hidden;
-  }
+/* Scrollable content area */
+.app-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1.2em 1.8em 1.5em;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1em;
+  scrollbar-width: none;
+}
+.app-scroll::-webkit-scrollbar { display: none; }
 
-  /* ── Left panel ── */
-  .left-panel {
-    padding: 14px 16px;
-    border-right: 1px solid rgba(255,255,255,.06);
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    overflow: hidden;
-  }
+/* ── Step badge ── */
+.step-badge {
+  display: flex;
+  align-items: center;
+  gap: .6em;
+  margin-bottom: .5em;
+}
+.step-num {
+  width: 1.6em;
+  height: 1.6em;
+  border-radius: 50%;
+  background: rgba(0,201,181,.15);
+  border: 1px solid rgba(0,201,181,.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .8em;
+  font-weight: 700;
+  color: #00C9B5;
+  flex-shrink: 0;
+}
+.step-label {
+  font-size: .9em;
+  font-weight: 600;
+  color: rgba(255,255,255,.7);
+}
 
-  .section-label {
-    font-size: 9.5px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: rgba(255,255,255,.35);
-    margin-bottom: 4px;
-  }
+/* ── Template selector (6 buttons) ── */
+.tpl-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: .5em;
+}
+.tpl-btn {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: .7em;
+  padding: .6em .4em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .25em;
+  cursor: pointer;
+  transition: all .25s;
+  text-align: center;
+}
+.tpl-btn.active {
+  background: rgba(0,201,181,.1);
+  border-color: rgba(0,201,181,.35);
+}
+.tpl-icon { font-size: 1.15em; }
+.tpl-name {
+  font-size: .7em;
+  font-weight: 600;
+  color: rgba(255,255,255,.65);
+  line-height: 1.2;
+}
+.tpl-btn.active .tpl-name { color: #00C9B5; }
+.tpl-sub {
+  font-size: .6em;
+  color: rgba(255,255,255,.3);
+  line-height: 1.2;
+  display: none;
+}
 
-  /* Template selector */
-  .template-selector {
-    background: rgba(255,255,255,.04);
-    border: 1px solid rgba(255,255,255,.08);
-    border-radius: 8px;
-    padding: 8px 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .template-name {
-    font-size: 12px;
-    color: rgba(255,255,255,.85);
-    font-weight: 500;
-  }
-  .template-chevron {
-    color: rgba(255,255,255,.3);
-    font-size: 11px;
-  }
-  .template-active {
-    border-color: rgba(0,201,181,.3);
-    background: rgba(0,201,181,.05);
-  }
-  .template-active .template-name { color: #00C9B5; }
+/* Template description */
+.tpl-desc {
+  font-size: .85em;
+  color: rgba(255,255,255,.45);
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: .6em;
+  padding: .55em .9em;
+  transition: opacity .3s;
+}
 
-  /* Mic area */
-  .mic-area {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 0;
-  }
+/* ── Recording section ── */
+.rec-section {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: .9em;
+  padding: 1em 1.2em;
+  display: flex;
+  flex-direction: column;
+  gap: .75em;
+}
 
-  .mic-btn {
-    width: 54px;
-    height: 54px;
-    border-radius: 50%;
-    background: rgba(255,255,255,.07);
-    border: 2px solid rgba(255,255,255,.15);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    cursor: pointer;
-    transition: all .3s;
-    position: relative;
-  }
-  .mic-btn.recording {
-    background: rgba(255, 60, 60, .15);
-    border-color: #ff3c3c;
-  }
-  .mic-btn.recording::before {
-    content: '';
-    position: absolute;
-    inset: -6px;
-    border-radius: 50%;
-    border: 2px solid rgba(255,60,60,.35);
-    animation: pulse-ring 1.2s ease-out infinite;
-  }
-  .mic-btn.recording::after {
-    content: '';
-    position: absolute;
-    inset: -12px;
-    border-radius: 50%;
-    border: 2px solid rgba(255,60,60,.15);
-    animation: pulse-ring 1.2s ease-out infinite .4s;
-  }
-  @keyframes pulse-ring {
-    0% { transform: scale(.9); opacity: 1; }
-    100% { transform: scale(1.3); opacity: 0; }
-  }
+/* Status row */
+.rec-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.rec-status {
+  display: flex;
+  align-items: center;
+  gap: .5em;
+  font-size: .85em;
+  color: rgba(255,255,255,.55);
+}
+.status-dot {
+  width: .7em;
+  height: .7em;
+  border-radius: 50%;
+  background: rgba(255,255,255,.25);
+  transition: background .3s;
+  flex-shrink: 0;
+}
+.status-dot.recording {
+  background: #ff453a;
+  box-shadow: 0 0 6px rgba(255,69,58,.6);
+  animation: dot-blink .9s ease-in-out infinite;
+}
+@keyframes dot-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .3; }
+}
+.avg-badge {
+  font-size: .72em;
+  background: rgba(0,201,181,.07);
+  border: 1px solid rgba(0,201,181,.15);
+  border-radius: 2em;
+  padding: .25em .7em;
+  color: rgba(0,201,181,.7);
+}
 
-  /* Recording indicator */
-  .rec-indicator {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 10px;
-    color: rgba(255,255,255,.4);
-    opacity: 0;
-    transition: opacity .4s;
-  }
-  .rec-indicator.visible { opacity: 1; }
-  .rec-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: #ff3c3c;
-    animation: blink 1s ease-in-out infinite;
-  }
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.2; }
-  }
+/* Audiometer */
+.audiometer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: .25em;
+  height: 2.2em;
+  opacity: .25;
+  transition: opacity .4s;
+}
+.audiometer.active { opacity: 1; }
+.audio-bar {
+  width: .3em;
+  border-radius: .2em;
+  background: #00C9B5;
+  height: .4em;
+  transition: height .12s ease;
+}
 
-  /* Waveform */
-  .waveform {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-    height: 28px;
-    opacity: 0;
-    transition: opacity .4s;
-  }
-  .waveform.visible { opacity: 1; }
-  .wave-bar {
-    width: 3px;
-    border-radius: 2px;
-    background: #00C9B5;
-    animation: wave-anim 0.8s ease-in-out infinite;
-    transform-origin: bottom;
-  }
-  .wave-bar:nth-child(1)  { animation-delay: 0s;    height: 6px; }
-  .wave-bar:nth-child(2)  { animation-delay: .07s;  height: 14px; }
-  .wave-bar:nth-child(3)  { animation-delay: .14s;  height: 20px; }
-  .wave-bar:nth-child(4)  { animation-delay: .21s;  height: 26px; }
-  .wave-bar:nth-child(5)  { animation-delay: .28s;  height: 18px; }
-  .wave-bar:nth-child(6)  { animation-delay: .35s;  height: 22px; }
-  .wave-bar:nth-child(7)  { animation-delay: .42s;  height: 28px; }
-  .wave-bar:nth-child(8)  { animation-delay: .49s;  height: 16px; }
-  .wave-bar:nth-child(9)  { animation-delay: .56s;  height: 24px; }
-  .wave-bar:nth-child(10) { animation-delay: .63s;  height: 12px; }
-  .wave-bar:nth-child(11) { animation-delay: .70s;  height: 20px; }
-  .wave-bar:nth-child(12) { animation-delay: .77s;  height: 8px; }
-  @keyframes wave-anim {
-    0%, 100% { transform: scaleY(1); }
-    50% { transform: scaleY(1.8); }
-  }
+/* Timer */
+.rec-timer {
+  text-align: center;
+  font-size: 1em;
+  font-weight: 600;
+  color: rgba(255,255,255,.35);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .05em;
+  transition: color .3s;
+}
+.rec-timer.active { color: rgba(255,255,255,.8); }
 
-  /* Transcript box */
-  .transcript-box {
-    flex: 1;
-    background: rgba(255,255,255,.03);
-    border: 1px solid rgba(255,255,255,.07);
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-size: 11px;
-    line-height: 1.55;
-    color: rgba(255,255,255,.75);
-    min-height: 60px;
-    overflow: hidden;
-  }
-  .transcript-box .placeholder {
-    color: rgba(255,255,255,.2);
-    font-style: italic;
-  }
-  .cursor {
-    display: inline-block;
-    width: 2px;
-    height: 12px;
-    background: #00C9B5;
-    margin-left: 1px;
-    vertical-align: middle;
-    animation: cursor-blink .7s step-end infinite;
-  }
-  @keyframes cursor-blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
-  }
+/* Mic button */
+.mic-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .6em;
+}
+.mic-btn {
+  width: 4em;
+  height: 4em;
+  border-radius: 50%;
+  background: rgba(255,255,255,.07);
+  border: 2px solid rgba(255,255,255,.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6em;
+  cursor: pointer;
+  transition: all .3s;
+  position: relative;
+}
+.mic-btn.recording {
+  background: rgba(255,69,58,.15);
+  border-color: #ff453a;
+  box-shadow: 0 0 2em rgba(255,69,58,.25);
+}
+.mic-btn.recording::before {
+  content: '';
+  position: absolute;
+  inset: -.5em;
+  border-radius: 50%;
+  border: 2px solid rgba(255,69,58,.25);
+  animation: pulse-ring 1.2s ease-out infinite;
+}
+@keyframes pulse-ring {
+  0% { transform: scale(.9); opacity: 1; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+.mic-hint {
+  font-size: .75em;
+  color: rgba(255,255,255,.25);
+  text-align: center;
+}
 
-  /* Generate button */
-  .gen-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    padding: 10px;
-    border-radius: 8px;
-    background: rgba(0,201,181,.12);
-    border: 1px solid rgba(0,201,181,.2);
-    color: rgba(0,201,181,.5);
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all .3s;
-    flex-shrink: 0;
-  }
-  .gen-btn.active {
-    background: #00C9B5;
-    border-color: #00C9B5;
-    color: #070710;
-    box-shadow: 0 0 20px rgba(0,201,181,.35);
-  }
-  .gen-btn.clicked {
-    transform: scale(0.94);
-    box-shadow: 0 0 32px rgba(0,201,181,.6);
-  }
-  @keyframes gen-pulse {
-    0%, 100% { box-shadow: 0 0 20px rgba(0,201,181,.35); }
-    50% { box-shadow: 0 0 36px rgba(0,201,181,.7); }
-  }
-  .gen-btn.pulsing {
-    animation: gen-pulse .8s ease-in-out infinite;
-  }
+/* Transcript box */
+.transcript-box {
+  background: rgba(0,0,0,.25);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: .6em;
+  padding: .7em .9em;
+  min-height: 3.5em;
+  font-size: .82em;
+  line-height: 1.6;
+  color: rgba(255,255,255,.75);
+  position: relative;
+}
+.transcript-placeholder {
+  color: rgba(255,255,255,.2);
+  font-style: italic;
+}
+.transcript-cursor {
+  display: inline-block;
+  width: 2px;
+  height: .9em;
+  background: #00C9B5;
+  margin-left: 1px;
+  vertical-align: middle;
+  animation: cur-blink .7s step-end infinite;
+}
+@keyframes cur-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
 
-  /* ── Right panel ── */
-  .right-panel {
-    padding: 14px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    overflow: hidden;
-    position: relative;
-  }
+/* Transcript controls */
+.transcript-controls {
+  display: flex;
+  gap: .5em;
+}
+.ctrl-btn {
+  flex: 1;
+  padding: .45em .7em;
+  border-radius: .5em;
+  font-size: .78em;
+  font-weight: 500;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.04);
+  color: rgba(255,255,255,.5);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .35em;
+}
 
-  /* Loading steps */
-  .loading-steps {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    position: absolute;
-    inset: 14px 16px;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity .4s;
-    pointer-events: none;
-  }
-  .loading-steps.visible { opacity: 1; }
-  .step {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 12px;
-    color: rgba(255,255,255,.3);
-    transition: color .4s;
-  }
-  .step.done { color: rgba(255,255,255,.85); }
-  .step-icon {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 1.5px solid rgba(255,255,255,.15);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 9px;
-    flex-shrink: 0;
-    transition: all .4s;
-  }
-  .step.done .step-icon {
-    background: #00C9B5;
-    border-color: #00C9B5;
-    color: #070710;
-    font-size: 11px;
-  }
-  .step-spinner {
-    width: 10px;
-    height: 10px;
-    border: 1.5px solid rgba(0,201,181,.3);
-    border-top-color: #00C9B5;
-    border-radius: 50%;
-    animation: spin .7s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* ── Generate button ── */
+.gen-btn {
+  width: 100%;
+  padding: .85em;
+  border-radius: .7em;
+  background: rgba(0,201,181,.12);
+  border: 1px solid rgba(0,201,181,.2);
+  color: rgba(0,201,181,.4);
+  font-size: .95em;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5em;
+  transition: all .3s;
+  flex-shrink: 0;
+}
+.gen-btn.active {
+  background: #00C9B5;
+  border-color: #00C9B5;
+  color: #070710;
+  box-shadow: 0 0 2em rgba(0,201,181,.35);
+}
+.gen-btn.pulsing {
+  animation: gen-pulse .8s ease-in-out infinite;
+}
+@keyframes gen-pulse {
+  0%, 100% { box-shadow: 0 0 1.5em rgba(0,201,181,.3); }
+  50% { box-shadow: 0 0 3em rgba(0,201,181,.65); }
+}
+.gen-btn.clicked {
+  transform: scale(.95);
+}
 
-  /* Result panel */
-  .result-panel {
-    position: absolute;
-    inset: 14px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    overflow: hidden;
-    transform: translateX(110%);
-    transition: transform .5s cubic-bezier(.25,.46,.45,.94);
-    pointer-events: none;
-  }
-  .result-panel.visible {
-    transform: translateX(0);
-    pointer-events: auto;
-  }
+/* ── Loading overlay ── */
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(7,7,16,.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.1em;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .35s;
+  z-index: 5;
+}
+.loading-overlay.visible { opacity: 1; pointer-events: auto; }
+.loading-title {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: rgba(255,255,255,.85);
+  margin-bottom: .3em;
+}
+.loading-steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: .6em;
+  width: 16em;
+}
+.load-step {
+  display: flex;
+  align-items: center;
+  gap: .7em;
+  font-size: .9em;
+  color: rgba(255,255,255,.3);
+  transition: color .4s;
+}
+.load-step.done { color: rgba(255,255,255,.85); }
+.load-step.active { color: rgba(255,255,255,.75); }
+.load-icon {
+  width: 1.6em; height: 1.6em;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.12);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .75em;
+  flex-shrink: 0;
+  transition: all .3s;
+}
+.load-step.done .load-icon {
+  background: #00C9B5;
+  border-color: #00C9B5;
+  color: #070710;
+  font-size: .8em;
+}
+.load-step.active .load-icon {
+  border-color: #00C9B5;
+}
+.load-spinner {
+  width: .75em; height: .75em;
+  border: 1.5px solid rgba(0,201,181,.25);
+  border-top-color: #00C9B5;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 
-  .soep-box {
-    background: rgba(255,255,255,.03);
-    border: 1px solid rgba(255,255,255,.08);
-    border-radius: 8px;
-    padding: 10px 12px;
-    flex-shrink: 0;
-  }
-  .soep-title {
-    font-size: 9.5px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: #00C9B5;
-    margin-bottom: 7px;
-  }
-  .soep-line {
-    font-size: 10.5px;
-    line-height: 1.6;
-    color: rgba(255,255,255,.7);
-  }
-  .soep-line strong {
-    color: #00C9B5;
-    font-weight: 600;
-  }
+/* ── Output section ── */
+.output-section {
+  opacity: 0;
+  transform: translateY(1em);
+  transition: opacity .5s, transform .5s;
+  pointer-events: none;
+}
+.output-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.output-header {
+  display: flex;
+  align-items: center;
+  gap: .7em;
+  margin-bottom: .7em;
+  flex-wrap: wrap;
+}
+.output-title {
+  font-size: 1em;
+  font-weight: 600;
+  color: rgba(255,255,255,.85);
+}
+.output-gen-badge {
+  font-size: .72em;
+  background: rgba(0,201,181,.1);
+  border: 1px solid rgba(0,201,181,.2);
+  border-radius: 2em;
+  padding: .25em .7em;
+  color: #00C9B5;
+}
+.output-time-badge {
+  font-size: .72em;
+  background: rgba(52,199,89,.1);
+  border: 1px solid rgba(52,199,89,.2);
+  border-radius: 2em;
+  padding: .25em .7em;
+  color: #34C759;
+  opacity: 0;
+  transform: scale(.8);
+  transition: opacity .5s, transform .5s cubic-bezier(.34,1.56,.64,1);
+}
+.output-time-badge.visible {
+  opacity: 1;
+  transform: scale(1);
+}
 
-  .whatsapp-box {
-    background: rgba(37,211,102,.07);
-    border: 1px solid rgba(37,211,102,.2);
-    border-radius: 8px;
-    padding: 9px 12px;
-    flex-shrink: 0;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity .5s, transform .5s;
-  }
-  .whatsapp-box.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  .wa-title {
-    font-size: 9.5px;
-    font-weight: 700;
-    letter-spacing: .8px;
-    text-transform: uppercase;
-    color: #25D366;
-    margin-bottom: 5px;
-  }
-  .wa-text {
-    font-size: 10.5px;
-    color: rgba(255,255,255,.75);
-    line-height: 1.5;
-  }
+/* SOEP blocks */
+.soep-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: .5em;
+}
+.soep-block {
+  background: rgba(255,255,255,.035);
+  border: 1px solid rgba(255,255,255,.07);
+  border-left-width: 3px;
+  border-radius: .65em;
+  padding: .65em .9em;
+  display: flex;
+  align-items: flex-start;
+  gap: .7em;
+  opacity: 0;
+  transform: translateX(-1em);
+  transition: opacity .4s, transform .4s;
+}
+.soep-block.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+.soep-block.s { border-left-color: #00C9B5; }
+.soep-block.o { border-left-color: #007AFF; }
+.soep-block.e { border-left-color: #BF5AF2; }
+.soep-block.p { border-left-color: #34C759; }
+.soep-letter {
+  font-size: .8em;
+  font-weight: 800;
+  letter-spacing: .05em;
+  min-width: 1.2em;
+  padding-top: .1em;
+  flex-shrink: 0;
+}
+.soep-block.s .soep-letter { color: #00C9B5; }
+.soep-block.o .soep-letter { color: #007AFF; }
+.soep-block.e .soep-letter { color: #BF5AF2; }
+.soep-block.p .soep-letter { color: #34C759; }
+.soep-content {
+  flex: 1;
+}
+.soep-head {
+  font-size: .78em;
+  font-weight: 600;
+  color: rgba(255,255,255,.6);
+  margin-bottom: .2em;
+}
+.soep-text {
+  font-size: .8em;
+  color: rgba(255,255,255,.72);
+  line-height: 1.5;
+}
+.soep-copy {
+  font-size: .68em;
+  color: rgba(255,255,255,.3);
+  padding: .25em .5em;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: .4em;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
 
-  /* Time badge */
-  .time-badge {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    padding: 8px 12px;
-    background: rgba(255,193,7,.08);
-    border: 1px solid rgba(255,193,7,.2);
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 700;
-    color: #FFC107;
-    flex-shrink: 0;
-    opacity: 0;
-    transform: scale(.88);
-    transition: opacity .5s, transform .5s cubic-bezier(.34,1.56,.64,1);
-  }
-  .time-badge.visible {
-    opacity: 1;
-    transform: scale(1);
-  }
+/* Output actions */
+.output-actions {
+  display: flex;
+  gap: .5em;
+  margin-top: .4em;
+}
+.out-btn {
+  flex: 1;
+  padding: .6em;
+  border-radius: .55em;
+  font-size: .8em;
+  font-weight: 500;
+  border: 1px solid rgba(255,255,255,.1);
+  background: rgba(255,255,255,.05);
+  color: rgba(255,255,255,.6);
+  cursor: pointer;
+  text-align: center;
+}
 
-  /* Outro overlay */
-  .outro {
-    position: absolute;
-    inset: 0;
-    background: #070710;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .6s;
-    z-index: 10;
-  }
-  .outro.visible { opacity: 1; pointer-events: auto; }
-  .outro-logo { font-size: 22px; font-weight: 800; color: #00C9B5; }
-  .outro-sub { font-size: 13px; color: rgba(255,255,255,.55); }
-  .outro-cta {
-    margin-top: 6px;
-    padding: 9px 22px;
-    border-radius: 8px;
-    background: #00C9B5;
-    color: #070710;
-    font-size: 13px;
-    font-weight: 700;
-    border: none;
-    cursor: pointer;
-  }
+/* ── Patient message ── */
+.patient-section {
+  opacity: 0;
+  transform: translateY(1em);
+  transition: opacity .5s, transform .5s;
+  pointer-events: none;
+}
+.patient-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.patient-tabs {
+  display: flex;
+  gap: .4em;
+  margin-bottom: .6em;
+}
+.ptab {
+  font-size: .78em;
+  padding: .35em .75em;
+  border-radius: 2em;
+  border: 1px solid rgba(255,255,255,.08);
+  color: rgba(255,255,255,.4);
+  background: transparent;
+  cursor: pointer;
+}
+.ptab.active {
+  background: rgba(37,211,102,.12);
+  border-color: rgba(37,211,102,.3);
+  color: #25D366;
+}
+.patient-msg-box {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: .65em;
+  padding: .75em .9em;
+  font-size: .82em;
+  color: rgba(255,255,255,.7);
+  line-height: 1.55;
+}
 
-  /* ── Play overlay ── */
-  .play-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(7,7,16,.82);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 30;
-    cursor: pointer;
-    transition: opacity .4s;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-  }
-  .play-overlay.hidden { opacity: 0; pointer-events: none; }
-  .play-btn-big {
-    width: 64px; height: 64px;
-    border-radius: 50%;
-    background: #00C9B5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    color: #070710;
-    box-shadow: 0 0 40px rgba(0,201,181,.4);
-    transition: transform .2s;
-  }
-  .play-overlay:hover .play-btn-big { transform: scale(1.08); }
-  .play-label {
-    position: absolute;
-    bottom: 22%;
-    font-size: 13px;
-    color: rgba(255,255,255,.6);
-    letter-spacing: .5px;
-  }
+/* ── Outro overlay ── */
+.outro {
+  position: absolute;
+  inset: 0;
+  background: rgba(7,7,16,.97);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .9em;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .6s;
+  z-index: 10;
+}
+.outro.visible { opacity: 1; pointer-events: auto; }
+.outro-logo { font-size: 2em; font-weight: 800; color: #00C9B5; }
+.outro-tagline { font-size: 1.1em; color: rgba(255,255,255,.55); }
+.outro-cta {
+  margin-top: .4em;
+  padding: .75em 2em;
+  border-radius: .7em;
+  background: #00C9B5;
+  color: #070710;
+  font-size: 1em;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
+/* ── Play overlay ── */
+.play-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(7,7,16,.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1em;
+  z-index: 30;
+  cursor: pointer;
+  transition: opacity .4s;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.play-overlay.hidden { opacity: 0; pointer-events: none; }
+.play-btn-big {
+  width: 5.5em; height: 5.5em;
+  border-radius: 50%;
+  background: #00C9B5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2em;
+  color: #070710;
+  box-shadow: 0 0 4em rgba(0,201,181,.5);
+}
+.play-label {
+  font-size: 1em;
+  color: rgba(255,255,255,.55);
+}
 </style>
 </head>
 <body>
@@ -551,258 +715,448 @@
 
   <!-- App -->
   <div class="app">
+
+    <!-- Header -->
     <div class="app-header">
-      <div class="logo">Spreekdossier<span>.nl</span></div>
-      <div class="badge">Beta</div>
+      <div class="logo">
+        <span class="logo-icon">🎙️</span>
+        Spreekdossier<span class="logo-dot">.nl</span>
+      </div>
+      <div class="header-badge">Live demo · 6 templates · Van intake tot afsluiting</div>
     </div>
 
-    <div class="content">
-      <!-- LEFT -->
-      <div class="left-panel">
-        <div>
-          <div class="section-label">Sjabloon</div>
-          <div class="template-selector template-active" id="tplSelector">
-            <span class="template-name" id="tplName">SOEP Behandelnotitie</span>
-            <span class="template-chevron">▾</span>
+    <!-- Scrollable content -->
+    <div class="app-scroll" id="appScroll">
+
+      <!-- Step 1: Template -->
+      <div>
+        <div class="step-badge">
+          <div class="step-num">1</div>
+          <div class="step-label">Kies je sjabloon</div>
+        </div>
+        <div class="tpl-grid">
+          <div class="tpl-btn" id="tpl0">
+            <span class="tpl-icon">🏁</span>
+            <span class="tpl-name">Intake</span>
+          </div>
+          <div class="tpl-btn active" id="tpl1">
+            <span class="tpl-icon">🛠️</span>
+            <span class="tpl-name">Behandeling</span>
+          </div>
+          <div class="tpl-btn" id="tpl2">
+            <span class="tpl-icon">📋</span>
+            <span class="tpl-name">Behandelplan</span>
+          </div>
+          <div class="tpl-btn" id="tpl3">
+            <span class="tpl-icon">📈</span>
+            <span class="tpl-name">Evaluatie</span>
+          </div>
+          <div class="tpl-btn" id="tpl4">
+            <span class="tpl-icon">✅</span>
+            <span class="tpl-name">Afsluiting</span>
+          </div>
+          <div class="tpl-btn" id="tpl5">
+            <span class="tpl-icon">💰</span>
+            <span class="tpl-name">Administratie</span>
           </div>
         </div>
-
-        <div class="mic-area">
-          <div class="mic-btn" id="micBtn">🎙️</div>
-          <div class="rec-indicator" id="recIndicator">
-            <div class="rec-dot"></div>
-            <span id="recText">Opname bezig...</span>
-          </div>
-          <div class="waveform" id="waveform">
-            <div class="wave-bar"></div><div class="wave-bar"></div>
-            <div class="wave-bar"></div><div class="wave-bar"></div>
-            <div class="wave-bar"></div><div class="wave-bar"></div>
-            <div class="wave-bar"></div><div class="wave-bar"></div>
-            <div class="wave-bar"></div><div class="wave-bar"></div>
-            <div class="wave-bar"></div><div class="wave-bar"></div>
-          </div>
+        <div class="tpl-desc" id="tplDesc" style="margin-top:.5em">
+          Maak een professionele SOEP-notitie op basis van je behandelsessie
         </div>
+      </div>
 
-        <div>
-          <div class="section-label">Spraakopname</div>
+      <!-- Step 2: Recording -->
+      <div>
+        <div class="step-badge">
+          <div class="step-num">2</div>
+          <div class="step-label">Spreek in je memo</div>
+        </div>
+        <div class="rec-section">
+          <!-- Status + AVG -->
+          <div class="rec-status-row">
+            <div class="rec-status">
+              <div class="status-dot" id="statusDot"></div>
+              <span id="statusText">Klaar om op te nemen</span>
+            </div>
+            <div class="avg-badge">🔒 AVG-proof · Geen opslag</div>
+          </div>
+          <!-- Audiometer -->
+          <div class="audiometer" id="audiometer">
+            <div class="audio-bar" id="ab0"></div>
+            <div class="audio-bar" id="ab1"></div>
+            <div class="audio-bar" id="ab2"></div>
+            <div class="audio-bar" id="ab3"></div>
+            <div class="audio-bar" id="ab4"></div>
+            <div class="audio-bar" id="ab5"></div>
+            <div class="audio-bar" id="ab6"></div>
+            <div class="audio-bar" id="ab7"></div>
+            <div class="audio-bar" id="ab8"></div>
+          </div>
+          <!-- Timer -->
+          <div class="rec-timer" id="recTimer">00:00</div>
+          <!-- Mic -->
+          <div class="mic-wrap">
+            <div class="mic-btn" id="micBtn">🎙️</div>
+            <div class="mic-hint" id="micHint">Druk op de microfoon en vertel wat er is besproken</div>
+          </div>
+          <!-- Transcript -->
           <div class="transcript-box" id="transcriptBox">
-            <span class="placeholder" id="placeholder">Druk op microfoon om te beginnen...</span>
-            <span id="transcriptText"></span><span class="cursor" id="cursor" style="display:none"></span>
+            <span id="tPlaceholder" class="transcript-placeholder">Je gesproken memo verschijnt hier als tekst...</span><span id="tText"></span><span id="tCursor" class="transcript-cursor" style="display:none"></span>
           </div>
-        </div>
-
-        <button class="gen-btn" id="genBtn">
-          <span>✦</span> Genereer documentatie
-        </button>
-      </div>
-
-      <!-- RIGHT -->
-      <div class="right-panel">
-        <!-- Loading steps -->
-        <div class="loading-steps" id="loadingSteps">
-          <div class="step" id="step0"><div class="step-icon" id="si0"></div><span>Transcriptie verwerken</span></div>
-          <div class="step" id="step1"><div class="step-icon" id="si1"></div><span>Klachten structureren</span></div>
-          <div class="step" id="step2"><div class="step-icon" id="si2"></div><span>SOEP opmaken</span></div>
-          <div class="step" id="step3"><div class="step-icon" id="si3"></div><span>Documentatie gereed</span></div>
-        </div>
-
-        <!-- Result panel -->
-        <div class="result-panel" id="resultPanel">
-          <div class="section-label">SOEP Notitie</div>
-          <div class="soep-box">
-            <div class="soep-title">SOEP — Jan de Vries</div>
-            <div class="soep-line"><strong>S:</strong> Patiënt meldt pijn in de lage rug links (NRS 6/10), aanwezig sinds 3 weken.</div>
-            <div class="soep-line"><strong>O:</strong> Manuele therapie L4-L5 uitgevoerd. ROM beperkt in flexie en rotatie links.</div>
-            <div class="soep-line"><strong>E:</strong> Subacute lumbale discogene klachten. Goede prognose bij correcte belasting.</div>
-            <div class="soep-line"><strong>P:</strong> Continueren manuele therapie. Thuisoefeningen: 3x daags rugstrekkers (10x).</div>
-          </div>
-
-          <div class="whatsapp-box" id="waBadge">
-            <div class="wa-title">📱 WhatsApp klaar</div>
-            <div class="wa-text">"Hoi Jan! 👋 Rugstrekkers 3x per dag doen. Volgende afspraak: donderdag. Succes! 💪"</div>
-          </div>
-
-          <div class="time-badge" id="timeBadge">
-            ⏱️ 7 minuten bespaard
+          <!-- Controls -->
+          <div class="transcript-controls">
+            <div class="ctrl-btn">💡 Probeer demo</div>
+            <div class="ctrl-btn">🗑️ Wis</div>
           </div>
         </div>
       </div>
+
+      <!-- Step 3: Generate -->
+      <div>
+        <div class="step-badge">
+          <div class="step-num">3</div>
+          <div class="step-label">Genereer je documentatie</div>
+        </div>
+        <div class="gen-btn" id="genBtn">
+          <span>✨</span> Genereer documentatie
+        </div>
+      </div>
+
+      <!-- Output section -->
+      <div class="output-section" id="outputSection">
+        <div class="output-header">
+          <div class="output-title">Behandelnotitie</div>
+          <div class="output-gen-badge">✓ Gegenereerd · 4.2s</div>
+          <div class="output-time-badge" id="timeBadge">⏱️ ~7 min bespaard</div>
+        </div>
+        <div class="soep-blocks">
+          <div class="soep-block s" id="soepS">
+            <div class="soep-letter">S</div>
+            <div class="soep-content">
+              <div class="soep-head">Subjectief</div>
+              <div class="soep-text">Patiënt meldt pijnafname van NRS 7 naar 4. Rugklachten links, 3 weken aanwezig.</div>
+            </div>
+            <div class="soep-copy">📋 Kopieer</div>
+          </div>
+          <div class="soep-block o" id="soepO">
+            <div class="soep-letter">O</div>
+            <div class="soep-content">
+              <div class="soep-head">Objectief</div>
+              <div class="soep-text">Manuele therapie L4-L5 uitgevoerd. ROM verbetering 15° flexie t.o.v. vorige sessie.</div>
+            </div>
+            <div class="soep-copy">📋 Kopieer</div>
+          </div>
+          <div class="soep-block e" id="soepE">
+            <div class="soep-letter">E</div>
+            <div class="soep-content">
+              <div class="soep-head">Evaluatie / diagnose</div>
+              <div class="soep-text">Subacute lumbale discogene klachten. Gunstig verloop. Therapie effectief.</div>
+            </div>
+            <div class="soep-copy">📋 Kopieer</div>
+          </div>
+          <div class="soep-block p" id="soepP">
+            <div class="soep-letter">P</div>
+            <div class="soep-content">
+              <div class="soep-head">Plan</div>
+              <div class="soep-text">Continueren manuele therapie. Thuisoefeningen: rugstrekkers 3x daags (10 herh.). Afspraak: do 14:00.</div>
+            </div>
+            <div class="soep-copy">📋 Kopieer</div>
+          </div>
+        </div>
+        <div class="output-actions" style="margin-top:.6em">
+          <div class="out-btn">📋 Kopieer complete documentatie</div>
+          <div class="out-btn">📄 Verwijsbrief</div>
+        </div>
+      </div>
+
+      <!-- Step 4: Patient message -->
+      <div class="patient-section" id="patientSection">
+        <div class="step-badge">
+          <div class="step-num">4</div>
+          <div class="step-label">Stuur patiëntbericht</div>
+        </div>
+        <div class="patient-tabs">
+          <div class="ptab active">💬 WhatsApp</div>
+          <div class="ptab">📧 E-mail</div>
+          <div class="ptab">📱 SMS</div>
+        </div>
+        <div class="patient-msg-box" id="patientMsg">
+          Hoi Jan! 👋 Fijn dat je er was. Rugstrekkers 3x per dag doen (10x). Pijn neemt goed af! Afspraak: donderdag 14:00. Vragen? Stuur gerust een berichtje 💪
+        </div>
+      </div>
+
+      <!-- Spacer for scroll breathing room -->
+      <div style="height:1em;flex-shrink:0"></div>
+
+    </div><!-- /app-scroll -->
+  </div><!-- /app -->
+
+  <!-- Loading overlay (above app, below outro) -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-title">🛠️ Behandelnotitie wordt aangemaakt...</div>
+    <div class="loading-steps-list">
+      <div class="load-step" id="ls0"><div class="load-icon" id="li0"></div><span>Transcriptie verwerken</span></div>
+      <div class="load-step" id="ls1"><div class="load-icon" id="li1"></div><span>Klachten structureren</span></div>
+      <div class="load-step" id="ls2"><div class="load-icon" id="li2"></div><span>SOEP opmaken</span></div>
+      <div class="load-step" id="ls3"><div class="load-icon" id="li3"></div><span>Documentatie gereed</span></div>
     </div>
   </div>
 
-  <!-- Outro -->
+  <!-- Outro overlay -->
   <div class="outro" id="outro">
-    <div class="outro-logo">Spreekdossier</div>
-    <div class="outro-sub">Jouw beurt. Probeer het gratis.</div>
-    <button class="outro-cta" onclick="window.parent.location.href='https://spreekdossier.nl'">Gratis starten →</button>
+    <div class="outro-logo">🎙️ Jouw beurt.</div>
+    <div class="outro-tagline">Probeer het gratis →</div>
+    <button class="outro-cta" onclick="window.parent && (window.parent.location.href='https://spreekdossier.nl')">Gratis starten →</button>
   </div>
 
   <!-- Play overlay -->
-  <div class="play-overlay" id="playOverlay" onclick="startDemo()">
+  <div class="play-overlay hidden" id="playOverlay" onclick="startDemo()">
     <div class="play-btn-big">▶</div>
-    <div class="play-label">▶ Demo afspelen</div>
+    <div class="play-label">Demo afspelen</div>
   </div>
 
-</div>
+</div><!-- /demo-wrapper -->
 
 <script>
-(function() {
-  'use strict';
+(function(){
+'use strict';
 
-  // ── Helpers ──────────────────────────────────────────
-  function el(id) { return document.getElementById(id); }
+var el = function(id){ return document.getElementById(id); };
+var raf = requestAnimationFrame;
 
-  function delay(ms) {
-    return new Promise(function(res) { setTimeout(res, ms); });
-  }
+/* ── Helpers ── */
+function delay(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
 
-  // Typewriter
-  function typeText(target, text, msPerChar) {
-    return new Promise(function(res) {
-      var i = 0;
-      function tick() {
-        if (i >= text.length) { res(); return; }
-        target.textContent += text[i++];
-        setTimeout(tick, msPerChar + Math.random() * 20 - 10);
-      }
-      tick();
-    });
-  }
-
-  // ── State ────────────────────────────────────────────
-  var running = false;
-
-  // ── Reset ────────────────────────────────────────────
-  function resetUI() {
-    el('micBtn').className = 'mic-btn';
-    el('recIndicator').className = 'rec-indicator';
-    el('recText').textContent = 'Opname bezig...';
-    el('waveform').className = 'waveform';
-    el('placeholder').style.display = '';
-    el('transcriptText').textContent = '';
-    el('cursor').style.display = 'none';
-    el('genBtn').className = 'gen-btn';
-    el('loadingSteps').className = 'loading-steps';
-    ['step0','step1','step2','step3'].forEach(function(id) {
-      el(id).className = 'step';
-      el(id.replace('step','si')).innerHTML = '';
-      el(id.replace('step','si')).className = 'step-icon';
-    });
-    el('resultPanel').className = 'result-panel';
-    el('waBadge').className = 'whatsapp-box';
-    el('timeBadge').className = 'time-badge';
-    el('outro').className = 'outro';
-  }
-
-  // ── Step helper ──────────────────────────────────────
-  function showStepSpinner(idx) {
-    var si = el('si'+idx);
-    si.innerHTML = '<div class="step-spinner"></div>';
-  }
-  function completeStep(idx) {
-    el('step'+idx).className = 'step done';
-    var si = el('si'+idx);
-    si.innerHTML = '✓';
-    si.className = 'step-icon';
-  }
-
-  // ── Main sequence ────────────────────────────────────
-  async function runSequence() {
-    var TRANSCRIPT = 'Patiënt Jan de Vries, rugklachten links 3 weken. Manuele therapie L4-L5 uitgevoerd. Oefeningen meegegeven: 3x daags rugstrekkers. Volgende afspraak donderdag.';
-
-    // Frame 0-2s: Initial idle state — already shown
-    await delay(1800);
-
-    // Frame 2-4s: Start recording
-    el('micBtn').className = 'mic-btn recording';
-    el('recIndicator').className = 'rec-indicator visible';
-    el('waveform').className = 'waveform visible';
-    el('placeholder').style.display = 'none';
-    el('cursor').style.display = 'inline-block';
-
-    await delay(400);
-
-    // Type transcript
-    await typeText(el('transcriptText'), TRANSCRIPT, 28);
-
-    // Frame 4-5s: Stop recording
-    await delay(300);
-    el('micBtn').className = 'mic-btn';
-    el('recIndicator').className = 'rec-indicator visible';
-    el('recText').textContent = 'Opname gestopt';
-    el('waveform').className = 'waveform';
-    el('cursor').style.display = 'none';
-
-    await delay(600);
-    el('recIndicator').className = 'rec-indicator';
-
-    // Frame 5-6s: Activate + pulse generate button
-    await delay(300);
-    el('genBtn').className = 'gen-btn active pulsing';
-
-    await delay(900);
-
-    // Click effect
-    el('genBtn').className = 'gen-btn active clicked';
-    await delay(200);
-    el('genBtn').className = 'gen-btn active';
-
-    // Frame 6-8s: Loading steps
-    await delay(150);
-    el('loadingSteps').className = 'loading-steps visible';
-
-    var steps = [
-      { id: 0, wait: 300 },
-      { id: 1, wait: 400 },
-      { id: 2, wait: 500 },
-      { id: 3, wait: 400 }
-    ];
-
-    for (var s = 0; s < steps.length; s++) {
-      showStepSpinner(steps[s].id);
-      el('step'+steps[s].id).className = 'step';
-      await delay(steps[s].wait);
-      completeStep(steps[s].id);
-      await delay(150);
+function typeText(target, text, msPC){
+  return new Promise(function(res){
+    var i = 0;
+    function tick(){
+      if(i >= text.length){ res(); return; }
+      target.textContent += text[i++];
+      setTimeout(tick, msPC + (Math.random()*18 - 9));
     }
+    tick();
+  });
+}
 
-    // Frame 8-14s: Show result panel
-    await delay(300);
-    el('loadingSteps').className = 'loading-steps';
-    el('resultPanel').className = 'result-panel visible';
+/* ── Audiometer ── */
+var audioInterval = null;
+var audioBars = [el('ab0'),el('ab1'),el('ab2'),el('ab3'),el('ab4'),el('ab5'),el('ab6'),el('ab7'),el('ab8')];
+var barHeights = [0.15, 0.3, 0.5, 0.85, 0.6, 0.9, 0.45, 0.7, 0.25];
 
-    // Frame 14-16s: WhatsApp badge appears
-    await delay(3200);
-    el('waBadge').className = 'whatsapp-box visible';
+function startAudiometer(){
+  el('audiometer').classList.add('active');
+  var t = 0;
+  audioInterval = setInterval(function(){
+    t += 0.18;
+    audioBars.forEach(function(b, i){
+      var base = barHeights[i];
+      var h = base + Math.sin(t + i * 0.7) * 0.3 + Math.sin(t * 1.7 + i * 0.4) * 0.2;
+      h = Math.max(0.08, Math.min(1, h));
+      b.style.height = (h * 2.2) + 'em';
+    });
+  }, 80);
+}
 
-    // Frame 16-18s: Time saved badge
-    await delay(2000);
-    el('timeBadge').className = 'time-badge visible';
+function stopAudiometer(){
+  clearInterval(audioInterval);
+  el('audiometer').classList.remove('active');
+  audioBars.forEach(function(b){ b.style.height = '0.4em'; });
+}
 
-    // Frame 18-20s: Outro
-    await delay(2200);
-    el('outro').className = 'outro visible';
+/* ── Timer ── */
+var timerInterval = null;
+var timerStart = 0;
 
-    // Loop back after 2s
-    await delay(2200);
-    resetUI();
-    await delay(400);
-    runSequence();
+function startTimer(){
+  timerStart = Date.now();
+  el('recTimer').classList.add('active');
+  timerInterval = setInterval(function(){
+    var elapsed = Math.floor((Date.now() - timerStart) / 1000);
+    var m = Math.floor(elapsed / 60);
+    var s = elapsed % 60;
+    el('recTimer').textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }, 500);
+}
+
+function stopTimer(){
+  clearInterval(timerInterval);
+  el('recTimer').classList.remove('active');
+}
+
+/* ── Loading steps ── */
+function setLoadStep(idx, state){
+  var ls = el('ls' + idx);
+  var li = el('li' + idx);
+  ls.className = 'load-step' + (state === 'done' ? ' done' : state === 'active' ? ' active' : '');
+  if(state === 'active'){
+    li.innerHTML = '<div class="load-spinner"></div>';
+  } else if(state === 'done'){
+    li.innerHTML = '✓';
+    li.className = 'load-icon';
+  } else {
+    li.innerHTML = '';
+    li.className = 'load-icon';
+  }
+}
+
+/* ── Reset ── */
+function resetUI(){
+  // Mic
+  el('micBtn').className = 'mic-btn';
+  el('statusDot').className = 'status-dot';
+  el('statusText').textContent = 'Klaar om op te nemen';
+  stopAudiometer();
+  stopTimer();
+  el('recTimer').textContent = '00:00';
+  el('recTimer').classList.remove('active');
+  // Transcript
+  el('tPlaceholder').style.display = '';
+  el('tText').textContent = '';
+  el('tCursor').style.display = 'none';
+  // Gen btn
+  el('genBtn').className = 'gen-btn';
+  // Loading overlay
+  el('loadingOverlay').className = 'loading-overlay';
+  for(var i=0;i<4;i++) setLoadStep(i,'');
+  // Output
+  el('outputSection').className = 'output-section';
+  ['soepS','soepO','soepE','soepP'].forEach(function(id){ el(id).className = el(id).className.replace(' visible',''); });
+  el('timeBadge').className = 'output-time-badge';
+  // Patient
+  el('patientSection').className = 'patient-section';
+  // Outro
+  el('outro').className = 'outro';
+  // Scroll to top
+  el('appScroll').scrollTop = 0;
+}
+
+/* ── Template selection animation ── */
+function selectTemplate(idx){
+  for(var i=0;i<6;i++){
+    var btn = el('tpl'+i);
+    if(btn) btn.classList.remove('active');
+  }
+  var target = el('tpl'+idx);
+  if(target){
+    target.classList.add('active');
+    // Brief click scale
+    target.style.transform = 'scale(0.93)';
+    setTimeout(function(){ target.style.transform = ''; target.style.transition = 'transform .2s'; }, 150);
+  }
+}
+
+/* ── Smooth scroll ── */
+function scrollTo(targetPx, duration){
+  var start = el('appScroll').scrollTop;
+  var diff = targetPx - start;
+  var startTime = null;
+  function step(ts){
+    if(!startTime) startTime = ts;
+    var progress = Math.min((ts - startTime) / duration, 1);
+    var ease = progress < .5 ? 2*progress*progress : -1+(4-2*progress)*progress;
+    el('appScroll').scrollTop = start + diff * ease;
+    if(progress < 1) raf(step);
+  }
+  raf(step);
+}
+
+/* ── Main sequence ── */
+async function runSequence(){
+
+  var TRANSCRIPT = 'Patiënt Jan de Vries, behandeling rugklachten links. Manuele therapie L4-L5 uitgevoerd. Pijn afgenomen van NRS 7 naar 4. Oefeningen meegegeven: 3x daags rugstrekkers 10 herhalingen. Volgende afspraak donderdag 14:00.';
+
+  // 0-1.5s: Idle — Intake selected (tpl0 active initially)
+  selectTemplate(0);
+  el('tplDesc').textContent = 'Eerste contact, anamnese en diagnose vastleggen';
+  await delay(1500);
+
+  // 1.5-2.5s: Switch to Behandeling (tpl1)
+  selectTemplate(1);
+  await delay(300);
+  el('tplDesc').textContent = 'Maak een professionele SOEP-notitie op basis van je behandelsessie';
+  await delay(500);
+
+  // 2.5-3s: Click mic → recording starts
+  el('micBtn').className = 'mic-btn recording';
+  el('statusDot').className = 'status-dot recording';
+  el('statusText').textContent = 'Opname bezig...';
+  el('tPlaceholder').style.display = 'none';
+  el('tCursor').style.display = 'inline-block';
+  startAudiometer();
+  startTimer();
+
+  await delay(500);
+
+  // 3-6s: Type transcript
+  await typeText(el('tText'), TRANSCRIPT, 26);
+
+  // 6-6.5s: Stop recording
+  el('micBtn').className = 'mic-btn';
+  el('statusDot').className = 'status-dot';
+  el('statusText').textContent = '✓ Tekst klaar';
+  el('tCursor').style.display = 'none';
+  stopAudiometer();
+  stopTimer();
+
+  await delay(600);
+
+  // 6.5-7s: Enable generate button, pulse, then click
+  el('genBtn').className = 'gen-btn active pulsing';
+  await delay(800);
+  el('genBtn').className = 'gen-btn active clicked';
+  await delay(180);
+  el('genBtn').className = 'gen-btn active';
+
+  // 7-9s: Loading overlay
+  await delay(200);
+  el('loadingOverlay').className = 'loading-overlay visible';
+
+  var steps = [350, 450, 500, 400];
+  for(var s=0; s<4; s++){
+    setLoadStep(s, 'active');
+    await delay(steps[s]);
+    setLoadStep(s, 'done');
+    await delay(130);
   }
 
-  // ── Start ────────────────────────────────────────────
-  window.startDemo = function() {
-    if (running) return;
-    running = true;
-    el('playOverlay').className = 'play-overlay hidden';
-    resetUI();
-    runSequence();
-  };
+  // Hide loading, show output
+  await delay(250);
+  el('loadingOverlay').className = 'loading-overlay';
 
-  // Autoplay after short pause
-  setTimeout(function() {
-    window.startDemo();
-  }, 600);
+  // 9-14s: SOEP blocks appear with stagger
+  el('outputSection').className = 'output-section visible';
+  scrollTo(300, 500);
+
+  var soepIds = ['soepS','soepO','soepE','soepP'];
+  for(var b=0; b<soepIds.length; b++){
+    await delay(350);
+    el(soepIds[b]).className = el(soepIds[b]).className + ' visible';
+  }
+
+  // Time badge pops in
+  await delay(800);
+  el('timeBadge').className = 'output-time-badge visible';
+
+  // 14-16s: Patient section fades in
+  await delay(1800);
+  el('patientSection').className = 'patient-section visible';
+  scrollTo(700, 600);
+
+  // 17.5-19s: Outro
+  await delay(2800);
+  el('outro').className = 'outro visible';
+
+  // 19-20s: Reset & loop
+  await delay(2200);
+  resetUI();
+  await delay(400);
+  runSequence();
+}
+
+/* ── Boot ── */
+resetUI();
+setTimeout(function(){ runSequence(); }, 300);
 
 })();
 </script>
