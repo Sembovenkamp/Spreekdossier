@@ -28,25 +28,24 @@ body {
   font-size: calc(min(960px, 100vw) / 96);
 }
 
-/* ── Animated cursor ── */
+/* ── Animated cursor (real mouse pointer SVG) ── */
 .demo-cursor {
   position: absolute;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.92);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.7), 0 0 0 1.5px rgba(0,0,0,0.25);
+  width: 24px;
+  height: 28px;
   pointer-events: none;
   z-index: 100;
-  transform: translate(-50%, -50%) scale(1);
+  /* hotspot is top-left corner of SVG */
+  transform: translate(0, 0) scale(1);
   transition: left 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
               top 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
               transform 0.15s ease;
   display: none;
 }
 .demo-cursor.clicking {
-  transform: translate(-50%, -50%) scale(0.7);
+  transform: scale(0.8);
 }
+
 
 /* ── Fake browser chrome ── */
 .titlebar {
@@ -626,6 +625,15 @@ body {
   transform: translateY(0);
   pointer-events: auto;
 }
+.patient-section-title {
+  font-size: 1em;
+  font-weight: 600;
+  color: rgba(255,255,255,.75);
+  margin-bottom: .65em;
+  display: flex;
+  align-items: center;
+  gap: .4em;
+}
 .patient-tabs {
   display: flex;
   gap: .45em;
@@ -654,6 +662,60 @@ body {
   font-size: .86em;
   color: rgba(255,255,255,.7);
   line-height: 1.6;
+  min-height: 3em;
+}
+
+/* ── Verwijsbrief card ── */
+.verwijsbrief-section {
+  opacity: 0;
+  transform: translateY(1em);
+  transition: opacity .5s, transform .5s;
+  pointer-events: none;
+}
+.verwijsbrief-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.verwijsbrief-card {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: .7em;
+  padding: .9em 1.1em;
+}
+.verwijsbrief-header {
+  display: flex;
+  align-items: center;
+  gap: .5em;
+  margin-bottom: .55em;
+}
+.verwijsbrief-title {
+  font-size: .95em;
+  font-weight: 700;
+  color: rgba(255,255,255,.85);
+}
+.verwijsbrief-badge {
+  font-size: .72em;
+  background: rgba(255,159,10,.1);
+  border: 1px solid rgba(255,159,10,.25);
+  border-radius: 2em;
+  padding: .22em .6em;
+  color: #FF9F0A;
+}
+.verwijsbrief-preview {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: .5em;
+  padding: .65em .85em;
+  font-size: .82em;
+  color: rgba(255,255,255,.65);
+  line-height: 1.6;
+  font-family: 'Georgia', serif;
+  border-left: 3px solid rgba(255,159,10,.4);
+}
+.verwijsbrief-preview em {
+  color: rgba(255,255,255,.35);
+  font-style: normal;
 }
 
 /* ── Outro overlay ── */
@@ -732,8 +794,12 @@ body {
     <div class="urlbar">🔒 app.spreekdossier.nl</div>
   </div>
 
-  <!-- Animated cursor -->
-  <div class="demo-cursor" id="demoCursor"></div>
+  <!-- Animated cursor (real mouse pointer SVG) -->
+  <div class="demo-cursor" id="demoCursor">
+    <svg width="24" height="28" viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 2L2 20L7 15L11 23L14 21.5L10 13.5L17 13.5L2 2Z" fill="white" stroke="#333" stroke-width="1.5" stroke-linejoin="round"/>
+    </svg>
+  </div>
 
   <!-- App -->
   <div class="app">
@@ -856,7 +922,7 @@ body {
             <div class="soep-letter">S</div>
             <div class="soep-content">
               <div class="soep-head">Subjectief</div>
-              <div class="soep-text">Patiënt meldt pijnafname van NRS 7 naar 4. Rugklachten links, 3 weken aanwezig.</div>
+              <div class="soep-text">Patiënt Jan de Vries (45j) meldt pijnafname NRS 7→4. Rugklachten links al drie weken aanwezig. Geeft aan beter te slapen.</div>
             </div>
             <div class="soep-copy" id="copySBtn">📋 Kopieer</div>
           </div>
@@ -864,7 +930,7 @@ body {
             <div class="soep-letter">O</div>
             <div class="soep-content">
               <div class="soep-head">Objectief</div>
-              <div class="soep-text">Manuele therapie L4-L5 uitgevoerd. ROM verbetering 15° flexie t.o.v. vorige sessie.</div>
+              <div class="soep-text">Manuele therapie L4-L5 uitgevoerd. Mobilisatie en weefselbehandeling. Beweeglijkheid duidelijk verbeterd t.o.v. vorige sessie.</div>
             </div>
             <div class="soep-copy">📋 Kopieer</div>
           </div>
@@ -872,7 +938,7 @@ body {
             <div class="soep-letter">E</div>
             <div class="soep-content">
               <div class="soep-head">Evaluatie / diagnose</div>
-              <div class="soep-text">Subacute lumbale discogene klachten. Gunstig verloop. Therapie effectief.</div>
+              <div class="soep-text">Subacute lumbale klachten links. Gunstig verloop, therapie effectief. Zwaar tillen nog vermijden komende week.</div>
             </div>
             <div class="soep-copy">📋 Kopieer</div>
           </div>
@@ -880,14 +946,14 @@ body {
             <div class="soep-letter">P</div>
             <div class="soep-content">
               <div class="soep-head">Plan</div>
-              <div class="soep-text">Continueren manuele therapie. Thuisoefeningen: rugstrekkers 3x daags (10 herh.). Afspraak: do 14:00.</div>
+              <div class="soep-text">Thuisoefeningen: rugstrekkers 3x daags (10 herh.) + cat-cow stretch 's ochtends. Volgende afspraak: donderdag 14:00.</div>
             </div>
             <div class="soep-copy">📋 Kopieer</div>
           </div>
         </div>
         <div class="output-actions" style="margin-top:.6em">
           <div class="out-btn">📋 Kopieer complete documentatie</div>
-          <div class="out-btn">📄 Verwijsbrief</div>
+          <div class="out-btn" id="verwijsbriefBtn">📄 Verwijsbrief</div>
         </div>
       </div>
 
@@ -902,8 +968,26 @@ body {
           <div class="ptab" id="ptabEmail">📧 E-mail</div>
           <div class="ptab" id="ptabSMS">📱 SMS</div>
         </div>
-        <div class="patient-msg-box" id="patientMsg">
-          Hoi Jan! 👋 Fijn dat je er was. Rugstrekkers 3x per dag doen (10x). Pijn neemt goed af! Afspraak: donderdag 14:00. Vragen? Stuur gerust een berichtje 💪
+        <div class="patient-msg-box" id="patientMsg"></div>
+      </div>
+
+      <!-- Step 5: Verwijsbrief -->
+      <div class="verwijsbrief-section" id="verwijsbriefSection">
+        <div class="step-badge">
+          <div class="step-num">5</div>
+          <div class="step-label">Verwijsbrief gegenereerd</div>
+        </div>
+        <div class="verwijsbrief-card">
+          <div class="verwijsbrief-header">
+            <span style="font-size:1.1em">📄</span>
+            <div class="verwijsbrief-title">Verwijsbrief — Jan de Vries</div>
+            <div class="verwijsbrief-badge">Concept klaar</div>
+          </div>
+          <div class="verwijsbrief-preview">
+            Geachte collega,<br><br>
+            Hierbij verwijs ik naar u patiënt <strong style="color:rgba(255,255,255,.85)">Jan de Vries (45j, M)</strong> voor verdere behandeling van subacute lumbale klachten links <strong style="color:rgba(255,255,255,.85)">(NRS 7→4)</strong>.<br><br>
+            <em>Behandeling: manuele therapie L4-L5, mobilisatie en weefselbehandeling. Beweeglijkheid duidelijk verbeterd...</em>
+          </div>
         </div>
       </div>
 
@@ -955,7 +1039,7 @@ function typeText(target, text, msPC){
     function tick(){
       if(i >= text.length){ res(); return; }
       target.textContent += text[i++];
-      setTimeout(tick, msPC + (Math.random()*18 - 9));
+      setTimeout(tick, msPC + (Math.random()*10 - 5));
     }
     tick();
   });
@@ -970,6 +1054,7 @@ function showCursor(){
 
 function moveCursor(xPct, yPct){
   // xPct/yPct are percentages of the demo-wrapper
+  // cursor hotspot is top-left of the SVG
   var wrapper = el('demoWrapper');
   var w = wrapper.offsetWidth;
   var h = wrapper.offsetHeight;
@@ -1096,9 +1181,12 @@ function resetUI(){
   el('copySBtn').classList.remove('highlight');
   // Patient
   el('patientSection').className = 'patient-section';
+  el('patientMsg').textContent = '';
   el('ptabWA').className = 'ptab active';
   el('ptabEmail').className = 'ptab';
   el('ptabSMS').className = 'ptab';
+  // Verwijsbrief
+  el('verwijsbriefSection').className = 'verwijsbrief-section';
   // Outro
   el('outro').className = 'outro';
   // Scroll to top
@@ -1135,10 +1223,12 @@ function scrollTo(targetPx, duration){
   raf(step);
 }
 
-/* ── Main sequence (32s loop) ── */
+/* ── Main sequence (~40s loop) ── */
 async function runSequence(){
 
-  var TRANSCRIPT = 'Patiënt Jan de Vries, behandeling rugklachten links. Manuele therapie L4-L5 uitgevoerd. Pijn afgenomen van NRS 7 naar 4. Oefeningen meegegeven: 3x daags rugstrekkers 10 herhalingen. Volgende afspraak donderdag 14:00.';
+  var TRANSCRIPT = 'Patiënt Jan de Vries, 45 jaar. Behandeling rugklachten links, al drie weken aanwezig. Pijn NRS 7 naar 4 na sessie. Manuele therapie L4-L5 uitgevoerd, mobilisatie en weefselbehandeling. Beweeglijkheid duidelijk verbeterd. Thuisoefeningen meegegeven: rugstrekkers 3x daags 10 herhalingen, cat-cow stretch \'s ochtends. Patiënt geeft aan beter te slapen. Zwaar tillen nog vermijden komende week. Volgende afspraak donderdag 14:00.';
+
+  var WA_MESSAGE = 'Hoi Jan! 👋 Super dat de pijn al minder is geworden. Doe thuis de rugstrekkers 3x per dag (10x) en de cat-cow stretch elke ochtend. Geen zwaar tillen deze week. Volgende afspraak: donderdag 14:00. Vragen? Stuur gerust een appje! 💪';
 
   /* 0-3s: Idle UI — viewer orients */
   await delay(3000);
@@ -1148,6 +1238,7 @@ async function runSequence(){
   cursor.style.transition = 'none';
   moveCursor(15, 30);
   await delay(50);
+
   cursor.style.transition = 'left 0.6s cubic-bezier(0.25,0.46,0.45,0.94), top 0.6s cubic-bezier(0.25,0.46,0.45,0.94), transform 0.15s ease';
 
   /* 3-4s: Cursor moves to "Behandeling" (tpl1) → clicks */
@@ -1181,10 +1272,10 @@ async function runSequence(){
   await delay(400);
   moveCursor(65, 72);
 
-  /* 6.5-11s: Recording — transcript types in slowly (~4.5s for the text) */
-  await typeText(el('tText'), TRANSCRIPT, 18);
+  /* 6.5-15s: Recording — full transcript types in (~8.5s at 22ms/char) */
+  await typeText(el('tText'), TRANSCRIPT, 22);
 
-  /* 11-12s: Cursor moves to mic button → stop */
+  /* 15-16s: Cursor moves to mic button → stop */
   var micPos2 = elPct(el('micBtn'));
   moveCursor(micPos2.x, micPos2.y);
   await delay(700);
@@ -1196,14 +1287,14 @@ async function runSequence(){
   stopAudiometer();
   stopTimer();
 
-  /* 12-13s: Enable generate button + pulse; cursor moves to it */
+  /* 16-17s: Enable generate button + pulse; cursor moves to it */
   await delay(400);
   el('genBtn').className = 'gen-btn active pulsing';
   var genPos = elPct(el('genBtn'));
   moveCursor(genPos.x, genPos.y);
   await delay(800);
 
-  /* 13-13.5s: Click generate */
+  /* 17-17.5s: Click generate */
   await clickCursor();
   el('genBtn').className = 'gen-btn active clicked';
   await delay(180);
@@ -1212,68 +1303,72 @@ async function runSequence(){
   /* Move cursor to center during loading */
   moveCursor(50, 50);
 
-  /* 13.5-17s: Loading overlay — 4 steps ~1s each */
+  /* 17.5-20s: Loading overlay — 4 steps ~0.6s each (total ~2.5s) */
   await delay(250);
   el('loadingOverlay').className = 'loading-overlay visible';
 
-  var steps = [900, 950, 1000, 850];
+  var steps = [550, 580, 620, 500];
   for(var s=0; s<4; s++){
     setLoadStep(s, 'active');
     await delay(steps[s]);
     setLoadStep(s, 'done');
-    await delay(150);
+    await delay(100);
   }
 
   /* Hide loading, show output */
   await delay(200);
   el('loadingOverlay').className = 'loading-overlay';
 
-  /* 17-24s: SOEP output slides in, blocks appear with ~2s spacing */
+  /* 20-26s: SOEP output slides in, blocks appear staggered */
   el('outputSection').className = 'output-section visible';
   scrollTo(280, 500);
 
   var soepIds = ['soepS','soepO','soepE','soepP'];
   for(var b=0; b<soepIds.length; b++){
-    await delay(b === 0 ? 400 : 1800);
+    await delay(b === 0 ? 400 : 1400);
     el(soepIds[b]).classList.add('visible');
   }
 
   /* Time badge bounces in */
-  await delay(600);
+  await delay(500);
   el('timeBadge').className = 'output-time-badge visible';
 
-  /* 24-26s: Cursor moves to WhatsApp tab → click */
-  await delay(1200);
+  /* 26-28s: Scroll down, patiëntbericht card appears */
+  await delay(1000);
   el('patientSection').className = 'patient-section visible';
   scrollTo(700, 600);
   await delay(700);
 
+  /* 28-30s: Cursor clicks WhatsApp tab clearly, message fills in */
   var waPos = elPct(el('ptabWA'));
   moveCursor(waPos.x, waPos.y);
-  await delay(800);
+  await delay(600);
   await clickCursor();
-  /* WhatsApp already active — just show the highlight */
+  /* WhatsApp already active — highlight it */
   el('ptabWA').style.transform = 'scale(0.93)';
   setTimeout(function(){ el('ptabWA').style.transform = ''; }, 160);
 
-  /* 26-28s: Patient message already visible — cursor moves to Kopieer on S block */
-  await delay(1500);
-  var copyPos = elPct(el('copySBtn'));
-  moveCursor(copyPos.x, copyPos.y);
+  /* Message types in */
+  await delay(300);
+  await typeText(el('patientMsg'), WA_MESSAGE, 14);
+
+  /* 30-33s: Verwijsbrief preview card slides in */
   await delay(800);
+  el('verwijsbriefSection').className = 'verwijsbrief-section visible';
+  scrollTo(1100, 700);
+  await delay(500);
 
-  /* 28-29s: Click "Kopieer" on SOEP S block */
-  await clickCursor();
-  el('copySBtn').classList.add('highlight');
-  await delay(600);
-  el('copySBtn').classList.remove('highlight');
+  /* Cursor moves toward verwijsbrief card */
+  var vbPos = elPct(el('verwijsbriefSection'));
+  moveCursor(vbPos.x, vbPos.y + 5);
+  await delay(1500);
 
-  /* 29-31s: Outro */
-  await delay(1000);
+  /* 33-35s: "⏱️ 7 min bespaard" badge already shown — outro */
+  await delay(800);
   el('outro').className = 'outro visible';
   cursor.style.display = 'none';
 
-  /* 31-32s: Reset & loop */
+  /* 35-36s: Reset & loop */
   await delay(2200);
   resetUI();
   await delay(500);
