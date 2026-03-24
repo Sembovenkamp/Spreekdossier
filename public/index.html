@@ -9,7 +9,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://spreekdossier.nl/" />
   <meta property="og:title" content="Spreekdossier — Stop met typen. Spreek in. Dossier klaar." />
-  <meta property="og:description" content="Het complete administratieplatform voor fysiotherapeuten. SOEP-notitie, patiëntbericht, verwijsbrief, behandelplan — alles in één. €39/mnd. 30 dagen gratis." />
+  <meta property="og:description" content="Het complete administratieplatform voor fysiotherapeuten. SOEP-notitie, patiëntbericht, verwijsbrief, behandelplan — alles in één. €39/mnd. 3 maanden gratis voor vroege gebruikers." />
   <meta property="og:image" content="https://spreekdossier-site.vercel.app/og-image.png" />
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
@@ -26,7 +26,7 @@
   }
   </script>
   <meta name="twitter:title" content="Spreekdossier — SOEP-documentatie in 2 minuten" />
-  <meta name="twitter:description" content="Spreek in na je behandeling. Wij schrijven de SOEP-notitie. Werkt met elk EPD. AVG-proof. 30 dagen gratis." />
+  <meta name="twitter:description" content="Spreek in na je behandeling. Wij schrijven de SOEP-notitie. Werkt met elk EPD. AVG-proof. 3 maanden gratis voor vroege gebruikers." />
   <link rel="canonical" href="https://spreekdossier.nl/" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -241,8 +241,7 @@
     /* ===== PRICING ===== */
     #pricing { background: var(--bg-card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
     .pricing-note { text-align: center; background: var(--primary-light); border: 1px solid var(--border-glow); border-radius: var(--radius-sm); padding: 14px 24px; font-size: 14px; color: var(--primary); font-weight: 600; margin-bottom: 40px; display: inline-block; }
-    .pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; align-items: start; }
-    @media (max-width: 1000px) { .pricing-grid { grid-template-columns: repeat(2, 1fr); } }
+    .pricing-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; align-items: start; max-width: 720px; margin: 0 auto; }
     @media (max-width: 600px) { .pricing-grid { grid-template-columns: 1fr; } }
     .pricing-card { background: var(--bg-card2); border-radius: var(--radius); padding: 28px 24px; border: 1px solid var(--border); position: relative; transition: all 0.3s; display: flex; flex-direction: column; }
     .pricing-card:hover { transform: translateY(-4px); border-color: var(--border-glow); }
@@ -521,8 +520,8 @@
     <div class="donut-inner container">
       <div class="fade-in">
         <p class="section-label">Tijdsverdeling</p>
-        <h2>Uw tijd als fysiotherapeut</h2>
-        <p class="section-body">Gemiddeld gaat <strong>25% van uw werkdag</strong> op aan administratie — ruim 45 minuten. Dat is tijd die u niet besteedt aan uw patiënten.</p>
+        <h2>Jouw tijd als fysiotherapeut</h2>
+        <p class="section-body">Gemiddeld gaat <strong>25% van jouw werkdag</strong> op aan administratie — ruim 45 minuten. Dat is tijd die je niet besteedt aan jouw patiënten.</p>
         <p class="section-body" style="color:var(--primary);font-weight:600;">Spreekdossier brengt dit terug naar &lt;5 minuten.</p>
         <div class="donut-legend">
           <div class="donut-legend-item"><div class="donut-legend-dot" style="background:var(--primary);"></div>75% — Behandelen patiënten</div>
@@ -846,64 +845,34 @@
       <div class="pricing-grid">
 
         <div class="pricing-card fade-in fade-in-delay-1">
-          <div class="pricing-tier">Solo</div>
+          <div class="pricing-tier">ZZP</div>
           <div class="pricing-price"><span class="amount">€39</span><span class="period">/maand</span></div>
-          <p class="pricing-desc">Voor de zelfstandige fysiotherapeut die direct wil starten.<br /><strong style="color:var(--primary)">Ideaal voor ZZP-fysiotherapeuten</strong></p>
+          <p class="pricing-desc">Voor de solo fysiotherapeut die direct wil starten.<br /><strong style="color:var(--primary)">Ideaal voor ZZP-fysiotherapeuten</strong></p>
           <div class="pricing-templates-badge">✦ Alle 6 templates inbegrepen</div>
           <ul class="pricing-features">
             <li>Intake, SOEP, Behandelplan, Evaluatie, Afsluiting, Administratie</li>
             <li>Onbeperkte rapportages</li>
             <li>Professioneel Nederlands (KNGF-conform)</li>
             <li>Kopieer naar elk EPD</li>
-            <li>30 dagen gratis proberen</li>
+            <li>3 maanden gratis voor vroege gebruikers</li>
           </ul>
-          <a href="#cta" class="pricing-cta">Start 30 dagen gratis</a>
+          <a href="#cta" class="pricing-cta">Start 3 maanden gratis</a>
         </div>
 
         <div class="pricing-card popular fade-in fade-in-delay-2">
-          <div class="popular-badge">⭐ Meest gekozen</div>
-          <div class="pricing-tier">Praktijk S</div>
-          <div class="pricing-price"><span class="amount">€39</span><span class="period">/maand</span></div>
-          <p class="pricing-desc">Voor een kleine praktijk met meerdere behandelaars.<br /><strong style="color:var(--primary)">Voor kleine fysiotherapiepraktijken</strong></p>
+          <div class="popular-badge">⭐ Voor praktijken</div>
+          <div class="pricing-tier">Praktijk</div>
+          <div class="pricing-price"><span class="amount">€79</span><span class="period">/maand</span></div>
+          <p class="pricing-desc">Voor praktijken met meerdere behandelaars, schaalbaar.<br /><strong style="color:var(--primary)">Tot 3 therapeuten, uitbreidbaar</strong></p>
           <div class="pricing-templates-badge">✦ Alle 6 templates voor elk teamlid</div>
           <ul class="pricing-features">
-            <li>Alles van Solo</li>
-            <li>Tot 3 gebruikers</li>
+            <li>Alles van ZZP</li>
+            <li>Tot 3 therapeuten inbegrepen (daarna +€20/therapeut)</li>
             <li>Gedeelde rapportagegeschiedenis</li>
             <li>Prioriteit e-mail support</li>
-            <li>Verwerkersovereenkomst</li>
+            <li>Verwerkersovereenkomst beschikbaar op aanvraag</li>
           </ul>
-          <a href="#cta" class="pricing-cta">Start 30 dagen gratis</a>
-        </div>
-
-        <div class="pricing-card fade-in fade-in-delay-3">
-          <div class="pricing-tier">Praktijk M</div>
-          <div class="pricing-price"><span class="amount">€39</span><span class="period">/maand</span></div>
-          <p class="pricing-desc">Voor middelgrote praktijken met een groter team.<br /><strong style="color:var(--primary)">Voor middelgrote praktijken</strong></p>
-          <div class="pricing-templates-badge">✦ Alle 6 templates + aangepaste varianten</div>
-          <ul class="pricing-features">
-            <li>Alles van Praktijk S</li>
-            <li>Tot 8 gebruikers</li>
-            <li>Aangepaste templates (eigen velden)</li>
-            <li>Rapportage-export (PDF/Word)</li>
-            <li>API-integratie beschikbaar</li>
-          </ul>
-          <a href="#cta" class="pricing-cta">Start 30 dagen gratis</a>
-        </div>
-
-        <div class="pricing-card fade-in fade-in-delay-4">
-          <div class="pricing-tier">Praktijk L</div>
-          <div class="pricing-price"><span class="amount">€39</span><span class="period">/maand</span></div>
-          <p class="pricing-desc">Voor grote praktijken en zorgorganisaties.<br /><strong style="color:var(--primary)">Voor grote praktijken en ketens</strong></p>
-          <div class="pricing-templates-badge">✦ Alle 6 templates + EPD-koppeling</div>
-          <ul class="pricing-features">
-            <li>Alles van Praktijk M</li>
-            <li>Onbeperkt gebruikers</li>
-            <li>EPD-koppeling op maat</li>
-            <li>Dedicated accountmanager</li>
-            <li>SLA 99,9% uptime</li>
-          </ul>
-          <a href="#cta" class="pricing-cta">Neem contact op</a>
+          <a href="#cta" class="pricing-cta">Start 3 maanden gratis</a>
         </div>
 
       </div>
@@ -992,7 +961,7 @@
         </div>
         <div class="faq-item" onclick="toggleFaq(this)">
           <div class="faq-q">Hoe nauwkeurig is de transcriptie? Wat als medische termen verkeerd gaan?<span class="faq-chevron">▾</span></div>
-          <div class="faq-a">We gebruiken Whisper van OpenAI — de sterkste spraakherkenning op de markt. <strong>De AI is specifiek getraind op fysiotherapeutische terminologie</strong>: rotatorcuff, lumbosacraal, SOEP, NRS, ROM, Maitland, McKenzie etc. Je leest de output altijd even na voor je kopieert — dat kost 30 seconden. Fouten corrigeer je direct in het transcript voor je genereert.</div>
+          <div class="faq-a">We gebruiken state-of-the-art spraakherkenning voor transcriptie en Claude (Anthropic) voor AI-generatie. <strong>De AI is specifiek geoptimaliseerd op fysiotherapeutische terminologie</strong>: rotatorcuff, lumbosacraal, SOEP, NRS, ROM, Maitland, McKenzie etc. Je leest de output altijd even na voor je kopieert — dat kost 30 seconden. Fouten corrigeer je direct in het transcript voor je genereert.</div>
         </div>
         <div class="faq-item" onclick="toggleFaq(this)">
           <div class="faq-q">Werkt het met mijn EPD? Ik gebruik Intramed / Fysiomanager / SpotOnMedics.<span class="faq-chevron">▾</span></div>
@@ -1000,7 +969,7 @@
         </div>
         <div class="faq-item" onclick="toggleFaq(this)">
           <div class="faq-q">Moet ik een contract tekenen of kan ik op elk moment stoppen?<span class="faq-chevron">▾</span></div>
-          <div class="faq-a">Geen jaarcontract, geen kleine lettertjes. <strong>Maandelijks opzegbaar, per direct.</strong> Je start met 30 dagen gratis — geen creditcard nodig. Daarna betaal je alleen als je tevreden bent.</div>
+          <div class="faq-a">Geen jaarcontract, geen kleine lettertjes. <strong>Maandelijks opzegbaar, per direct.</strong> Je start met 3 maanden gratis — geen creditcard nodig. Daarna betaal je alleen als je tevreden bent.</div>
         </div>
         <div class="faq-item" onclick="toggleFaq(this)">
           <div class="faq-q">Ik werk maar parttime — is het dan nog de moeite waard?<span class="faq-chevron">▾</span></div>
@@ -1020,11 +989,11 @@
         </div>
         <div class="faq-item" onclick="toggleFaq(this)">
           <div class="faq-q">Is Spreekdossier compatibel met mijn EPD (Intramed, Fysiomanager, SpotOnMedics)?<span class="faq-chevron">▾</span></div>
-          <div class="faq-a">Spreekdossier werkt naast elk EPD als losse tool. U kopieert de gegenereerde tekst in uw bestaande systeem. <strong>EPD-integratie (automatisch inplakken) staat op de roadmap.</strong></div>
+          <div class="faq-a">Spreekdossier werkt naast elk EPD als losse tool. Je kopieert de gegenereerde tekst in jouw bestaande systeem. <strong>EPD-integratie (automatisch inplakken) staat op de roadmap.</strong></div>
         </div>
         <div class="faq-item" onclick="toggleFaq(this)">
           <div class="faq-q">Voldoet Spreekdossier aan NEN 7510?<span class="faq-chevron">▾</span></div>
-          <div class="faq-a">NEN 7510 is primair van toepassing op opslag van patiëntgegevens. <strong>Spreekdossier slaat geen patiëntdata op</strong>, waardoor de norm minder van toepassing is. Wij raden aan geen BSN of naam in uw memo te vermelden.</div>
+          <div class="faq-a">NEN 7510 is primair van toepassing op opslag van patiëntgegevens. <strong>Spreekdossier slaat geen patiëntdata op</strong>, waardoor de norm minder van toepassing is. Wij raden aan geen BSN of naam in jouw memo te vermelden.</div>
         </div>
         <div class="faq-item" onclick="toggleFaq(this)">
           <div class="faq-q">Hoe lang duurt de gratis proefperiode?<span class="faq-chevron">▾</span></div>
@@ -1055,7 +1024,7 @@
         <div class="privacy-card fade-in fade-in-delay-1"><span class="privacy-icon">🌍</span><h3>EU-servers</h3><p>Alle data verwerkt en opgeslagen binnen de Europese Unie. Nooit buiten Europa.</p></div>
         <div class="privacy-card fade-in fade-in-delay-2"><span class="privacy-icon">🗑️</span><h3>Audio direct verwijderd</h3><p>Opnames direct na transcriptie verwijderd. We bewaren nooit meer dan nodig.</p></div>
         <div class="privacy-card fade-in fade-in-delay-3"><span class="privacy-icon">🚫</span><h3>Geen AI-training</h3><p>Jouw data wordt nooit gebruikt om AI-modellen te trainen. Contractueel vastgelegd.</p></div>
-        <div class="privacy-card fade-in fade-in-delay-4"><span class="privacy-icon">📋</span><h3>AVG-proof</h3><p>Verwerkersovereenkomst inbegrepen. NEN-7510-compatibel. Klaar voor IGJ-inspectie.</p></div>
+        <div class="privacy-card fade-in fade-in-delay-4"><span class="privacy-icon">📋</span><h3>AVG-proof</h3><p>Verwerkersovereenkomst beschikbaar op aanvraag. NEN-7510-compatibel. Klaar voor IGJ-inspectie.</p></div>
       </div>
     </div>
   </section>
@@ -1080,7 +1049,7 @@
     <div class="container">
       <p class="section-label">Klaar om te starten?</p>
       <h2>Win je avonden terug.</h2>
-      <p class="cta-sub">Meer dan een AI-scribe — het complete administratieplatform voor fysiotherapeuten. SOEP, behandelplan, verwijsbrief, patiëntbericht. 30 dagen gratis, geen creditcard.</p>
+      <p class="cta-sub">Meer dan een AI-scribe — het complete administratieplatform voor fysiotherapeuten. SOEP, behandelplan, verwijsbrief, patiëntbericht. 3 maanden gratis voor vroege gebruikers, geen creditcard.</p>
       <form class="waitlist-form" id="waitlist-form" onsubmit="submitWaitlist(event)">
         <input type="email" id="wl-email" placeholder="Jouw e-mailadres" required autocomplete="email" />
         <button type="submit" class="waitlist-submit" id="wl-btn">✦ Vraag vroege toegang aan — gratis</button>
@@ -1105,8 +1074,8 @@
         <li><a href="waitlist.html">Vroege toegang</a></li>
         <li><a href="blog.html">Blog & Kennisbank</a></li>
         <li><a href="vergelijk.html">Vergelijk tools</a></li>
-        <li><a href="#">Algemene voorwaarden</a></li>
-        <li><a href="#">Verwerkersovereenkomst</a></li>
+        <li><a href="algemene-voorwaarden.html">Algemene voorwaarden</a></li>
+        <li><a href="verwerkersovereenkomst.html">Verwerkersovereenkomst</a></li>
         <li><a href="mailto:info@spreekdossier.nl">Contact</a></li>
       </ul>
     </div>

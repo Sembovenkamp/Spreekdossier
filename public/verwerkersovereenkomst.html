@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verwerkersovereenkomst — Spreekdossier</title>
+  <meta name="robots" content="noindex" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #00c9b5;
+      --bg: #090912;
+      --bg-card: #0f0f1a;
+      --text: #f0f0ff;
+      --text-muted: rgba(240,240,255,0.55);
+      --border: rgba(255,255,255,0.07);
+    }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.7; }
+    nav { background: rgba(9,9,18,0.95); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-brand { font-weight: 800; font-size: 18px; color: white; text-decoration: none; }
+    .nav-back { color: var(--text-muted); font-size: 14px; text-decoration: none; }
+    .nav-back:hover { color: white; }
+    .container { max-width: 760px; margin: 0 auto; padding: 48px 24px 96px; }
+    h1 { font-size: clamp(26px, 4vw, 40px); font-weight: 900; margin-bottom: 8px; }
+    .meta { color: var(--text-muted); font-size: 14px; margin-bottom: 48px; }
+    h2 { font-size: 20px; font-weight: 700; margin-top: 40px; margin-bottom: 12px; color: var(--primary); }
+    p { color: var(--text-muted); margin-bottom: 14px; }
+    ul { color: var(--text-muted); padding-left: 20px; margin-bottom: 14px; }
+    li { margin-bottom: 6px; }
+    a { color: var(--primary); }
+    .callout { background: #0f0f1a; border: 1px solid rgba(0,201,181,0.2); border-radius: 10px; padding: 20px 24px; margin: 24px 0; }
+    .callout p { margin: 0; }
+    footer { border-top: 1px solid var(--border); padding: 24px; text-align: center; color: var(--text-muted); font-size: 13px; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="nav-brand">🎙️ Spreekdossier</a>
+    <a href="index.html" class="nav-back">← Terug naar home</a>
+  </nav>
+
+  <div class="container">
+    <h1>Verwerkersovereenkomst</h1>
+    <p class="meta">Conform AVG artikel 28 · Spreekdossier · KvK 94521837 · Versie 1.0 · Januari 2026</p>
+
+    <div class="callout">
+      <p>📋 <strong>Persoonlijke verwerkersovereenkomst nodig?</strong> Neem contact op via <a href="mailto:info@spreekdossier.nl">info@spreekdossier.nl</a>. We sturen je een ondertekend exemplaar toe.</p>
+    </div>
+
+    <h2>Artikel 1 — Partijen</h2>
+    <p><strong>Verwerker:</strong> Spreekdossier, KvK 94521837, Nieuw Nijenrode 113, Breukelen, info@spreekdossier.nl</p>
+    <p><strong>Verwerkingsverantwoordelijke:</strong> De fysiotherapeut of zorgpraktijk die gebruik maakt van de diensten van Spreekdossier.</p>
+
+    <h2>Artikel 2 — Grondslag (AVG art. 28)</h2>
+    <p>Deze verwerkersovereenkomst regelt de verwerking van persoonsgegevens door Spreekdossier namens de verwerkingsverantwoordelijke, conform artikel 28 van de Algemene Verordening Gegevensbescherming (AVG).</p>
+
+    <h2>Artikel 3 — Aard en doel van de verwerking</h2>
+    <p>Spreekdossier verwerkt geluidsopnames en transcripties uitsluitend voor het doel waarvoor de verwerkingsverantwoordelijke de dienst inzet: het genereren van klinische documentatie (SOEP-notities, behandelplannen, patiëntberichten, verwijsbrieven).</p>
+    <ul>
+      <li><strong>Categorie gegevens:</strong> Gezondheidsgegevens (bijzondere categorie onder AVG)</li>
+      <li><strong>Betrokkenen:</strong> Patiënten van de verwerkingsverantwoordelijke</li>
+      <li><strong>Bewaartermijn:</strong> Geen — data wordt niet opgeslagen. Verwerking vindt uitsluitend binnen de sessie plaats.</li>
+    </ul>
+
+    <h2>Artikel 4 — Privacy by design</h2>
+    <p>Spreekdossier is gebouwd op het principe van minimale gegevensverwerking:</p>
+    <ul>
+      <li>🎙️ <strong>Audio:</strong> verwerkt voor transcriptie, daarna direct verwijderd — nooit opgeslagen</li>
+      <li>📝 <strong>Transcript en output:</strong> alleen zichtbaar in de browser van de gebruiker, nooit opgeslagen op servers van Spreekdossier</li>
+      <li>🌍 <strong>Verwerking:</strong> uitsluitend op EU-servers (Frankfurt / Amsterdam)</li>
+      <li>🚫 <strong>AI-training:</strong> data wordt nooit gebruikt om AI-modellen te trainen</li>
+    </ul>
+
+    <h2>Artikel 5 — Sub-verwerkers</h2>
+    <p>Spreekdossier maakt gebruik van de volgende sub-verwerker voor AI-generatie:</p>
+    <ul>
+      <li><strong>Anthropic (Claude)</strong> — AI-taalmodel voor documentgeneratie. Anthropic heeft een zero-retention policy voor API-gebruik: data wordt niet opgeslagen of gebruikt voor training.</li>
+    </ul>
+    <p>Spreekdossier staat in voor de naleving van AVG-verplichtingen door deze sub-verwerker.</p>
+
+    <h2>Artikel 6 — Verplichtingen van de verwerker</h2>
+    <p>Spreekdossier verplicht zich tot:</p>
+    <ul>
+      <li>Verwerking uitsluitend conform de instructies van de verwerkingsverantwoordelijke</li>
+      <li>Geheimhouding van alle verwerkte persoonsgegevens</li>
+      <li>Passende technische en organisatorische maatregelen (beveiliging, toegangscontrole, versleuteling)</li>
+      <li>Assistentie bij het naleven van rechten van betrokkenen (inzage, correctie, verwijdering)</li>
+      <li>Melding van datalekken binnen 48 uur aan de verwerkingsverantwoordelijke</li>
+    </ul>
+
+    <h2>Artikel 7 — Aanbevelingen voor de verwerkingsverantwoordelijke</h2>
+    <p>Wij adviseren fysiotherapeuten om in memo's geen volledige persoonsidentificerende gegevens (naam, BSN, geboortedatum) te vermelden. Gebruik "patiënt" of een initiaal. Spreekdossier verwerkt het medisch-functionele verhaal — niet de identiteit.</p>
+
+    <h2>Artikel 8 — Contactpersoon</h2>
+    <p>Voor vragen over gegevensverwerking, datalekken of het opvragen van een ondertekende verwerkersovereenkomst:</p>
+    <p><a href="mailto:info@spreekdossier.nl">info@spreekdossier.nl</a></p>
+
+    <h2>Artikel 9 — Toepasselijk recht</h2>
+    <p>Op deze verwerkersovereenkomst is Nederlands recht van toepassing.</p>
+  </div>
+
+  <footer>
+    © 2026 Spreekdossier · KvK 94521837 · <a href="privacy.html">Privacy</a> · <a href="algemene-voorwaarden.html">Algemene Voorwaarden</a>
+  </footer>
+</body>
+</html>
