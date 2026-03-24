@@ -567,15 +567,15 @@ body {
 .soep-block.p .soep-letter { color: #34C759; }
 .soep-content { flex: 1; }
 .soep-head {
-  font-size: .82em;
-  font-weight: 600;
-  color: rgba(255,255,255,.6);
-  margin-bottom: .2em;
+  font-size: .85em;
+  font-weight: 700;
+  color: rgba(255,255,255,.75);
+  margin-bottom: .25em;
 }
 .soep-text {
-  font-size: .84em;
-  color: rgba(255,255,255,.72);
-  line-height: 1.55;
+  font-size: .88em;
+  color: rgba(255,255,255,.88);
+  line-height: 1.6;
 }
 .soep-copy {
   font-size: .72em;
@@ -586,12 +586,24 @@ body {
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
-  transition: background .2s, color .2s;
+  transition: background .2s, color .2s, transform .15s;
 }
 .soep-copy.highlight {
-  background: rgba(0,201,181,.15);
+  background: rgba(0,201,181,.2);
   color: #00C9B5;
-  border-color: rgba(0,201,181,.3);
+  border-color: rgba(0,201,181,.4);
+  transform: scale(1.05);
+}
+.epd-hint {
+  font-size: .75em;
+  color: rgba(0,201,181,.7);
+  text-align: center;
+  margin-top: .4em;
+  opacity: 0;
+  transition: opacity .4s;
+}
+.epd-hint.visible {
+  opacity: 1;
 }
 
 /* Output actions */
@@ -952,9 +964,10 @@ body {
           </div>
         </div>
         <div class="output-actions" style="margin-top:.6em">
-          <div class="out-btn">📋 Kopieer complete documentatie</div>
+          <div class="out-btn" id="copyAllBtn">📋 Kopieer naar EPD</div>
           <div class="out-btn" id="verwijsbriefBtn">📄 Verwijsbrief</div>
         </div>
+        <div class="epd-hint" id="epdHint">✓ Gekopieerd — plak direct in Intramed of Fysiomanager</div>
       </div>
 
       <!-- Step 4: Patient message -->
@@ -1179,6 +1192,8 @@ function resetUI(){
   });
   el('timeBadge').className = 'output-time-badge';
   el('copySBtn').classList.remove('highlight');
+  if(el('epdHint')) el('epdHint').classList.remove('visible');
+  if(el('copyAllBtn')) { el('copyAllBtn').style.background = ''; el('copyAllBtn').style.color = ''; }
   // Patient
   el('patientSection').className = 'patient-section';
   el('patientMsg').textContent = '';
@@ -1226,7 +1241,7 @@ function scrollTo(targetPx, duration){
 /* ── Main sequence (~40s loop) ── */
 async function runSequence(){
 
-  var TRANSCRIPT = 'Patiënt Jan de Vries, 45 jaar. Behandeling rugklachten links, al drie weken aanwezig. Pijn NRS 7 naar 4 na sessie. Manuele therapie L4-L5 uitgevoerd, mobilisatie en weefselbehandeling. Beweeglijkheid duidelijk verbeterd. Thuisoefeningen meegegeven: rugstrekkers 3x daags 10 herhalingen, cat-cow stretch \'s ochtends. Patiënt geeft aan beter te slapen. Zwaar tillen nog vermijden komende week. Volgende afspraak donderdag 14:00.';
+  var TRANSCRIPT = 'Jan de Vries, 45 jaar. Rugklachten links, NRS 7→4. Manuele therapie L4-L5, mobilisatie. Beweeglijkheid verbeterd. Rugstrekkers 3x daags, cat-cow stretch. Zwaar tillen vermijden. Afspraak donderdag 14:00.';
 
   var WA_MESSAGE = 'Hoi Jan! 👋 Super dat de pijn al minder is geworden. Doe thuis de rugstrekkers 3x per dag (10x) en de cat-cow stretch elke ochtend. Geen zwaar tillen deze week. Volgende afspraak: donderdag 14:00. Vragen? Stuur gerust een appje! 💪';
 
@@ -1333,8 +1348,22 @@ async function runSequence(){
   await delay(500);
   el('timeBadge').className = 'output-time-badge visible';
 
+  /* Cursor → "Kopieer naar EPD" knop → click → hint toont */
+  await delay(600);
+  var copyPos = elPct(el('copyAllBtn'));
+  moveCursor(copyPos.x, copyPos.y);
+  await delay(700);
+  await clickCursor();
+  el('copyAllBtn').style.background = 'rgba(0,201,181,0.25)';
+  el('copyAllBtn').style.color = '#00C9B5';
+  el('epdHint').classList.add('visible');
+  await delay(1800);
+  el('copyAllBtn').style.background = '';
+  el('copyAllBtn').style.color = '';
+  el('epdHint').classList.remove('visible');
+
   /* 26-28s: Scroll down, patiëntbericht card appears */
-  await delay(1000);
+  await delay(600);
   el('patientSection').className = 'patient-section visible';
   scrollTo(700, 600);
   await delay(700);
