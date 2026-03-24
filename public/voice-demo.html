@@ -259,7 +259,7 @@
     }
 
     /* PATIËNTBERICHT */
-    .patient-msg-block { display: none; background: linear-gradient(135deg, rgba(0,201,181,0.06), rgba(255,140,97,0.04)); border: 1.5px solid rgba(0,201,181,0.25); border-radius: var(--radius); padding: 22px; margin-top: 20px; }
+    .patient-msg-block { display: block; background: linear-gradient(135deg, rgba(0,201,181,0.06), rgba(255,140,97,0.04)); border: 1.5px solid rgba(0,201,181,0.25); border-radius: var(--radius); padding: 22px; margin-top: 20px; }
     .patient-msg-block.visible { display: block !important; }
     .patient-msg-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
     .patient-msg-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
@@ -614,13 +614,9 @@
       <button class="btn-new" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="padding:14px 16px;" title="Naar boven">↑</button>
     </div>
 
-
-
-  </div><!-- /output-container -->
-
-  <!-- PATIËNTBERICHT SECTIE -->
-  <div class="step-badge" id="step-badge-4" style="display:none; margin: 20px 0 6px;"><span class="step-num">4</span> Stuur patiëntbericht</div>
-  <div id="patient-msg-block" style="display:none; background: linear-gradient(135deg, rgba(0,201,181,0.06), rgba(255,140,97,0.04)); border: 1.5px solid rgba(0,201,181,0.25); border-radius: 16px; padding: 22px; margin-top: 20px;">
+  <!-- PATIËNTBERICHT SECTIE — binnen output-container zodat het altijd zichtbaar is -->
+  <div class="step-badge" id="step-badge-4" style="margin: 24px 0 6px;"><span class="step-num">4</span> Stuur patiëntbericht</div>
+  <div id="patient-msg-block" style="background: linear-gradient(135deg, rgba(0,201,181,0.06), rgba(255,140,97,0.04)); border: 1.5px solid rgba(0,201,181,0.25); border-radius: 16px; padding: 22px; margin-top: 20px;">
     <div class="patient-msg-header">
       <div>
         <div class="patient-msg-title">📱 Patiëntbericht</div>
@@ -664,6 +660,8 @@
       </div>
     </div>
   </div>
+
+  </div><!-- /output-container -->
 
 </main>
 
@@ -1863,10 +1861,7 @@ async function generatePatientMessage(memoInput) {
   const badge = document.getElementById('patient-msg-badge');
   if (!block || !textarea || !badge) return;
 
-  // Toon block + stap-badge in loading state
-  block.style.display = 'block';
-  const stepBadge4 = document.getElementById('step-badge-4');
-  if (stepBadge4) stepBadge4.style.display = 'block';
+  // Loading state
   textarea.value = '';
   textarea.placeholder = 'Patiëntbericht wordt gegenereerd op basis van uw memo...';
   textarea.style.opacity = '0.5';
@@ -2524,10 +2519,9 @@ function resetToStart() {
   const firstEpdBtn = document.querySelector('.epd-btn');
   if (firstEpdBtn) firstEpdBtn.classList.add('active');
 
-  // Reset patiëntbericht
-  document.getElementById('patient-msg-block').style.display = 'none';
-  const stepBadge4Reset = document.getElementById('step-badge-4');
-  if (stepBadge4Reset) stepBadge4Reset.style.display = 'none';
+  // Reset patiëntbericht content (blok blijft zichtbaar binnen output-container)
+  const pmBadgeReset = document.getElementById('patient-msg-badge');
+  if (pmBadgeReset) pmBadgeReset.textContent = '⏳ Laden...';
   document.getElementById('patient-msg-text').value = '';
   patientMessages = { whatsapp: '', email: '', sms: '' };
   currentChannel = 'whatsapp';
